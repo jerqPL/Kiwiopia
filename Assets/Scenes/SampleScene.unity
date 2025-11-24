@@ -413,7 +413,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tiles
   gridSize: 10
-  hexTile: {fileID: 919132149155446097, guid: 2fefd8ccc237c864fab097da43e5d409, type: 3}
+  hexTile: {fileID: 348725578846849905, guid: 297cd04e80f198b44acd4f1a01e4ab2e, type: 3}
   tiles: []
 --- !u!4 &487156673
 Transform:
