@@ -1,0 +1,6 @@
+regiony:
+pustynia,
+sawanna,
+las,
+lodowiec
+

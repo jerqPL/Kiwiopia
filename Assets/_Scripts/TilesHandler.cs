@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 
@@ -8,6 +8,7 @@ public class TilesHandler : MonoBehaviour
     public int gridSize;
     public GameObject hexTile;
     public List<Tile> tiles = new List<Tile>();
+    public GameObject centerTile;
 
     [SerializeField] private TerrainGeneration terrainGeneration;
 
@@ -18,7 +19,6 @@ public class TilesHandler : MonoBehaviour
         tileGameObject.transform.parent = transform;
         Tile newTile = tileGameObject.AddComponent<Tile>();
         newTile.position = pos;
-        newTile.ApplyTerrain(terrainGeneration.GetTerrainAtPos(pos));
         return newTile;
     }
 
@@ -28,6 +28,9 @@ public class TilesHandler : MonoBehaviour
         {
             gridSize += 1;
         }
+
+        terrainGeneration.GenerateOffset();
+
         Vector2 startingPosition = new Vector2((-Mathf.Sqrt(3)/2) * (gridSize - 1), (-gridSize + 1) * 1.5f);
         float deltaX = 0f;
         for (int i = 0; i < gridSize; i++)
@@ -55,8 +58,16 @@ public class TilesHandler : MonoBehaviour
                 }
 
                 tiles.Add(newTile);
+
+
+                if (i == gridSize - 1 && x == (gridSize + i - 1)/2)
+                {
+                    centerTile = newTile.gameObject;
+                }
             }
             deltaX -= Mathf.Sqrt(3) / 2;
+
+            
         }
         deltaX += Mathf.Sqrt(3);
         for (int i = gridSize - 2; i >= 0; i--)
@@ -64,7 +75,7 @@ public class TilesHandler : MonoBehaviour
             for (int x = 0; x < gridSize + i; x++)
             {
                 Vector2 pos = startingPosition + new Vector2(x * Mathf.Sqrt(3) + deltaX, 1.5f * (gridSize + (gridSize - 2 - i)) );
-                Tile newTile = getNewTile(pos, i, x);
+                Tile newTile = getNewTile(pos, 2 * gridSize - i - 2, x);
 
 
                 if ( x != 0) {
@@ -79,6 +90,13 @@ public class TilesHandler : MonoBehaviour
             }
             deltaX += Mathf.Sqrt(3) / 2;
         }
+
+        foreach (Tile tile in tiles)
+        {
+            tile.ApplyTerrain(terrainGeneration.GetTerrainAtPos(tile.transform.position.x, tile.transform.position.z));
+        }
+
+        
     }
 
     void AddNeighbourAtIndex(int index, Tile tile)

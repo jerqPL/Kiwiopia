@@ -12,7 +12,11 @@ public class Tile : MonoBehaviour
     public bool hasCity = false;
     public bool occupied = false;
 
-    public float terrain;
+    public float humidity;
+    public float temperature;
+
+    public string terrain;
+
     public Vector2 position;
 
     public bool inAnimation = false;
@@ -24,14 +28,6 @@ public class Tile : MonoBehaviour
     void Start()
     {
         
-    }
-
-    void Awake()
-    {
-        Color color1 = Color.yellow;
-        Color color2 = Color.purple;
-        Color lerpColor = new Color(Mathf.Lerp(color1.r, color2.r, terrain), Mathf.Lerp(color1.g, color2.g, terrain), Mathf.Lerp(color1.b, color2.b, terrain));
-        GetComponent<Renderer>().material.color = lerpColor;
     }
 
     // Update is called once per frame
@@ -95,12 +91,41 @@ public class Tile : MonoBehaviour
 
     }
 
-    public void ApplyTerrain(float newTerrain)
+    public void ApplyTerrain(Vector2 newTerrain)
     {
-        terrain = newTerrain;
-        Color color1 = Color.yellow;
-        Color color2 = Color.purple;
-        Color lerpColor = new Color(Mathf.Lerp(color1.r, color2.r, terrain), Mathf.Lerp(color1.g, color2.g, terrain), Mathf.Lerp(color1.b, color2.b, terrain));
-        GetComponent<Renderer>().material.color = lerpColor;
+        humidity = newTerrain.x;
+        temperature = newTerrain.y;
+
+        int temperatureInt = Mathf.FloorToInt(temperature * 4f - 0.001f -0.3f);
+        int humidityInt = Mathf.FloorToInt(humidity * 5f - 0.001f);
+        if (temperatureInt < 0)
+        {
+            temperatureInt = 0;
+        }
+        if (humidityInt < 0){ 
+            humidityInt = 0; 
+        }
+        if (temperatureInt > 3)
+        {
+            temperatureInt = 3;
+        }
+        if (humidityInt > 4)
+        {
+            humidityInt = 4;
+        }
+
+        terrain = Global.terrainTypes[temperatureInt, humidityInt];
+
+        foreach(Material mat in Global.terrainMaterials)
+        {
+            if (mat.name == terrain)
+            {
+                GetComponent<Renderer>().material = mat;
+                break;
+            }
+        }
+
+        /*terrainType = (int)Mathf.Floor(terrain * 4f);
+        GetComponent<Renderer>().material = Global.terrainMaterials[terrainType];*/
     }
 }

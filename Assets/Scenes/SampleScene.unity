@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -205,13 +206,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.61152714, y: 0, z: 0, w: 0.7912235}
+  m_LocalPosition: {x: 0, y: 14.22, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 75.4, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,6 +257,24 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fe7acb280e0a74bb3a475f92c09154, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraMovement
+  movementSpeed: 20
+  maxDistance: 30
+  minDistance: 5
+  rotationSpeed: 35
+  tilesHandler: {fileID: 487156672}
+  focusPoint: {fileID: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,9 +432,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6afebfa6c014077449a1ce97df19c753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tiles
-  gridSize: 10
+  gridSize: 24
   hexTile: {fileID: 348725578846849905, guid: 297cd04e80f198b44acd4f1a01e4ab2e, type: 3}
   tiles: []
+  centerTile: {fileID: 0}
   terrainGeneration: {fileID: 487156674}
 --- !u!4 &487156673
 Transform:
@@ -444,10 +464,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da15ba650009ac34b9553d73d3883cbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainGeneration
-  xOffset: 0
-  zOffset: 0
-  xScale: 1
-  zScale: 1
+  humidityXOffset: 0
+  humidityZOffset: 0
+  temperatureXOffset: 0
+  temperatureZOffset: 0
+  humidityXScale: 0.2
+  humidityZScale: 0.2
+  temperatureXScale: 0.1
+  temperatureZScale: 0.1
+--- !u!1 &816525039
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 816525041}
+  - component: {fileID: 816525040}
+  m_Layer: 0
+  m_Name: Selection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &816525040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816525039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65452b63256ba8141b34df21a2c83c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SelectionHandler
+  mainCamera: {fileID: 330585545}
+  cameraMovement: {fileID: 330585548}
+--- !u!4 &816525041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 816525039}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +598,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Global
   cityPrefabReference: {fileID: 919132149155446097, guid: aacaee4130ab55d4babea661fdd15f66, type: 3}
   swordmanPrefabReference: {fileID: 919132149155446097, guid: cb7fa06cc661a4949bae9c79bd190c61, type: 3}
+  terrainMaterialReference:
+  - {fileID: 2100000, guid: beee99db7381a6b4a98ec90839fd1fc0, type: 2}
+  - {fileID: 2100000, guid: 9d24b153e36be0c4d93ac20859a4acc3, type: 2}
+  - {fileID: 2100000, guid: 952d882f1a5a068499d5465da09f641e, type: 2}
+  - {fileID: 2100000, guid: aca4439ac6b96014fb68e9b86d5a0de5, type: 2}
+  - {fileID: 2100000, guid: 784d6433e041ca74b8746da16cddafd9, type: 2}
+  - {fileID: 2100000, guid: 3093419fafea499489e4e276129a31ba, type: 2}
+  - {fileID: 2100000, guid: a67b5cfa990aa0c4486733f405313390, type: 2}
+  - {fileID: 2100000, guid: 5e4cdddc430f88c42a43675caf23ddf2, type: 2}
+  - {fileID: 2100000, guid: 0a78841d98bcdbf4d88953f36247190c, type: 2}
+  - {fileID: 2100000, guid: 44205c6c5f1d0194d84695d39b7d9766, type: 2}
 --- !u!4 &1450353043
 Transform:
   m_ObjectHideFlags: 0
@@ -552,3 +633,4 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 487156673}
   - {fileID: 1450353043}
+  - {fileID: 816525041}

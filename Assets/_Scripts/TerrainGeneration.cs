@@ -1,23 +1,30 @@
-using TreeEditor;
 using UnityEngine;
 
 public class TerrainGeneration : MonoBehaviour
 {
-    [SerializeField] private int xOffset;
-    [SerializeField] private int zOffset;
+    [SerializeField] private int humidityXOffset;
+    [SerializeField] private int humidityZOffset;
 
-    [SerializeField] private float xScale;
-    [SerializeField] private float zScale;
+    [SerializeField] private int temperatureXOffset;
+    [SerializeField] private int temperatureZOffset;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private float humidityXScale;
+    [SerializeField] private float humidityZScale;
+
+    [SerializeField] private float temperatureXScale;
+    [SerializeField] private float temperatureZScale;
+    public void GenerateOffset()
     {
-        xOffset = Random.Range(-10000, 10000);
-        zOffset = Random.Range(-10000, 10000);
+        humidityXOffset = Random.Range(100, 1000);
+        humidityZOffset = Random.Range(100, 1000);
+        temperatureXOffset = Random.Range(100, 1000);
+        temperatureZOffset = Random.Range(100, 1000);
     }
 
-    public float GetTerrainAtPos(Vector2 pos)
+    public Vector2 GetTerrainAtPos(float posX, float posZ)
     {
-        return Mathf.PerlinNoise(xScale * (xOffset + pos.x), zScale * (zOffset + pos.y));
+        
+        return new Vector2( Mathf.PerlinNoise(humidityXScale * (humidityXOffset + posX), humidityZScale * (humidityZOffset + posZ)),
+                            Mathf.PerlinNoise(temperatureXScale * (temperatureXOffset + posX), temperatureZScale * (temperatureZOffset + posZ)));
     }
 }
