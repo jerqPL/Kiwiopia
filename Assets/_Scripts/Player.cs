@@ -3,15 +3,25 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public int hash;
+    public int money;
+    public int wood;
+    public int stone;
+
     [SerializeField] private TilesHandler tilesHandler;
     [SerializeField] private UnitsHandler unitsHandler;
     [SerializeField] private CameraMovement cameraMovement;
+    [SerializeField] private UIHandler uIHandler;
 
     void Awake()
     {
-
-
         hash = Random.Range(0, 1000000000);
+
+        money = Global.startingMoney;
+        wood = Global.startingWood;
+        stone = Global.startingStone;
+
+        SendValuesToUI();
+
         bool foundStartingTile = false;
         Tile startingTile = null;
         Unit startingUnit = null;
@@ -35,8 +45,15 @@ public class Player : MonoBehaviour
         cameraMovement.UpdateFocusPoint(startingTile.transform);
     }
 
+    void SendValuesToUI()
+    {
+        uIHandler.UpdateMoneyText(money);
+        uIHandler.UpdateWoodText(wood);
+        uIHandler.UpdateStoneText(stone);
+    }
+
     void Update()
     {
-        
+        SendValuesToUI();
     }
 }

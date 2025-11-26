@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
@@ -10,7 +11,14 @@ public class UIHandler : MonoBehaviour
 
     [SerializeField] private RectTransform tileMenu;
     [SerializeField] private RectTransform cityMenu;
+    [SerializeField] private RectTransform cityMenuUnits;
+
     [SerializeField] private RectTransform unitMenu;
+
+
+    [SerializeField] private TMP_Text moneyText;
+    [SerializeField] private TMP_Text woodText;
+    [SerializeField] private TMP_Text stoneText;
 
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
@@ -20,6 +28,15 @@ public class UIHandler : MonoBehaviour
     }
     public void ClickedTile(Tile tile, int num_of_times)
     {
+        if (tile.unit != null)
+        {
+            cityMenuUnits.gameObject.SetActive(false);
+        }
+        else
+        {
+            cityMenuUnits.gameObject.SetActive(true);
+        }
+
         if (tile == null) return;
         DisableAll();
 
@@ -61,6 +78,7 @@ public class UIHandler : MonoBehaviour
     public void RecruitUnit()
     {
         unitsHandler.RecruitUnit(selectionHandler.lastClickedTile);
+        cityMenuUnits.gameObject.SetActive(false);
     }
 
     public void DestroyUnit()
@@ -71,5 +89,20 @@ public class UIHandler : MonoBehaviour
     public void UpgradeCity()
     {
         selectionHandler.lastClickedTile.city.ChangeSize(selectionHandler.lastClickedTile.city.size + 1);
+    }
+
+    public void UpdateMoneyText(int value)
+    {
+        moneyText.text = value.ToString();
+    }
+
+    public void UpdateWoodText(int value)
+    {
+        woodText.text = value.ToString();
+    }
+
+    public void UpdateStoneText(int value)
+    {
+        stoneText.text = value.ToString();
     }
 }

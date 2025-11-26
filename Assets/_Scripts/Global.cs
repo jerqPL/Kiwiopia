@@ -42,6 +42,25 @@ public class Global : MonoBehaviour
     public static Material inProgressLineMaterial;
     [SerializeField] private Material inProgressLineMaterialReference;
 
+    public static int startingMoney; //money, wood, stone;
+    [SerializeField] private int startingMoneyReference;
+
+    public static int startingWood; 
+    [SerializeField] private int startingWoodReference;
+
+    public static int startingStone;
+    [SerializeField] private int startingStoneReference;
+
+
+    public static float timePerCoinPerTile;
+    [SerializeField] private float timePerCoinPerTileReference;
+
+    public static float timePerLogPerForest;
+    [SerializeField] private float timePerLogPerForestReference;
+
+    public static float timePerStonePerMountain;
+    [SerializeField] private float timePerStonePerMountainReference;
+
     void Awake()
     {
         cityPrefab = cityPrefabReference;
@@ -54,5 +73,9 @@ public class Global : MonoBehaviour
         hotWetnessToForest = hotWetnessToForestReference;
         completedLineMaterial = completedLineMaterialReference;
         inProgressLineMaterial = inProgressLineMaterialReference;
+
+        startingMoney = startingMoneyReference;
+        startingWood = startingWoodReference;
+        startingStone = startingStoneReference;
     }
 }
