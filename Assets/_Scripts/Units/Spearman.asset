@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 790345ce90f41e345938bc39473a25e3, type: 3}
+  m_Name: Spearman
+  m_EditorClassIdentifier: Assembly-CSharp::UnitType
+  id: 1
+  description: Has a spear
+  health: 7
+  range: 2
+  damage: 4
+  resistance: 1
+  speed: 4
+  canClimb: 1
+  timePerCoin: 2
+  scoutDistance: 1
+  model: {fileID: 7488025477634379700, guid: e4b3618fca07ba14488b220a972feaf8, type: 3}

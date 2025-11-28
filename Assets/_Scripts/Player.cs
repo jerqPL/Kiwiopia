@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,6 +13,9 @@ public class Player : MonoBehaviour
     [SerializeField] private UnitsHandler unitsHandler;
     [SerializeField] private CameraMovement cameraMovement;
     [SerializeField] private UIHandler uIHandler;
+
+    public List<Unit> units = new List<Unit>();
+    public List<City> citys = new List<City>();
 
     void Awake()
     {
@@ -31,7 +36,8 @@ public class Player : MonoBehaviour
             if (startingTile.unit == null && startingTile.city == null && startingTile.owner == null && !startingTile.hasMountains)
             {
                 foundStartingTile = true;
-                startingUnit = unitsHandler.RecruitUnit(startingTile);
+                startingUnit = unitsHandler.RecruitUnit(this, startingTile, 0);
+                startingUnit.isLeader = true;
                 startingTile.owner = this;
                 startingUnit.owner = this;
                 break;
@@ -43,6 +49,8 @@ public class Player : MonoBehaviour
             Destroy(gameObject);
         }
         cameraMovement.UpdateFocusPoint(startingTile.transform);
+        UnitMoved();
+
     }
 
     void SendValuesToUI()
@@ -62,5 +70,67 @@ public class Player : MonoBehaviour
         money += rMoney;
         wood += rWood;
         stone += rStone;
+    }
+
+
+
+    public bool TakeResources(int tMoney, int tWood, int tStone)
+    {
+        if (money >= tMoney && wood >= tWood && stone >= tStone)
+        {
+            money -= tMoney;
+            wood -= tWood;
+            stone -= tStone;
+            return true;
+        }
+        Debug.Log($"Not enouch resources: {tMoney}, {tWood}, {tStone}");
+        return false;
+    }
+
+    public void AddUnit(Unit unit)
+    {
+        units.Add(unit);
+    }
+    public void RemoveUnit(Unit unit)
+    {
+        units.Remove(unit);
+    }
+
+    public void UnitMoved()
+    {
+        List<Tile> visibleTiles = new List<Tile>();
+
+        foreach (City city in citys)
+        {
+            if (!visibleTiles.Contains(city.tile)) visibleTiles.Add(city.tile);
+            visibleTiles.AddRange(city.cityTiles.Where(x=>!visibleTiles.Contains(x)));
+        }
+
+        foreach (Unit unit in units)
+        {
+            if (unit.tile != null)
+            {
+                List<Tile> unitVisibleTiles = new List<Tile>();
+                unitVisibleTiles.Add(unit.tile);
+                for (int i = 0; i < Global.unitTypes[unit.type].scoutDistance; i++)
+                {
+                    int visTiles = unitVisibleTiles.Count;
+                    for (int j = 0; j < visTiles; j++)
+                    {
+                        Tile tile = unitVisibleTiles[j];
+                        foreach (Tile neighbour in tile.neighbors)
+                        {
+                            if (!unitVisibleTiles.Contains(neighbour))
+                            {
+                                unitVisibleTiles.Add(neighbour);
+                            }
+                        }
+                    }
+                }
+                visibleTiles.AddRange(unitVisibleTiles.Where(x=>!visibleTiles.Contains(x)));
+            }
+        }
+
+        tilesHandler.SetVisibility(visibleTiles);
     }
 }

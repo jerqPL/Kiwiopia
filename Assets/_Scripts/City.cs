@@ -5,6 +5,9 @@ public class City : MonoBehaviour
 {
     public List<Tile> cityTiles = new List<Tile>();
     public Tile tile;
+    public Player owner;
+
+    public int orderNumber = 0;
     public int size = 0;
 
     public int money = 0;
@@ -13,7 +16,19 @@ public class City : MonoBehaviour
 
     public void ChangeSize(int newSize)
     {
-        size = newSize;   
+        newSize -= 2;
+        if (newSize >= 0)
+        {
+            int moneyToTake = Global.newCityResourceCost[orderNumber, 0] * Global.cityUpgradeCostMultiplayer[newSize, 0];
+            int woodToTake = Global.newCityResourceCost[orderNumber, 1] * Global.cityUpgradeCostMultiplayer[newSize, 1];
+            int stoneToTake = Global.newCityResourceCost[orderNumber, 2] * Global.cityUpgradeCostMultiplayer[newSize, 2];
+
+            if (!owner.TakeResources(moneyToTake, woodToTake, stoneToTake))
+            {
+                return;
+            }
+        }
+        size = newSize + 2;   
         foreach (Tile cityTile in cityTiles)
         {
             cityTile.underCity = null;
@@ -29,7 +44,7 @@ public class City : MonoBehaviour
                 neighbour.owner = tile.owner;
             }
         }
-        for (int i = 0; i < newSize-1; i++)
+        for (int i = 0; i < size-1; i++)
         {
             int cityTilesCount = cityTiles.Count;
             for( int j = 0; j < cityTilesCount; j++) 
@@ -63,7 +78,7 @@ public class City : MonoBehaviour
         {
             return;
         }
-        tile.owner.RecieveResources(money, wood, stone);
+        owner.RecieveResources(money, wood, stone);
         money = 0;
         wood = 0;
         stone = 0;

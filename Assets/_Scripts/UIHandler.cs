@@ -5,6 +5,7 @@ using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
+    [SerializeField] private PlayerHandler playerHandler;
     [SerializeField] private CityHandler cityHandler;
     [SerializeField] private UnitsHandler unitsHandler;
     [SerializeField] private SelectionHandler selectionHandler;
@@ -72,12 +73,12 @@ public class UIHandler : MonoBehaviour
 
     public void BuildCity()
     {
-        cityHandler.BuildCity(selectionHandler.lastClickedTile);
+        cityHandler.BuildCity(playerHandler.localPlayer ,selectionHandler.lastClickedTile);
     }
 
-    public void RecruitUnit()
+    public void RecruitUnit(int type)
     {
-        unitsHandler.RecruitUnit(selectionHandler.lastClickedTile);
+        unitsHandler.RecruitUnit(playerHandler.localPlayer ,selectionHandler.lastClickedTile, type);
         cityMenuUnits.gameObject.SetActive(false);
     }
 

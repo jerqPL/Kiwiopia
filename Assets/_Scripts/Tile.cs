@@ -26,6 +26,17 @@ public class Tile : MonoBehaviour
     public float generationTimer = 0;
     public float generationTimer1 = 0;
 
+    private GameObject mountainGameObject;
+    private GameObject forestGameObject;
+    private Material material;
+
+
+    void Awake()
+    {
+        generationTimer = Random.Range(0, 100) * 0.01f;
+        generationTimer1 = Random.Range(0, 100) * 0.01f;
+    }
+
     void Update()
     {
         if (underCity != null)
@@ -35,7 +46,7 @@ public class Tile : MonoBehaviour
             if (!hasMountains && !hasForest)
             {
                 int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
-                
+
                 generationTimer -= generated * Global.timePerCoinPerTile;
                 SendToCity(generated, 0, 0);
             }
@@ -60,6 +71,38 @@ public class Tile : MonoBehaviour
                 SendToCity(0, 0, generated);
             }
         }
+        if (underCity == null && unit != null)
+        {
+            generationTimer += Time.deltaTime;
+            generationTimer1 += Time.deltaTime;
+            if (!hasMountains && !hasForest)
+            {
+                int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
+
+                generationTimer -= generated * Global.timePerCoinPerTile;
+                SendToUnit(generated, 0, 0);
+            }
+            else if (hasMountains && hasForest)
+            {
+                int generatedWood = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
+                generationTimer -= generatedWood * Global.timePerLogPerForest;
+                int generatedStone = (int)Mathf.Floor(generationTimer1 / Global.timePerStonePerMountain);
+                generationTimer1 -= generatedStone * Global.timePerStonePerMountain;
+                SendToUnit(0, generatedWood, generatedStone);
+            }
+            else if (hasForest)
+            {
+                int generated = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
+                generationTimer -= generated * Global.timePerLogPerForest;
+                SendToUnit(0, generated, 0);
+            }
+            else if (hasMountains)
+            {
+                int generated = (int)Mathf.Floor(generationTimer / Global.timePerStonePerMountain);
+                generationTimer -= generated * Global.timePerStonePerMountain;
+                SendToUnit(0, 0, generated);
+            }
+        }
     }
 
     public void ApplyTerrain(Vector3 newTerrain)
@@ -69,29 +112,32 @@ public class Tile : MonoBehaviour
         height = newTerrain.z;
 
         GameObject mountain = null;
-        if (Mathf.Pow(height * height * (1-temperature), 0.33333f) > Global.heightToMountain)
+        if (Mathf.Pow(height * height * (1 - temperature), 0.33333f) > Global.heightToMountain)
         {
-            mountain = Instantiate(Global.mountainPrefab, transform.position, Quaternion.identity);
+            mountain = Instantiate(Global.mountainPrefab, transform.position, Quaternion.Euler(0, Random.Range(0, 360), 0));
             mountain.transform.SetParent(transform);
             hasMountains = true;
         }
+        mountainGameObject = mountain;
 
         GameObject forest = null;
         if (Mathf.Pow(humidity * humidity * temperature, 0.33333f) > Global.hotWetnessToForest)
         {
-            forest = Instantiate(Global.forestPrefab, transform.position, Quaternion.identity);
+            forest = Instantiate(Global.forestPrefab, transform.position, Quaternion.Euler(0, Random.Range(0, 360), 0));
             forest.transform.SetParent(transform);
             hasForest = true;
         }
+        forestGameObject = forest;
 
-        int temperatureInt = Mathf.FloorToInt(temperature * 4f - 0.001f +0.3f);
+        int temperatureInt = Mathf.FloorToInt(temperature * 4f - 0.001f + 0.3f);
         int humidityInt = Mathf.FloorToInt(humidity * 5f - 0.001f);
         if (temperatureInt < 0)
         {
             temperatureInt = 0;
         }
-        if (humidityInt < 0){ 
-            humidityInt = 0; 
+        if (humidityInt < 0)
+        {
+            humidityInt = 0;
         }
         if (temperatureInt > 3)
         {
@@ -104,10 +150,12 @@ public class Tile : MonoBehaviour
 
         terrain = Global.terrainTypes[temperatureInt, humidityInt];
 
-        foreach(Material mat in Global.terrainMaterials)
+
+        foreach (Material mat in Global.terrainMaterials)
         {
             if (mat.name == terrain)
             {
+                material = mat;
                 GetComponent<Renderer>().material = mat;
                 if (mountain != null)
                 {
@@ -129,5 +177,17 @@ public class Tile : MonoBehaviour
     void SendToCity(int money, int wood, int stone)
     {
         underCity.RecieveResources(money, wood, stone);
+    }
+
+    void SendToUnit(int money, int wood, int stone)
+    {
+        unit.owner.RecieveResources(money, wood, stone);
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (mountainGameObject != null) mountainGameObject.SetActive(visible);
+        if (forestGameObject != null) forestGameObject.SetActive(visible);
+        this.gameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
     }
 }

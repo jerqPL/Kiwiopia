@@ -4,4 +4,10 @@ using UnityEngine;
 public class PlayerHandler : MonoBehaviour
 {
     public List<Player> players = new List<Player>();
+    public Player localPlayer;
+
+    void Awake()
+    {
+        localPlayer = players[0];
+    }
 }

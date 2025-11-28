@@ -119,6 +119,7 @@ public class TilesHandler : MonoBehaviour
 
     public List<Tile> shortestPath(Tile source, Tile end)
     {
+        Unit unit = source.unit;
         if (source == null || end == null)
             return new List<Tile>();
 
@@ -139,9 +140,10 @@ public class TilesHandler : MonoBehaviour
                 break; // znaleziono cel
             }
 
+
             foreach (Tile neighbor in current.neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && !neighbor.hasMountains)
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || Global.unitTypes[unit.type].canClimb))
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);
@@ -171,5 +173,19 @@ public class TilesHandler : MonoBehaviour
     public Tile RandomTile()
     {
         return tiles[Random.Range(0, tiles.Count)];
+    }
+
+    public void SetVisibility(List<Tile> visibleTiles)
+    {
+        foreach (Tile tile in tiles)
+        {
+            if (visibleTiles.Contains(tile)){
+                tile.SetVisibility(true);
+            }
+            else
+            {
+                tile.SetVisibility(false);
+            }
+        }
     }
 }

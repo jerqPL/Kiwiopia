@@ -1,6 +1,6 @@
-regiony:
-pustynia,
-sawanna,
-las,
-lodowiec
+citytiles:
+1 -> 6
+2 -> +12 => 18
+3 -> +18 => 36
+4 -> +24 => 60
 
