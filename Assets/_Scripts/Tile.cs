@@ -38,6 +38,7 @@ public class Tile : NetworkBehaviour
 
     void Update()
     {
+        if (!NetworkManager.Singleton.IsServer) return;
         if (underCity != null)
         {
             generationTimer += Time.deltaTime;

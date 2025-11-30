@@ -2,14 +2,11 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CityHandler : MonoBehaviour
+public class CityHandler : NetworkBehaviour
 {
-    [SerializeField] private SelectionHandler selectionHandler;
     [SerializeField] private GameObject cityPrefab;
 
     public List<City> cities = new List<City>();
-
-    public int numberOfCities = 0;
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void BuildCityServerRpc(int ownerIndex, int tileIndex)
@@ -28,10 +25,12 @@ public class CityHandler : MonoBehaviour
 
         tile.owner = owner;
 
-        int money = Global.newCityResourceCost[numberOfCities, 0];
-        int wood = Global.newCityResourceCost[numberOfCities, 1];
-        int stone = Global.newCityResourceCost[numberOfCities, 2];
+        int money = Global.newCityResourceCost[owner.citys.Count, 0];
+        int wood = Global.newCityResourceCost[owner.citys.Count, 1];
+        int stone = Global.newCityResourceCost[owner.citys.Count, 2];
 
+
+        if (NetworkManager.Singleton.IsServer) Debug.Log("building city on server");
         if (!owner.TakeResources(money, wood, stone))
         {
             Debug.Log($"Not enough resources: {money}, {wood}, {stone}");
@@ -44,12 +43,8 @@ public class CityHandler : MonoBehaviour
         City city = cityObj.GetComponent<City>();
         city.ownerIndex.Value = ownerIndex;
         city.tileIndex.Value = tileIndex;
-
-
         netObj.Spawn(); // == replicate to all clients
-
-        
-        numberOfCities++;
-
+        city.ChangeSizeServerRpc(1);
+        netObj.ChangeOwnership(Global.playerHandler.players[ownerIndex].OwnerClientId);
     }
 }

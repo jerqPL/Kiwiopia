@@ -6,9 +6,20 @@ using UnityEngine.Rendering.Universal;
 
 public class Player : NetworkBehaviour
 {
-    public NetworkVariable<int> money = new NetworkVariable<int>();
-    public NetworkVariable<int> wood = new NetworkVariable<int>();
-    public NetworkVariable<int> stone = new NetworkVariable<int>();
+    public NetworkVariable<int> money = new NetworkVariable<int>(
+    Global.startingMoney,
+    NetworkVariableReadPermission.Owner, // The owner (client) can read it
+    NetworkVariableWritePermission.Server); // <<< Server has write permission
+
+    public NetworkVariable<int> wood = new NetworkVariable<int>(
+        Global.startingWood,
+        NetworkVariableReadPermission.Owner,
+        NetworkVariableWritePermission.Server); // <<< Server has write permission
+
+    public NetworkVariable<int> stone = new NetworkVariable<int>(
+        Global.startingStone,
+        NetworkVariableReadPermission.Owner,
+        NetworkVariableWritePermission.Server);
 
     public List<Unit> units = new List<Unit>();
     public List<City> citys = new List<City>();
@@ -99,16 +110,15 @@ public class Player : NetworkBehaviour
     }
     public void RecieveResources(int rMoney, int rWood, int rStone)
     {
-        if (!IsServer) return;
+        if (!NetworkManager.Singleton.IsServer) return;
         money.Value += rMoney;
         wood.Value += rWood;
         stone.Value += rStone;
     }
-
-
+    
     public bool TakeResources(int tMoney, int tWood, int tStone)
     {
-        if (!IsOwnedByServer)
+        if (!NetworkManager.Singleton.IsServer)
         {
             Debug.Log("called from clienttttt! XD");
             return false;

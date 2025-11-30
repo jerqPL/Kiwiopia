@@ -12,7 +12,9 @@ public class City : NetworkBehaviour
     public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
 
     public int orderNumber = 0;
-    public int size = 0;
+    public NetworkVariable<int> size = new NetworkVariable<int>(0,
+                                           NetworkVariableReadPermission.Owner,
+                                           NetworkVariableWritePermission.Server);
 
     public int money = 0;
     public int wood = 0;
@@ -21,13 +23,14 @@ public class City : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         transform.position = tile.transform.position;
+        Debug.Log($"tile index: {tileIndex.Value}");
         owner.citys.Add(this);
         tile.city = this;
         Global.cityHandler.cities.Add(this);
-        ChangeSize(1);
     }
 
-    public void ChangeSize(int newSize)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    public void ChangeSizeServerRpc(int newSize)
     {
         newSize -= 2;
         if (newSize >= 0)
@@ -41,14 +44,21 @@ public class City : NetworkBehaviour
                 return;
             }
         }
-        size = newSize + 2;   
+        
+        ChangeSizeClientRpc(newSize);
+        size.Value = newSize + 2;
+    }
+
+    [ClientRpc]
+    public void ChangeSizeClientRpc(int newSize)
+    {
         foreach (Tile cityTile in cityTiles)
         {
             cityTile.underCity = null;
             cityTile.owner = null;
         }
         cityTiles.Clear();
-        foreach(Tile neighbour in tile.neighbors)
+        foreach (Tile neighbour in tile.neighbors)
         {
             if (neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
             {
@@ -57,10 +67,10 @@ public class City : NetworkBehaviour
                 neighbour.owner = tile.owner;
             }
         }
-        for (int i = 0; i < size-1; i++)
+        for (int i = 0; i < (newSize + 2) - 1; i++)
         {
             int cityTilesCount = cityTiles.Count;
-            for( int j = 0; j < cityTilesCount; j++) 
+            for (int j = 0; j < cityTilesCount; j++)
             {
                 Tile cityTile = cityTiles[j];
                 foreach (Tile neighbour in cityTile.neighbors)
@@ -74,7 +84,7 @@ public class City : NetworkBehaviour
                 }
             }
         }
-        foreach(Tile cityTile in cityTiles)
+        foreach (Tile cityTile in cityTiles)
         {
             cityTile.transform.position = new Vector3(cityTile.transform.position.x, .15f, cityTile.transform.position.z);
         }
@@ -82,6 +92,7 @@ public class City : NetworkBehaviour
 
     private void Update()
     {
+        if (!IsServer) return;
         SendResourcesToPlayer();
     }
 

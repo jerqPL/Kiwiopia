@@ -84,7 +84,7 @@ public class UIHandler : MonoBehaviour
 
     public void UpgradeCity()
     {
-        Global.selectionHandler.lastClickedTile.city.ChangeSize(Global.selectionHandler.lastClickedTile.city.size + 1);
+        Global.selectionHandler.lastClickedTile.city.ChangeSizeServerRpc(Global.selectionHandler.lastClickedTile.city.size.Value + 1);
     }
 
     public void UpdateMoneyText(int value)
