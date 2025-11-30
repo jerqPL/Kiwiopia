@@ -12,7 +12,7 @@ public class Unit : NetworkBehaviour
     public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
     public NetworkVariable<int> tileIndex;
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
-    public bool isLeader = false;
+    public NetworkVariable<bool> isLeader = new NetworkVariable<bool>(false);
 
     [SerializeField] private LineRenderer lineRendererPrefab;
 
@@ -23,11 +23,12 @@ public class Unit : NetworkBehaviour
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         tile.SetUnit(this);
+        transform.position = tile.transform.position;
     }
 
     private void Update()
     {
-        if (isLeader)
+        if (isLeader.Value)
         {
             return;
         }

@@ -68,7 +68,7 @@ public class UIHandler : MonoBehaviour
 
     public void BuildCity()
     {
-        Global.cityHandler.BuildCity(Global.playerHandler.GetLocalPlayer() ,Global.selectionHandler.lastClickedTile);
+        Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile));
     }
 
     public void RecruitUnit(int type)

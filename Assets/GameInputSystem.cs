@@ -253,6 +253,17 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""14b0cb6e-4869-4ffb-a221-e36dc2f040e9"",
+                    ""path"": ""<Touchscreen>/Press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4d86acad-8dc5-4a76-b0b0-f45a5ba11e0d"",
                     ""path"": ""<Mouse>/position"",
                     ""interactions"": """",

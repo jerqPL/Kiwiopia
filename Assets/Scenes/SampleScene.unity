@@ -4818,7 +4818,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityHandler
   selectionHandler: {fileID: 816525040}
-  cityPrefab: {fileID: 919132149155446097, guid: aacaee4130ab55d4babea661fdd15f66, type: 3}
+  cityPrefab: {fileID: 1917841802229817384, guid: 2b4b492bc8cfd7d458cc63f8fc3b3fbf, type: 3}
+  cities: []
   numberOfCities: 0
 --- !u!4 &2121364155
 Transform:

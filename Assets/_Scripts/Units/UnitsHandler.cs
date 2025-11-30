@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public class UnitsHandler : MonoBehaviour
 {

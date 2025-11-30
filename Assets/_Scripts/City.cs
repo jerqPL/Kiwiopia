@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
+using UnityEngine.UIElements.Experimental;
 
-public class City : MonoBehaviour
+public class City : NetworkBehaviour
 {
     public List<Tile> cityTiles = new List<Tile>();
-    public Tile tile;
-    public Player owner;
+    public NetworkVariable<int> tileIndex = new NetworkVariable<int>();
+    public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
+    public NetworkVariable<int> ownerIndex = new NetworkVariable<int>();
+    public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
 
     public int orderNumber = 0;
     public int size = 0;
@@ -13,6 +17,15 @@ public class City : MonoBehaviour
     public int money = 0;
     public int wood = 0;
     public int stone = 0;
+
+    public override void OnNetworkSpawn()
+    {
+        transform.position = tile.transform.position;
+        owner.citys.Add(this);
+        tile.city = this;
+        Global.cityHandler.cities.Add(this);
+        ChangeSize(1);
+    }
 
     public void ChangeSize(int newSize)
     {

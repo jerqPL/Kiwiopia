@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.Rendering.Universal;
 
 public class Player : NetworkBehaviour
 {
@@ -41,11 +42,13 @@ public class Player : NetworkBehaviour
         }
 
         // Spawn starting unit via UnitsHandler ServerRPC
-        Global.unitsHandler.RecruitUnitServerRpc(
+        Unit leader = Global.unitsHandler.RecruitUnitServerRpc(
             Global.playerHandler.GetIndexOf(this),
             Global.tilesHandler.GetIndexOf(startingTile),
             0 // starting unit type
         );
+
+        leader.isLeader.Value = true;
 
         // Focus camera only for this player
         InitializePlayerClientRpc(Global.tilesHandler.GetIndexOf(startingTile), new ClientRpcParams
@@ -89,19 +92,27 @@ public class Player : NetworkBehaviour
         Global.uIHandler.UpdateStoneText(stone.Value);
     }
 
-    void Update() => SendValuesToUI();
-
+    void Update()
+    {
+        if (!IsOwner) return;
+        SendValuesToUI();
+    }
     public void RecieveResources(int rMoney, int rWood, int rStone)
     {
-        return;
+        if (!IsServer) return;
         money.Value += rMoney;
         wood.Value += rWood;
         stone.Value += rStone;
     }
 
+
     public bool TakeResources(int tMoney, int tWood, int tStone)
     {
-        return true;
+        if (!IsOwnedByServer)
+        {
+            Debug.Log("called from clienttttt! XD");
+            return false;
+        }
         if (money.Value >= tMoney && wood.Value >= tWood && stone.Value >= tStone)
         {
             money.Value -= tMoney;
