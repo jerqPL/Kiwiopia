@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 
@@ -24,14 +25,13 @@ public class TilesHandler : MonoBehaviour
         return newTile;
     }
 
-    void Start()
+    public void GenerateTiles()
     {
         if (gridSize % 2 == 0)
         {
             gridSize += 1;
         }
 
-        terrainGeneration.GenerateOffset();
 
         Vector2 startingPosition = new Vector2((-Mathf.Sqrt(3)/2) * (gridSize - 1), (-gridSize + 1) * 1.5f);
         float deltaX = 0f;
@@ -97,11 +97,12 @@ public class TilesHandler : MonoBehaviour
         {
             tile.ApplyTerrain(terrainGeneration.GetTerrainAtPos(tile.transform.position.x, tile.transform.position.z));
         }   
+    }
 
-        foreach(Player player in playerHandler.players)
-        {
-            player.transform.gameObject.SetActive(true);
-        }
+    [ClientRpc]
+    public void SetUnitAtTileClientRpc(int unitIndex, int tileIndex)
+    {
+        tiles[tileIndex].unit = Global.unitsHandler.GetUnitAt(unitIndex);
     }
 
     void AddNeighbourAtIndex(int index, Tile tile)
@@ -143,7 +144,7 @@ public class TilesHandler : MonoBehaviour
 
             foreach (Tile neighbor in current.neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || Global.unitTypes[unit.type].canClimb))
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb))
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);
@@ -187,5 +188,15 @@ public class TilesHandler : MonoBehaviour
                 tile.SetVisibility(false);
             }
         }
+    }
+
+    public Tile GetTileAt(int index)
+    {
+        return tiles[index];
+    }
+
+    public int GetIndexOf(Tile tile)
+    {
+        return tiles.IndexOf(tile);
     }
 }

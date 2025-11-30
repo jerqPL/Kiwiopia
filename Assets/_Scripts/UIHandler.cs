@@ -5,11 +5,6 @@ using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
-    [SerializeField] private PlayerHandler playerHandler;
-    [SerializeField] private CityHandler cityHandler;
-    [SerializeField] private UnitsHandler unitsHandler;
-    [SerializeField] private SelectionHandler selectionHandler;
-
     [SerializeField] private RectTransform tileMenu;
     [SerializeField] private RectTransform cityMenu;
     [SerializeField] private RectTransform cityMenuUnits;
@@ -62,34 +57,34 @@ public class UIHandler : MonoBehaviour
         int menu_index = num_of_times % (menus.Count + 1);
         if (menu_index < menus.Count) {
             menus[menu_index].Value.gameObject.SetActive(true);
-            selectionHandler.state = menus[menu_index].Key;
+            Global.selectionHandler.state = menus[menu_index].Key;
         }
         else
         {
-            selectionHandler.state = 0;
+            Global.selectionHandler.state = 0;
         }
     }
 
 
     public void BuildCity()
     {
-        cityHandler.BuildCity(playerHandler.localPlayer ,selectionHandler.lastClickedTile);
+        Global.cityHandler.BuildCity(Global.playerHandler.GetLocalPlayer() ,Global.selectionHandler.lastClickedTile);
     }
 
     public void RecruitUnit(int type)
     {
-        unitsHandler.RecruitUnit(playerHandler.localPlayer ,selectionHandler.lastClickedTile, type);
+        Global.unitsHandler.RecruitUnitServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
         cityMenuUnits.gameObject.SetActive(false);
     }
 
     public void DestroyUnit()
     {
-        unitsHandler.DestroyUnit(selectionHandler.lastClickedTile);
+        Global.unitsHandler.DestroyUnit(Global.selectionHandler.lastClickedTile);
     }
 
     public void UpgradeCity()
     {
-        selectionHandler.lastClickedTile.city.ChangeSize(selectionHandler.lastClickedTile.city.size + 1);
+        Global.selectionHandler.lastClickedTile.city.ChangeSize(Global.selectionHandler.lastClickedTile.city.size + 1);
     }
 
     public void UpdateMoneyText(int value)

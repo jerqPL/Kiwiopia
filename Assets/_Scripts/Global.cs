@@ -68,8 +68,35 @@ public class Global : MonoBehaviour
 
 
 
-    public static UnitType[] unitTypes;
-    [SerializeField] private UnitType[] unitTypesReference;
+
+    public static GameObject[] unitPrefabs;
+    [SerializeField] private GameObject[] unitPrefabsPreference;
+
+
+    //SCRIPTS
+    public static TilesHandler tilesHandler;
+    [SerializeField] private TilesHandler tilesHandlerReference;
+
+    public static PlayerHandler playerHandler;
+    [SerializeField] private PlayerHandler playerHandlerReference;
+
+    public static TerrainGeneration terrainGeneration;
+    [SerializeField] private TerrainGeneration terrainGenerationReference;
+
+    public static UIHandler uIHandler;
+    [SerializeField] private UIHandler uIHandlerReference;
+
+    public static CameraMovement cameraMovement;
+    [SerializeField] private CameraMovement cameraMovementReference;
+
+    public static UnitsHandler unitsHandler;
+    [SerializeField] private UnitsHandler unitsHandlerReference;
+
+    public static SelectionHandler selectionHandler;
+    [SerializeField] private SelectionHandler selectionHandlerReference;
+
+    public static CityHandler cityHandler;
+    [SerializeField] private CityHandler cityHandlerReference;
 
 
     public static int[,] newCityResourceCost = {
@@ -114,6 +141,16 @@ public class Global : MonoBehaviour
         timePerLogPerForest = timePerLogPerForestReference;
         timePerStonePerMountain = timePerStonePerMountainReference;
 
-        unitTypes = unitTypesReference;
+        unitPrefabs = unitPrefabsPreference;
+
+        //SCRIPTS
+        tilesHandler = tilesHandlerReference;
+        playerHandler = playerHandlerReference;
+        terrainGeneration = terrainGenerationReference;
+        uIHandler = uIHandlerReference;
+        cameraMovement = cameraMovementReference;
+        unitsHandler = unitsHandlerReference;
+        selectionHandler = selectionHandlerReference;
+        cityHandler = cityHandlerReference;
     }
 }

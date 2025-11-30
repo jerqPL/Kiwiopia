@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class TerrainGeneration : MonoBehaviour
+public class TerrainGeneration : NetworkBehaviour
 {
     [SerializeField] private int humidityXOffset;
     [SerializeField] private int humidityZOffset;
@@ -19,22 +20,58 @@ public class TerrainGeneration : MonoBehaviour
 
     [SerializeField] private float heightXScale;
     [SerializeField] private float heightZScale;
-    public void GenerateOffset()
+
+    private bool tilesGenerated = false;
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void SpawnMapServerRpc()
+    {
+        if (tilesGenerated) return;
+        tilesGenerated = true;
+
+        GenerateOffsets(); // generate host offsets
+        SendOffsetsClientRpc(
+                humidityXOffset, humidityZOffset,
+                temperatureXOffset, temperatureZOffset,
+                heightXOffset, heightZOffset
+            );
+    }
+
+    [ClientRpc]
+    private void SendOffsetsClientRpc(
+        int hX, int hZ,
+        int tX, int tZ,
+        int htX, int htZ)
+    {
+        humidityXOffset = hX;
+        humidityZOffset = hZ;
+        temperatureXOffset = tX;
+        temperatureZOffset = tZ;
+        heightXOffset = htX;
+        heightZOffset = htZ;
+        Global.tilesHandler.GenerateTiles();
+    }
+
+    private void GenerateOffsets()
     {
         humidityXOffset = Random.Range(100, 1000);
         humidityZOffset = Random.Range(100, 1000);
+
         temperatureXOffset = Random.Range(100, 1000);
         temperatureZOffset = Random.Range(100, 1000);
+
         heightXOffset = Random.Range(100, 1000);
         heightZOffset = Random.Range(100, 1000);
     }
 
+    
+
     public Vector3 GetTerrainAtPos(float posX, float posZ)
     {
-        
-        return new Vector3( Mathf.PerlinNoise(humidityXScale * (humidityXOffset + posX), humidityZScale * (humidityZOffset + posZ)),
-                            Mathf.PerlinNoise(temperatureXScale * (temperatureXOffset + posX), temperatureZScale * (temperatureZOffset + posZ)),
-                            Mathf.PerlinNoise(heightXScale * (heightXOffset + posX), heightZScale * (heightZOffset + posZ))
-                            );
+        return new Vector3(
+            Mathf.PerlinNoise(humidityXScale * (humidityXOffset + posX), humidityZScale * (humidityZOffset + posZ)),
+            Mathf.PerlinNoise(temperatureXScale * (temperatureXOffset + posX), temperatureZScale * (temperatureZOffset + posZ)),
+            Mathf.PerlinNoise(heightXScale * (heightXOffset + posX), heightZScale * (heightZOffset + posZ))
+        );
     }
 }

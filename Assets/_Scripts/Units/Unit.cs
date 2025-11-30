@@ -1,20 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Unit : MonoBehaviour
+public class Unit : NetworkBehaviour
 {
-    public int type;
+    public UnitType unitType;
     public bool isMoving = false;
-    public Player owner;
-    public Tile tile;
-    public UnitsHandler unitsHandler;
+    public NetworkVariable<int> ownerIndex;
+    public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
+    public NetworkVariable<int> tileIndex;
+    public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
     public bool isLeader = false;
+    
 
-    private float priceTimer = 0;
+    private NetworkVariable<float> priceTimer = new NetworkVariable<float>();
 
-    void Awake()
+    public override void OnNetworkSpawn()
     {
-        priceTimer = Random.Range(0, 100) * 0.01f;
+        Global.unitsHandler.AddUnit(this);
+        owner.AddUnit(this);
+        tile.SetUnit(this);
     }
 
     private void Update()
@@ -23,16 +28,17 @@ public class Unit : MonoBehaviour
         {
             return;
         }
-        priceTimer += Time.deltaTime;
-        if (priceTimer > Global.unitTypes[type].timePerCoin)
+        if (!IsServer) return;
+        priceTimer.Value += Time.deltaTime;
+        if (priceTimer.Value > unitType.timePerCoin)
         {
-            int coinsToTake = (int)Mathf.Floor(priceTimer / Global.unitTypes[type].timePerCoin);
+            int coinsToTake = (int)Mathf.Floor(priceTimer.Value / unitType.timePerCoin);
 
-            priceTimer -= coinsToTake * Global.unitTypes[type].timePerCoin;
+            priceTimer.Value -= coinsToTake * unitType.timePerCoin;
 
             if (!owner.TakeResources(coinsToTake, 0, 0))
             {
-                unitsHandler.DestroyUnit(tile);
+                Global.unitsHandler.DestroyUnit(tile);
             }
         }
     }
@@ -80,14 +86,14 @@ public class Unit : MonoBehaviour
                 yield return null;
             }
             gameObject.transform.position = destinationPos;
-            if (!path[i].hasCity) path[i].owner = null; 
+            if (!path[i].hasCity) path[i].owner = null;
             path[i].unit = null;
             path[i + 1].unit = this;
             path[i + 1].owner = this.owner;
-            this.tile = path[i + 1];
+            this.tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
             this.owner.UnitMoved();
             completedLineRenderer.positionCount = i + 2;
-            completedLineRenderer.SetPosition(i + 1, path[i+1].transform.position + Vector3.up * 0.56f);
+            completedLineRenderer.SetPosition(i + 1, path[i + 1].transform.position + Vector3.up * 0.56f);
             line.positionCount = path.Count - i - 1;
             for (int j = 0; j < path.Count - i - 1; j++)
             {
@@ -98,6 +104,6 @@ public class Unit : MonoBehaviour
         Destroy(completedLineRenderer);
         isMoving = false;
         path[path.Count - 1].unit = GetComponent<Unit>();
-        tile = path[path.Count - 1];
+        tileIndex.Value = Global.tilesHandler.GetIndexOf(path[path.Count - 1]);
     }
 }

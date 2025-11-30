@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class UnitsHandler : MonoBehaviour
 {
@@ -51,21 +53,20 @@ public class UnitsHandler : MonoBehaviour
         }
     }
 
-
-    public Unit RecruitUnit(Player owner, Tile tile, int unitType)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public Unit RecruitUnitServerRpc(int playerIndex, int tileIndex, int unitType)
     {
-        GameObject unitGameObj = Instantiate(Global.unitTypes[unitType].model, tile.transform.position, Quaternion.identity);
-        Unit unit = unitGameObj.AddComponent<Unit>();
-        owner.AddUnit(unit);
-        unit.name = Global.unitTypes[unitType].name;
-        unit.type = unitType;
-        tile.unit = unit;
-        unit.tile = tile;
-        unit.owner = owner;
-        unit.transform.parent = tile.transform;
-        unit.unitsHandler = this;
-        units.Add(unit);
+        GameObject unitObject = Instantiate(Global.unitPrefabs[unitType], Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
+        Unit unit = unitObject.GetComponent<Unit>();
+        unit.tileIndex.Value = tileIndex;
+        unit.ownerIndex.Value = playerIndex;
+        unitObject.GetComponent<NetworkObject>().Spawn();
         return unit;
+    }
+
+    public void AddUnit(Unit unit)
+    {
+        units.Add(unit);
     }
 
     public void DestroyUnit(Tile tile)
@@ -86,5 +87,13 @@ public class UnitsHandler : MonoBehaviour
         uIHandler.ClickedTile(tile, 0);
     }
 
-    
+    public Unit GetUnitAt(int index)
+    {
+        return units[index];
+    }
+
+    public int GetIndexOf(Unit unit)
+    {
+        return units.IndexOf(unit);
+    }
 }

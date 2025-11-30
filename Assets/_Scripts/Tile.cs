@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using UnityEngine.InputSystem.XR.Haptics;
+using Unity.Netcode;
 
-public class Tile : MonoBehaviour
+public class Tile : NetworkBehaviour
 {
     public List<Tile> neighbors = new List<Tile>();
 
@@ -189,5 +188,10 @@ public class Tile : MonoBehaviour
         if (mountainGameObject != null) mountainGameObject.SetActive(visible);
         if (forestGameObject != null) forestGameObject.SetActive(visible);
         this.gameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+    }
+
+    public void SetUnit(Unit uni)
+    {
+        unit = uni;
     }
 }
