@@ -61,6 +61,7 @@ public class UnitsHandler : MonoBehaviour
         unit.tileIndex.Value = tileIndex;
         unit.ownerIndex.Value = playerIndex;
         unitObject.GetComponent<NetworkObject>().Spawn();
+        unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
         return unit;
     }
 

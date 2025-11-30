@@ -1,17 +1,20 @@
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class Unit : NetworkBehaviour
 {
     public UnitType unitType;
-    public bool isMoving = false;
+    public NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false);
     public NetworkVariable<int> ownerIndex;
     public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
     public NetworkVariable<int> tileIndex;
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
     public bool isLeader = false;
-    
+
+    [SerializeField] private LineRenderer lineRendererPrefab;
 
     private NetworkVariable<float> priceTimer = new NetworkVariable<float>();
 
@@ -43,67 +46,86 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    public void MoveUnit(List<Tile> path)
-    {
 
-        if (isMoving)
-        {
-            Debug.Log("unit already moving");
-            return;
-        }
-        LineRenderer newLineRenderer = Instantiate(Global.lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
-        newLineRenderer.numCornerVertices = 8;
-        newLineRenderer.numCapVertices = 8;
-        newLineRenderer.material = Global.inProgressLineMaterial;
-        newLineRenderer.positionCount = path.Count;
-        for (int i = 0; i < path.Count; i++)
-        {
-            newLineRenderer.SetPosition(i, path[i].gameObject.transform.position + Vector3.up * 0.55f);
-        }
-        newLineRenderer.transform.SetParent(transform, false);
-        StartCoroutine(moveUnit(path, 1f, newLineRenderer));
+    public void RequestMove(List<Tile> path)
+    {
+        if (path == null || path.Count < 2) return;
+
+        // Send request to server
+        MoveUnitServerRpc(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
     }
 
-    private IEnumerator<Tile> moveUnit(List<Tile> path, float time, LineRenderer line)
+    // ServerRPC to move the unit
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    public void MoveUnitServerRpc(int[] tileIndices)
     {
-        LineRenderer completedLineRenderer = Instantiate(Global.lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
-        completedLineRenderer.numCornerVertices = 8;
-        completedLineRenderer.numCapVertices = 8;
-        completedLineRenderer.positionCount = 1;
-        completedLineRenderer.SetPosition(0, path[0].transform.position + Vector3.up * 0.56f);
-        completedLineRenderer.material = Global.completedLineMaterial;
-        tile.unit = null;
+        if (isMoving.Value) return;
+
+        List<int> validIndices = new List<int>();
+        foreach (var idx in tileIndices)
+        {
+            if (Global.tilesHandler.GetTileAt(idx) != null)
+                validIndices.Add(idx);
+        }
+
+        MoveUnitClientRpc(validIndices.ToArray());
+    }
+
+    [ClientRpc]
+    private void MoveUnitClientRpc(int[] tileIndices)
+    {
+        List<Tile> path = new List<Tile>();
+        foreach (int idx in tileIndices)
+            path.Add(Global.tilesHandler.GetTileAt(idx));
+
+        StartCoroutine(MoveUnitCoroutine(path));
+    }
+
+    private IEnumerator MoveUnitCoroutine(List<Tile> path)
+    {
+        if (IsServer) isMoving.Value = true;
+
+        LineRenderer progressLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        progressLine.numCornerVertices = 8;
+        progressLine.numCapVertices = 8;
+        progressLine.material = Global.inProgressLineMaterial;
+        progressLine.positionCount = path.Count;
+        for (int i = 0; i < path.Count; i++)
+            progressLine.SetPosition(i, path[i].transform.position + Vector3.up * 0.55f);
+
         transform.parent = null;
+        tile.unit = null;
+
+        float moveTime = 1f;
+
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector3 startPos = path[i].gameObject.transform.position;
-            Vector3 destinationPos = path[i + 1].gameObject.transform.position;
-            float timePassed = 0;
-            while (timePassed < time)
+            Vector3 start = path[i].transform.position;
+            Vector3 end = path[i + 1].transform.position;
+            float elapsed = 0f;
+            while (elapsed < moveTime)
             {
-                gameObject.transform.position = Vector3.Lerp(startPos, destinationPos, timePassed / time);
-                timePassed += Time.deltaTime;
+                transform.position = Vector3.Lerp(start, end, elapsed / moveTime);
+                elapsed += Time.deltaTime;
                 yield return null;
             }
-            gameObject.transform.position = destinationPos;
+            transform.position = end;
+
+            if (IsServer)
+            {
+                tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
+            }
+            if (owner == Global.playerHandler.GetLocalPlayer())
+            {
+                Global.playerHandler.GetLocalPlayer().UnitMoved();
+            }
             if (!path[i].hasCity) path[i].owner = null;
             path[i].unit = null;
             path[i + 1].unit = this;
-            path[i + 1].owner = this.owner;
-            this.tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
-            this.owner.UnitMoved();
-            completedLineRenderer.positionCount = i + 2;
-            completedLineRenderer.SetPosition(i + 1, path[i + 1].transform.position + Vector3.up * 0.56f);
-            line.positionCount = path.Count - i - 1;
-            for (int j = 0; j < path.Count - i - 1; j++)
-            {
-                line.SetPosition(j, path[i + 1 + j].transform.position + Vector3.up * 0.55f);
-            }
+            path[i + 1].owner = owner;
         }
-        Destroy(line);
-        Destroy(completedLineRenderer);
-        isMoving = false;
-        path[path.Count - 1].unit = GetComponent<Unit>();
-        tileIndex.Value = Global.tilesHandler.GetIndexOf(path[path.Count - 1]);
+
+        Destroy(progressLine);
+        if (IsServer) isMoving.Value = false;
     }
 }

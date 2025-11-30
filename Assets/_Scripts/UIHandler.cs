@@ -24,7 +24,7 @@ public class UIHandler : MonoBehaviour
     }
     public void ClickedTile(Tile tile, int num_of_times)
     {
-        if (tile.unit != null)
+        if (tile.unit != null )
         {
             cityMenuUnits.gameObject.SetActive(false);
         }
@@ -37,9 +37,9 @@ public class UIHandler : MonoBehaviour
         DisableAll();
 
         menus.Clear();
-        if (tile.unit != null) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
+        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
         if (tile.city != null) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
-        if (tile.unit != null) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
+        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
 
         ActivateMenu(num_of_times);
         //Debug.Log($"Clicked tile: {tile.transform.name}, {num_of_times} times");

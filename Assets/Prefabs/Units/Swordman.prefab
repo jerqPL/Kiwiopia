@@ -73,13 +73,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Unit
   ShowTopMostFoldoutHeaderGroup: 1
   unitType: {fileID: 11400000, guid: e90c8fefd1eb72346911ab832d71f40c, type: 2}
-  type: 0
   isMoving: 0
-  owner: {fileID: 0}
+  ownerIndex:
+    m_InternalValue: 0
   tileIndex:
     m_InternalValue: 0
-  unitsHandler: {fileID: 0}
   isLeader: 0
+  lineRendererPrefab: {fileID: 5312008685315154619, guid: e93f7352b7ed8f84d907ce1edcb9ea8a, type: 3}
 --- !u!1001 &9218921226677825691
 PrefabInstance:
   m_ObjectHideFlags: 0
