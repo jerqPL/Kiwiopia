@@ -25,6 +25,8 @@ public class Tile : NetworkBehaviour
     public float generationTimer = 0;
     public float generationTimer1 = 0;
 
+    public bool localPlayerHasSeen = false;
+
     private GameObject mountainGameObject;
     private GameObject forestGameObject;
     private Material material;
@@ -186,9 +188,18 @@ public class Tile : NetworkBehaviour
 
     public void SetVisibility(bool visible)
     {
-        if (mountainGameObject != null) mountainGameObject.SetActive(visible);
-        if (forestGameObject != null) forestGameObject.SetActive(visible);
-        this.gameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+        if (visible) localPlayerHasSeen = true;
+        if (mountainGameObject != null)
+        {
+            mountainGameObject.SetActive(visible || localPlayerHasSeen);
+            mountainGameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+        }
+        if (forestGameObject != null)
+        {
+            forestGameObject.SetActive(visible || localPlayerHasSeen);
+            forestGameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+        }
+        GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
     }
 
     public void SetUnit(Unit uni)

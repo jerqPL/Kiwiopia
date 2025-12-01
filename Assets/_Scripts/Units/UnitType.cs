@@ -19,5 +19,4 @@ public class UnitType : ScriptableObject
     public int scoutDistance;
 
     public GameObject model;
-
 }

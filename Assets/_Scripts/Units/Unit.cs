@@ -6,20 +6,32 @@ using UnityEngine;
 
 public class Unit : NetworkBehaviour
 {
-    public UnitType unitType;
+    public NetworkVariable<int> typeIndex = new NetworkVariable<int>();
+    public UnitType unitType => Global.unitTypes[typeIndex.Value];
+
     public NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false);
+
+
     public NetworkVariable<int> ownerIndex;
     public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
+
+
     public NetworkVariable<int> tileIndex;
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
+    
+    
     public NetworkVariable<bool> isLeader = new NetworkVariable<bool>(false);
 
     [SerializeField] private LineRenderer lineRendererPrefab;
 
-    private NetworkVariable<float> priceTimer = new NetworkVariable<float>();
+    private float priceTimer = 0f;
+    private LineRenderer progressLine;
+    private Coroutine movementCoroutine;
+    private GameObject model;
 
     public override void OnNetworkSpawn()
     {
+        (model = Instantiate(unitType.model, transform.position, Quaternion.identity)).transform.SetParent(transform);
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         tile.SetUnit(this);
@@ -28,17 +40,22 @@ public class Unit : NetworkBehaviour
 
     private void Update()
     {
+        TakeMoney();
+    }
+
+    private void TakeMoney()
+    {
+        if (!IsServer) return;
         if (isLeader.Value)
         {
             return;
         }
-        if (!IsServer) return;
-        priceTimer.Value += Time.deltaTime;
-        if (priceTimer.Value > unitType.timePerCoin)
+        priceTimer += Time.deltaTime;
+        if (priceTimer > unitType.timePerCoin)
         {
-            int coinsToTake = (int)Mathf.Floor(priceTimer.Value / unitType.timePerCoin);
+            int coinsToTake = (int)Mathf.Floor(priceTimer / unitType.timePerCoin);
 
-            priceTimer.Value -= coinsToTake * unitType.timePerCoin;
+            priceTimer -= coinsToTake * unitType.timePerCoin;
 
             if (!owner.TakeResources(coinsToTake, 0, 0))
             {
@@ -46,7 +63,6 @@ public class Unit : NetworkBehaviour
             }
         }
     }
-
 
     public void RequestMove(List<Tile> path)
     {
@@ -79,14 +95,14 @@ public class Unit : NetworkBehaviour
         foreach (int idx in tileIndices)
             path.Add(Global.tilesHandler.GetTileAt(idx));
 
-        StartCoroutine(MoveUnitCoroutine(path));
+        movementCoroutine = StartCoroutine(MoveUnitCoroutine(path));
     }
 
     private IEnumerator MoveUnitCoroutine(List<Tile> path)
     {
         if (IsServer) isMoving.Value = true;
 
-        LineRenderer progressLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        progressLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
         progressLine.numCornerVertices = 8;
         progressLine.numCapVertices = 8;
         progressLine.material = Global.inProgressLineMaterial;
@@ -95,7 +111,7 @@ public class Unit : NetworkBehaviour
             progressLine.SetPosition(i, path[i].transform.position + Vector3.up * 0.55f);
 
         transform.parent = null;
-        tile.unit = null;
+        tile.SetUnit(null);
 
         float moveTime = 1f;
 
@@ -106,27 +122,55 @@ public class Unit : NetworkBehaviour
             float elapsed = 0f;
             while (elapsed < moveTime)
             {
-                transform.position = Vector3.Lerp(start, end, elapsed / moveTime);
+                MoveTo(Vector3.Lerp(start, end, elapsed / moveTime));
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-            transform.position = end;
+            MoveTo(end);
+
+            
 
             if (IsServer)
             {
+                if (path[i+1].unit != null)
+                {
+                    CancelMovementClientRpc(Global.tilesHandler.GetIndexOf(path[i]));
+                    isMoving.Value = false;
+                    break;
+                }
                 tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
             }
+
+            if (!path[i].hasCity && path[i].underCity == null) path[i].owner = null;
+            path[i].SetUnit(null);
+            path[i + 1].SetUnit(this);
+            path[i + 1].owner = owner;
+
             if (owner == Global.playerHandler.GetLocalPlayer())
             {
                 Global.playerHandler.GetLocalPlayer().UnitMoved();
             }
-            if (!path[i].hasCity) path[i].owner = null;
-            path[i].unit = null;
-            path[i + 1].unit = this;
-            path[i + 1].owner = owner;
         }
 
         Destroy(progressLine);
         if (IsServer) isMoving.Value = false;
+    }
+
+    [ClientRpc]
+    private void CancelMovementClientRpc(int tileIndex)
+    {
+        StopCoroutine(movementCoroutine);
+        Destroy(progressLine);
+        MoveTo(Global.tilesHandler.GetTileAt(tileIndex).transform.position);
+        Global.tilesHandler.GetTileAt(tileIndex).SetUnit(this);
+        if (owner == Global.playerHandler.GetLocalPlayer())
+        {
+            Global.playerHandler.GetLocalPlayer().UnitMoved();
+        }
+    }
+
+    private void MoveTo(Vector3 position)
+    {
+        transform.position = position;
     }
 }

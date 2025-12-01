@@ -3049,10 +3049,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0d0c85905f32794ebc52db978424e58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitsHandler
-  unitPrefab: {fileID: 919132149155446097, guid: b1b5da6ff79b1ee0dafa9dfd0b8ac136, type: 3}
-  tilesHandler: {fileID: 487156672}
-  selectionHandler: {fileID: 816525040}
-  uIHandler: {fileID: 207599518}
+  unitPrefab: {fileID: 8991019274755240810, guid: 0e1087d33e2ac09429e74c1bb3463760, type: 3}
   lineRendererPrefab: {fileID: 5312008685315154619, guid: e93f7352b7ed8f84d907ce1edcb9ea8a, type: 3}
 --- !u!4 &1277345735
 Transform:
@@ -3325,8 +3322,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5324d9fa8dfdffe4098331741cf85bd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Global
-  cityPrefabReference: {fileID: 919132149155446097, guid: aacaee4130ab55d4babea661fdd15f66, type: 3}
-  swordmanPrefabReference: {fileID: 919132149155446097, guid: cb7fa06cc661a4949bae9c79bd190c61, type: 3}
   terrainMaterialReference:
   - {fileID: 2100000, guid: beee99db7381a6b4a98ec90839fd1fc0, type: 2}
   - {fileID: 2100000, guid: 9d24b153e36be0c4d93ac20859a4acc3, type: 2}
@@ -3352,9 +3347,9 @@ MonoBehaviour:
   timePerCoinPerTileReference: 4
   timePerLogPerForestReference: 3
   timePerStonePerMountainReference: 3
-  unitPrefabsPreference:
-  - {fileID: 4360510976034045512, guid: 07c6073faf3bc3047955bb6db54f7f56, type: 3}
-  - {fileID: 7834793522301246409, guid: c644784ef6c122040aae70d0f0201045, type: 3}
+  unitTypesReference:
+  - {fileID: 11400000, guid: 836e3fd7e6f7e7a4a884991eaa8c636b, type: 2}
+  - {fileID: 11400000, guid: e90c8fefd1eb72346911ab832d71f40c, type: 2}
   tilesHandlerReference: {fileID: 487156672}
   playerHandlerReference: {fileID: 1535247750}
   terrainGenerationReference: {fileID: 487156674}

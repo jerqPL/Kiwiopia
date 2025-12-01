@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class Global : MonoBehaviour
 {
-    public static GameObject cityPrefab;
-    [SerializeField] private GameObject cityPrefabReference;
-
-    public static GameObject swordmanPrefab;
-    [SerializeField] private GameObject swordmanPrefabReference;
-
     public static string[,] terrainTypes = {
         {"lodowiec",     "lodowiec",         "lodowiec",     "lodowiec",     "lodowiec" },
         {"sucha tundra", "mokra tundra",     "mokra tundra", "mokra tundra", "deszczowa tundra" },
@@ -69,8 +63,8 @@ public class Global : MonoBehaviour
 
 
 
-    public static GameObject[] unitPrefabs;
-    [SerializeField] private GameObject[] unitPrefabsPreference;
+    public static UnitType[] unitTypes;
+    [SerializeField] private UnitType[] unitTypesReference;
 
 
     //SCRIPTS
@@ -121,8 +115,6 @@ public class Global : MonoBehaviour
 
     void Awake()
     {
-        cityPrefab = cityPrefabReference;
-        swordmanPrefab = swordmanPrefabReference;
         terrainMaterials = terrainMaterialReference;
         lineRendererPrefab = lineRendererPrefabReference;
         heightToMountain = heightToMoutainReference;
@@ -141,7 +133,7 @@ public class Global : MonoBehaviour
         timePerLogPerForest = timePerLogPerForestReference;
         timePerStonePerMountain = timePerStonePerMountainReference;
 
-        unitPrefabs = unitPrefabsPreference;
+        unitTypes = unitTypesReference;
 
         //SCRIPTS
         tilesHandler = tilesHandlerReference;

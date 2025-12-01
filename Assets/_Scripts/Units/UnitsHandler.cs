@@ -6,10 +6,6 @@ public class UnitsHandler : MonoBehaviour
 {
     [SerializeField] private GameObject unitPrefab;
 
-    [SerializeField] private TilesHandler tilesHandler;
-    [SerializeField] private SelectionHandler selectionHandler;
-    [SerializeField] private UIHandler uIHandler;
-
     [SerializeField] private LineRenderer lineRendererPrefab;
 
     private List<Unit> units = new List<Unit>();
@@ -18,9 +14,9 @@ public class UnitsHandler : MonoBehaviour
     
     void Update()
     {
-        if (selectionHandler.state == 3)
+        if (Global.selectionHandler.state == 3)
         {
-            Tile target = selectionHandler.getTileOnMouse();
+            Tile target = Global.selectionHandler.getTileOnMouse();
             if (target != null)
             {
                 if (lastHoveredTile == target)
@@ -33,7 +29,7 @@ public class UnitsHandler : MonoBehaviour
                     Destroy(tmpLineRenderer);
                 }
                 
-                List<Tile> path = tilesHandler.shortestPath(selectionHandler.lastClickedTile, target);
+                List<Tile> path = Global.tilesHandler.shortestPath(Global.selectionHandler.lastClickedTile, target);
                 LineRenderer newLineRenderer = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
                 newLineRenderer.numCornerVertices = 8;
                 newLineRenderer.numCapVertices = 8;
@@ -46,7 +42,7 @@ public class UnitsHandler : MonoBehaviour
                 lastHoveredTile = target;
             }
         }
-        if (selectionHandler.state != 3 && tmpLineRenderer != null)
+        if (Global.selectionHandler.state != 3 && tmpLineRenderer != null)
         {
             Destroy (tmpLineRenderer);
         }
@@ -55,8 +51,9 @@ public class UnitsHandler : MonoBehaviour
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public Unit RecruitUnitServerRpc(int playerIndex, int tileIndex, int unitType)
     {
-        GameObject unitObject = Instantiate(Global.unitPrefabs[unitType], Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
+        GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
+        unit.typeIndex.Value = unitType;
         unit.tileIndex.Value = tileIndex;
         unit.ownerIndex.Value = playerIndex;
         unitObject.GetComponent<NetworkObject>().Spawn();
@@ -77,14 +74,14 @@ public class UnitsHandler : MonoBehaviour
             tile.owner.RemoveUnit(tile.unit);
             Destroy(tile.unit.gameObject);
             Destroy(tile.unit);
-            tile.unit = null;
+            tile.SetUnit(null);
         }
         if (tmpLineRenderer != null)
         {
             Destroy(tmpLineRenderer.gameObject);
         }
-        selectionHandler.state = 0;
-        uIHandler.ClickedTile(tile, 0);
+        Global.selectionHandler.state = 0;
+        Global.uIHandler.ClickedTile(tile, 0);
     }
 
     public Unit GetUnitAt(int index)

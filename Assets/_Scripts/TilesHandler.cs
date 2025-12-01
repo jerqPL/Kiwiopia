@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-
-
 public class TilesHandler : MonoBehaviour
 {
     public int gridSize;
@@ -99,11 +97,6 @@ public class TilesHandler : MonoBehaviour
         }   
     }
 
-    [ClientRpc]
-    public void SetUnitAtTileClientRpc(int unitIndex, int tileIndex)
-    {
-        tiles[tileIndex].unit = Global.unitsHandler.GetUnitAt(unitIndex);
-    }
 
     void AddNeighbourAtIndex(int index, Tile tile)
     {
@@ -144,7 +137,7 @@ public class TilesHandler : MonoBehaviour
 
             foreach (Tile neighbor in current.neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb))
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && neighbor.unit == null)
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);
