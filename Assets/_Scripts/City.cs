@@ -88,6 +88,10 @@ public class City : NetworkBehaviour
         {
             cityTile.transform.position = new Vector3(cityTile.transform.position.x, .15f, cityTile.transform.position.z);
         }
+        if (owner == Global.playerHandler.GetLocalPlayer())
+        {
+            Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
+        }
     }
 
     private void Update()

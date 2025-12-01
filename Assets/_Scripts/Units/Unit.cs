@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Unit : NetworkBehaviour
 {
@@ -24,6 +26,8 @@ public class Unit : NetworkBehaviour
 
     [SerializeField] private LineRenderer lineRendererPrefab;
 
+    private List<Tile> tilesInRange = new List<Tile>();
+
     private float priceTimer = 0f;
     private LineRenderer progressLine;
     private Coroutine movementCoroutine;
@@ -41,6 +45,21 @@ public class Unit : NetworkBehaviour
     private void Update()
     {
         TakeMoney();
+        AttackEnemies();
+    }
+
+    public void AttackEnemies()
+    {
+        if (!IsServer) return;
+        if (isMoving.Value) return;
+        foreach (Tile tileInRange in tilesInRange)
+        {
+            if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+            {
+                Global.unitsHandler.DestroyUnit(tileInRange.unit.tile);
+            }
+        }
+        
     }
 
     private void TakeMoney()
@@ -126,7 +145,7 @@ public class Unit : NetworkBehaviour
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-            MoveTo(end);
+            
 
             
 
@@ -141,14 +160,11 @@ public class Unit : NetworkBehaviour
                 tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
             }
 
-            if (!path[i].hasCity && path[i].underCity == null) path[i].owner = null;
-            path[i].SetUnit(null);
-            path[i + 1].SetUnit(this);
-            path[i + 1].owner = owner;
+            MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
 
             if (owner == Global.playerHandler.GetLocalPlayer())
             {
-                Global.playerHandler.GetLocalPlayer().UnitMoved();
+                Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
             }
         }
 
@@ -165,7 +181,40 @@ public class Unit : NetworkBehaviour
         Global.tilesHandler.GetTileAt(tileIndex).SetUnit(this);
         if (owner == Global.playerHandler.GetLocalPlayer())
         {
-            Global.playerHandler.GetLocalPlayer().UnitMoved();
+            Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
+        }
+    }
+
+    private void MoveToTile(int fromIndex, int toIndex)
+    {
+        if (!Global.tilesHandler.GetTileAt(fromIndex).hasCity && Global.tilesHandler.GetTileAt(fromIndex).underCity == null) Global.tilesHandler.GetTileAt(fromIndex).owner = null;
+        Global.tilesHandler.GetTileAt(fromIndex).SetUnit(null);
+        Global.tilesHandler.GetTileAt(toIndex).SetUnit(this);
+        Global.tilesHandler.GetTileAt(toIndex).owner = owner;
+        MoveTo(Global.tilesHandler.GetTileAt(toIndex).transform.position);
+        UpdateTilesInRange();
+        Global.unitsHandler.AttackEnemies();
+    }
+
+    private void UpdateTilesInRange()
+    {
+        if (tile != null)
+        {
+            List<Tile> unitVisibleTiles = new List<Tile> { tile };
+            for (int i = 0; i < unitType.range; i++)
+            {
+                int visTiles = unitVisibleTiles.Count;
+                for (int j = 0; j < visTiles; j++)
+                {
+                    Tile tile = unitVisibleTiles[j];
+                    foreach (Tile neighbour in tile.neighbors)
+                    {
+                        if (!unitVisibleTiles.Contains(neighbour))
+                            unitVisibleTiles.Add(neighbour);
+                    }
+                }
+            }
+            tilesInRange.AddRange(unitVisibleTiles.Where(x => !tilesInRange.Contains(x)));
         }
     }
 

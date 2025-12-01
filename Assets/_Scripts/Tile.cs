@@ -31,6 +31,8 @@ public class Tile : NetworkBehaviour
     private GameObject forestGameObject;
     private Material material;
 
+    private Material seenNotVisible;
+
 
     void Awake()
     {
@@ -171,6 +173,9 @@ public class Tile : NetworkBehaviour
                 break;
             }
         }
+        Color seenNotVisibleColor = Color.Lerp(Global.notScoutedTileMaterial.color, material.color, 0.15f);
+        seenNotVisible = new Material(material);
+        seenNotVisible.color = seenNotVisibleColor;
 
         /*terrainType = (int)Mathf.Floor(terrain * 4f);
         GetComponent<Renderer>().material = Global.terrainMaterials[terrainType];*/
@@ -188,18 +193,19 @@ public class Tile : NetworkBehaviour
 
     public void SetVisibility(bool visible)
     {
+        
         if (visible) localPlayerHasSeen = true;
         if (mountainGameObject != null)
         {
             mountainGameObject.SetActive(visible || localPlayerHasSeen);
-            mountainGameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+            mountainGameObject.GetComponent<Renderer>().material = visible ? material : (localPlayerHasSeen ? seenNotVisible : Global.notScoutedTileMaterial);
         }
         if (forestGameObject != null)
         {
             forestGameObject.SetActive(visible || localPlayerHasSeen);
-            forestGameObject.GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+            forestGameObject.GetComponent<Renderer>().material = visible ? material : (localPlayerHasSeen ? seenNotVisible : Global.notScoutedTileMaterial);
         }
-        GetComponent<Renderer>().material = visible ? material : Global.notScoutedTileMaterial;
+        GetComponent<Renderer>().material = visible ? material : (localPlayerHasSeen ? seenNotVisible : Global.notScoutedTileMaterial);
     }
 
     public void SetUnit(Unit uni)

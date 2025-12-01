@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -72,8 +73,7 @@ public class UnitsHandler : MonoBehaviour
         {
             units.Remove(tile.unit);
             tile.owner.RemoveUnit(tile.unit);
-            Destroy(tile.unit.gameObject);
-            Destroy(tile.unit);
+            tile.unit.GetComponent<NetworkObject>().Despawn();
             tile.SetUnit(null);
         }
         if (tmpLineRenderer != null)
@@ -92,5 +92,14 @@ public class UnitsHandler : MonoBehaviour
     public int GetIndexOf(Unit unit)
     {
         return units.IndexOf(unit);
+    }
+
+    public void AttackEnemies()
+    {
+        if (!NetworkManager.Singleton.IsServer) return;
+        foreach (Unit unit in units)
+        {
+            unit.AttackEnemies();
+        }
     }
 }

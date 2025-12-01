@@ -73,7 +73,7 @@ public class Player : NetworkBehaviour
     {
         Tile tile = Global.tilesHandler.GetTileAt(tileIndex);
         Global.cameraMovement.UpdateFocusPoint(tile.transform);
-        UnitMoved();
+        UpdateVisibleTiles();
     }
 
     private Tile FindStartingTile()
@@ -145,7 +145,7 @@ public class Player : NetworkBehaviour
         units.Remove(unit);
     }
 
-    public void UnitMoved()
+    public void UpdateVisibleTiles()
     {
         List<Tile> visibleTiles = new List<Tile>();
 
