@@ -16,10 +16,12 @@ MonoBehaviour:
   description: Has a sword
   health: 10
   range: 1
-  damage: 5
+  damage: 7
   resistance: 2
+  attackCooldown: 5
   speed: 5
   canClimb: 0
+  cost: 4
   timePerCoin: 1
   scoutDistance: 1
   model: {fileID: 919132149155446097, guid: b05cff2258508c84da3bec569dfe85c7, type: 3}

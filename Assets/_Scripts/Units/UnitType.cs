@@ -10,10 +10,12 @@ public class UnitType : ScriptableObject
     public int range;
     public int damage;
     public int resistance;
+    public float attackCooldown;
 
     public float speed;
     public bool canClimb;
 
+    public int cost;
     public float timePerCoin;
 
     public int scoutDistance;

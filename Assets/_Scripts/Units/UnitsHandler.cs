@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class UnitsHandler : MonoBehaviour
+public class UnitsHandler : NetworkBehaviour
 {
     [SerializeField] private GameObject unitPrefab;
 
@@ -50,16 +50,21 @@ public class UnitsHandler : MonoBehaviour
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public Unit RecruitUnitServerRpc(int playerIndex, int tileIndex, int unitType)
+    public void RecruitUnitServerRpc(int playerIndex, int tileIndex, int unitType)
     {
+        if (!Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
+        {
+            Debug.Log("not enough resources");
+            return;
+        }
         GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
         unit.typeIndex.Value = unitType;
         unit.tileIndex.Value = tileIndex;
         unit.ownerIndex.Value = playerIndex;
+        unit.health.Value = Global.unitTypes[unitType].health;
         unitObject.GetComponent<NetworkObject>().Spawn();
         unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
-        return unit;
     }
 
     public void AddUnit(Unit unit)
@@ -67,21 +72,23 @@ public class UnitsHandler : MonoBehaviour
         units.Add(unit);
     }
 
-    public void DestroyUnit(Tile tile)
+    public void DealDamage(int dealing, int recieving)
     {
-        if (tile.unit != null)
+        Unit dealingUnit = Global.unitsHandler.GetUnitAt(dealing);
+        Unit recievingUnit = Global.unitsHandler.GetUnitAt(recieving);
+        recievingUnit.RecieveDamage(dealingUnit.unitType.damage);
+    }
+
+    public void DestroyUnit(Unit unit)
+    {
+        if (unit != null)
         {
-            units.Remove(tile.unit);
-            tile.owner.RemoveUnit(tile.unit);
-            tile.unit.GetComponent<NetworkObject>().Despawn();
+            Tile tile = unit.tile;
+            units.Remove(unit);
+            tile.owner.RemoveUnit(unit);
+            unit.GetComponent<NetworkObject>().Despawn();
             tile.SetUnit(null);
         }
-        if (tmpLineRenderer != null)
-        {
-            Destroy(tmpLineRenderer.gameObject);
-        }
-        Global.selectionHandler.state = 0;
-        Global.uIHandler.ClickedTile(tile, 0);
     }
 
     public Unit GetUnitAt(int index)

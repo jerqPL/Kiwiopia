@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using System;
 
 public class Unit : NetworkBehaviour
 {
@@ -26,12 +25,31 @@ public class Unit : NetworkBehaviour
 
     [SerializeField] private LineRenderer lineRendererPrefab;
 
+    public NetworkVariable<int> health = new NetworkVariable<int>(1);
+
     private List<Tile> tilesInRange = new List<Tile>();
 
     private float priceTimer = 0f;
     private LineRenderer progressLine;
     private Coroutine movementCoroutine;
     private GameObject model;
+
+    public NetworkVariable<bool> inCombat = new NetworkVariable<bool>(false);
+    private float attackCooldown = 0f;
+
+    public void DestroyProgressLine()
+    {
+        Destroy(progressLine);
+    }
+
+    public void RecieveDamage(int damage)
+    {
+        health.Value -= Math.Max(0, damage - unitType.resistance);
+        if (health.Value <= 0)
+        {
+            Global.unitsHandler.DestroyUnit(this);
+        }
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -42,24 +60,54 @@ public class Unit : NetworkBehaviour
         transform.position = tile.transform.position;
     }
 
+    public override void OnNetworkDespawn()
+    {
+        DestroyProgressLine();
+    }
+
     private void Update()
     {
+        if (!IsServer) return;
         TakeMoney();
         AttackEnemies();
+        TakeCooldown();
+    }
+
+    private void TakeCooldown()
+    {
+        if (attackCooldown > 0)
+        {
+            attackCooldown -= Time.deltaTime;
+            if (attackCooldown <= 0)
+            {
+                AttackEnemies();
+            }
+        }
     }
 
     public void AttackEnemies()
     {
         if (!IsServer) return;
         if (isMoving.Value) return;
+        bool foundTarget = false;
         foreach (Tile tileInRange in tilesInRange)
         {
             if (tileInRange.unit != null && tileInRange.unit.owner != owner)
             {
-                Global.unitsHandler.DestroyUnit(tileInRange.unit.tile);
+                foundTarget = true;
+                attackCooldown = unitType.attackCooldown;
+                Global.unitsHandler.DealDamage(Global.unitsHandler.GetIndexOf(this), Global.unitsHandler.GetIndexOf(tileInRange.unit));
+                break;
             }
         }
-        
+        if (foundTarget)
+        {
+            inCombat.Value = true;
+        }
+        else
+        {
+            inCombat.Value = false;
+        }
     }
 
     private void TakeMoney()
@@ -78,7 +126,7 @@ public class Unit : NetworkBehaviour
 
             if (!owner.TakeResources(coinsToTake, 0, 0))
             {
-                Global.unitsHandler.DestroyUnit(tile);
+                Global.unitsHandler.DestroyUnit(this);
             }
         }
     }
@@ -168,7 +216,7 @@ public class Unit : NetworkBehaviour
             }
         }
 
-        Destroy(progressLine);
+        DestroyProgressLine();
         if (IsServer) isMoving.Value = false;
     }
 
@@ -176,7 +224,7 @@ public class Unit : NetworkBehaviour
     private void CancelMovementClientRpc(int tileIndex)
     {
         StopCoroutine(movementCoroutine);
-        Destroy(progressLine);
+        DestroyProgressLine();
         MoveTo(Global.tilesHandler.GetTileAt(tileIndex).transform.position);
         Global.tilesHandler.GetTileAt(tileIndex).SetUnit(this);
         if (owner == Global.playerHandler.GetLocalPlayer())

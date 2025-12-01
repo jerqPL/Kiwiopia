@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.Rendering.Universal;
 
 public class Player : NetworkBehaviour
 {
@@ -53,13 +52,11 @@ public class Player : NetworkBehaviour
         }
 
         // Spawn starting unit via UnitsHandler ServerRPC
-        Unit leader = Global.unitsHandler.RecruitUnitServerRpc(
+        Global.unitsHandler.RecruitUnitServerRpc(
             Global.playerHandler.GetIndexOf(this),
             Global.tilesHandler.GetIndexOf(startingTile),
             0 // starting unit type
         );
-
-        leader.isLeader.Value = true;
 
         // Focus camera only for this player
         InitializePlayerClientRpc(Global.tilesHandler.GetIndexOf(startingTile), new ClientRpcParams
@@ -138,6 +135,13 @@ public class Player : NetworkBehaviour
     {
         if (!units.Contains(unit))
             units.Add(unit);
+        if (IsServer)
+        {
+            if (units.Count == 1)
+            {
+                units[0].isLeader.Value = true;
+            }
+        }
     }
 
     public void RemoveUnit(Unit unit)
