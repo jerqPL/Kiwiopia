@@ -85,6 +85,7 @@ public class UnitsHandler : NetworkBehaviour
     {
         if (GetUnitAt(unitIndex) != null)
         {
+            GetUnitAt(unitIndex).inCombat.Value = false;
             GetUnitAt(unitIndex).KillUnitClientRpc();
         }
     }

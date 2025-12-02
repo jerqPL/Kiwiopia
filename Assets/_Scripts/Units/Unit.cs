@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class Unit : NetworkBehaviour
 {
@@ -24,6 +25,7 @@ public class Unit : NetworkBehaviour
     public NetworkVariable<bool> isLeader = new NetworkVariable<bool>(false);
 
     [SerializeField] private LineRenderer lineRendererPrefab;
+    [SerializeField] private Slider healthBar;
 
     public NetworkVariable<int> health = new NetworkVariable<int>(1);
 
@@ -44,6 +46,19 @@ public class Unit : NetworkBehaviour
         Destroy(progressLine);
     }
 
+    private void UpdateHealthBar(int prev, int curr)
+    {
+        if (curr == unitType.health || curr == 0)
+        {
+            healthBar.transform.gameObject.SetActive(false);
+        }
+        else
+        {
+            healthBar.transform.gameObject.SetActive(true);
+            healthBar.value = (float)curr / unitType.health;
+        }  
+    }
+
     public void RecieveDamage(int damage)
     {
         health.Value -= Math.Max(0, damage - unitType.resistance);
@@ -57,10 +72,13 @@ public class Unit : NetworkBehaviour
     public void KillUnitClientRpc()
     {
         isDead = true;
+        healthBar.transform.gameObject.SetActive(false);
+        DestroyProgressLine();
         tile.SetUnit(null);
         MoveTo(tile.transform.position);
         transform.localScale = Vector3.one * 0.3f;
         transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), -90f);
+        healthBar.transform.gameObject.SetActive(false);
     }
 
     public override void OnNetworkSpawn()
@@ -69,6 +87,7 @@ public class Unit : NetworkBehaviour
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         tile.SetUnit(this);
+        health.OnValueChanged += UpdateHealthBar;
         MoveTo(tile.transform.position);
     }
 
@@ -80,6 +99,24 @@ public class Unit : NetworkBehaviour
         TakeMoney();
         TakeCooldown();
         AttackEnemies();
+    }
+
+    void LateUpdate()
+    {
+        UpdateHealthBarRotation();
+    }
+
+    private void UpdateHealthBarRotation()
+    {
+        // get camera forward direction
+        Vector3 camDir = Camera.main.transform.forward;
+
+        // flatten (remove vertical influence)
+        camDir.y = 0f;
+        camDir.Normalize();
+
+        // create rotation only around Y
+        healthBar.transform.rotation = Quaternion.LookRotation(camDir);
     }
 
     private void RotateTowards(Vector3 vector)
