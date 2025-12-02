@@ -145,4 +145,9 @@ public class Global : MonoBehaviour
         selectionHandler = selectionHandlerReference;
         cityHandler = cityHandlerReference;
     }
+
+    public static Vector3 ZeroYVector3(Vector3 vector)
+    {
+        return new Vector3(vector.x, 0f, vector.z);
+    }
 }

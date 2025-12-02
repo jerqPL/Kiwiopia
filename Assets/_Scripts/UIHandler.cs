@@ -79,7 +79,7 @@ public class UIHandler : MonoBehaviour
 
     public void DestroyUnit()
     {
-        Global.unitsHandler.DestroyUnit(Global.selectionHandler.lastClickedTile.unit);
+        Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(Global.selectionHandler.lastClickedTile.unit));
     }
 
     public void UpgradeCity()

@@ -15,7 +15,7 @@ public class TilesHandler : MonoBehaviour
 
     private Tile getNewTile(Vector2 pos, int i, int x)
     {
-        GameObject tileGameObject = Instantiate(hexTile, new Vector3(pos.x, 0, pos.y), Quaternion.identity);
+        GameObject tileGameObject = Instantiate(hexTile, new Vector3(pos.x, -.5f, pos.y), Quaternion.identity);
         tileGameObject.name = $"Tile_{i}_{x}";
         tileGameObject.transform.parent = transform;
         Tile newTile = tileGameObject.AddComponent<Tile>();
@@ -137,7 +137,7 @@ public class TilesHandler : MonoBehaviour
 
             foreach (Tile neighbor in current.neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && neighbor.unit == null)
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb))
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);

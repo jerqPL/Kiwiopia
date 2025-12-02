@@ -35,7 +35,9 @@ public class Unit : NetworkBehaviour
     private GameObject model;
 
     public NetworkVariable<bool> inCombat = new NetworkVariable<bool>(false);
-    private float attackCooldown = 0f;
+    public NetworkVariable<int> enemyIndex = new NetworkVariable<int>(0);
+    private bool isDead = false;
+    public float attackCooldown = 0f;
 
     public void DestroyProgressLine()
     {
@@ -47,8 +49,18 @@ public class Unit : NetworkBehaviour
         health.Value -= Math.Max(0, damage - unitType.resistance);
         if (health.Value <= 0)
         {
-            Global.unitsHandler.DestroyUnit(this);
+            Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(this));
         }
+    }
+
+    [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
+    public void KillUnitClientRpc()
+    {
+        isDead = true;
+        tile.SetUnit(null);
+        MoveTo(tile.transform.position);
+        transform.localScale = Vector3.one * 0.3f;
+        transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), -90f);
     }
 
     public override void OnNetworkSpawn()
@@ -57,20 +69,30 @@ public class Unit : NetworkBehaviour
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         tile.SetUnit(this);
-        transform.position = tile.transform.position;
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        DestroyProgressLine();
+        MoveTo(tile.transform.position);
     }
 
     private void Update()
     {
+        if (isDead) return;
+        if (inCombat.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
         if (!IsServer) return;
         TakeMoney();
-        AttackEnemies();
         TakeCooldown();
+        AttackEnemies();
+    }
+
+    private void RotateTowards(Vector3 vector)
+    {
+        Vector3 direction = vector - transform.position;
+        direction.y = 0;
+        if (direction == Vector3.zero)
+        {
+            return;
+        }
+        Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+        Quaternion offsetRotation = Quaternion.Euler(0, 90, 0);
+        transform.rotation = rotation * offsetRotation;
     }
 
     private void TakeCooldown()
@@ -78,10 +100,6 @@ public class Unit : NetworkBehaviour
         if (attackCooldown > 0)
         {
             attackCooldown -= Time.deltaTime;
-            if (attackCooldown <= 0)
-            {
-                AttackEnemies();
-            }
         }
     }
 
@@ -89,12 +107,14 @@ public class Unit : NetworkBehaviour
     {
         if (!IsServer) return;
         if (isMoving.Value) return;
+        if (attackCooldown > 0) return;
         bool foundTarget = false;
         foreach (Tile tileInRange in tilesInRange)
         {
             if (tileInRange.unit != null && tileInRange.unit.owner != owner)
             {
                 foundTarget = true;
+                enemyIndex.Value = Global.unitsHandler.GetIndexOf(tileInRange.unit);
                 attackCooldown = unitType.attackCooldown;
                 Global.unitsHandler.DealDamage(Global.unitsHandler.GetIndexOf(this), Global.unitsHandler.GetIndexOf(tileInRange.unit));
                 break;
@@ -126,7 +146,7 @@ public class Unit : NetworkBehaviour
 
             if (!owner.TakeResources(coinsToTake, 0, 0))
             {
-                Global.unitsHandler.DestroyUnit(this);
+                Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(this));
             }
         }
     }
@@ -246,6 +266,7 @@ public class Unit : NetworkBehaviour
 
     private void UpdateTilesInRange()
     {
+        tilesInRange.Clear();
         if (tile != null)
         {
             List<Tile> unitVisibleTiles = new List<Tile> { tile };
@@ -268,6 +289,6 @@ public class Unit : NetworkBehaviour
 
     private void MoveTo(Vector3 position)
     {
-        transform.position = position;
+        transform.position = Global.ZeroYVector3(position);
     }
 }

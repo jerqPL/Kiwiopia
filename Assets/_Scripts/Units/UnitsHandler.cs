@@ -79,15 +79,13 @@ public class UnitsHandler : NetworkBehaviour
         recievingUnit.RecieveDamage(dealingUnit.unitType.damage);
     }
 
-    public void DestroyUnit(Unit unit)
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Server | RpcInvokePermission.Owner)]
+    public void KillUnitServerRpc(int unitIndex)
     {
-        if (unit != null)
+        if (GetUnitAt(unitIndex) != null)
         {
-            Tile tile = unit.tile;
-            units.Remove(unit);
-            tile.owner.RemoveUnit(unit);
-            unit.GetComponent<NetworkObject>().Despawn();
-            tile.SetUnit(null);
+            GetUnitAt(unitIndex).KillUnitClientRpc();
         }
     }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitType
   id: 1
   description: Has a spear
-  health: 9
+  health: 28
   range: 2
   damage: 4
   resistance: 1
