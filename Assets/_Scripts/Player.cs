@@ -52,7 +52,7 @@ public class Player : NetworkBehaviour
         }
 
         // Spawn starting unit via UnitsHandler ServerRPC
-        Global.unitsHandler.RecruitUnitServerRpc(
+        Global.unitsHandler.RecruitUnit(
             Global.playerHandler.GetIndexOf(this),
             Global.tilesHandler.GetIndexOf(startingTile),
             0 // starting unit type

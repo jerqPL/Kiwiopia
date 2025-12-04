@@ -73,7 +73,7 @@ public class UIHandler : MonoBehaviour
 
     public void RecruitUnit(int type)
     {
-        Global.unitsHandler.RecruitUnitServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
+        Global.unitsHandler.StartRecruitingServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
         cityMenuUnits.gameObject.SetActive(false);
     }
 

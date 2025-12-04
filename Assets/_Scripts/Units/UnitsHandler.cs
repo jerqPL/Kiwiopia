@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -50,13 +49,33 @@ public class UnitsHandler : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void RecruitUnitServerRpc(int playerIndex, int tileIndex, int unitType)
+    public void StartRecruitingServerRpc(int playerIndex, int tileIndex, int unitType)
     {
-        if (!Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
+        if (Global.tilesHandler.GetTileAt(tileIndex).city.owner == Global.playerHandler.GetPlayerAt(playerIndex))
         {
-            Debug.Log("not enough resources");
-            return;
+            if (Global.tilesHandler.GetTileAt(tileIndex).city.isRecruiting) return;
+            if (!Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
+            {
+                Debug.Log("not enough resources");
+                return;
+            }
+            StartRecruitingClientRpc(playerIndex, tileIndex, unitType, new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { Global.playerHandler.GetPlayerAt(playerIndex).OwnerClientId } }
+            });
         }
+    }
+
+    [ClientRpc]
+    public void StartRecruitingClientRpc(int playerIndex, int tileIndex, int unitType, ClientRpcParams clientRpcParams = default)
+    {
+        Global.tilesHandler.GetTileAt(tileIndex).city.StartRecruiting(unitType);
+    }
+
+    public void RecruitUnit(int playerIndex, int tileIndex, int unitType)
+    {
+        if (!IsServer) return;
+        
         GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
         unit.typeIndex.Value = unitType;

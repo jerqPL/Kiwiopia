@@ -6,6 +6,8 @@ public class UnitType : ScriptableObject
     public int id;
     public string description;
 
+    public float recruitTime;
+
     public int health;
     public int range;
     public int damage;

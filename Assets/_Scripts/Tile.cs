@@ -212,4 +212,26 @@ public class Tile : MonoBehaviour
     {
         unit = uni;
     }
+
+    public Vector3[] GetCorners()
+    {
+        Vector3[] corners = new Vector3[6];
+        float r = 1;
+        Vector3 c = transform.position;
+
+        // 0°, 60°, 120°, 180°, 240°, 300°
+        for (int i = 0; i < 6; i++)
+        {
+            float angle = 60f * i;
+            float rad = angle * Mathf.Deg2Rad;
+
+            corners[i] = new Vector3(
+                Mathf.Round((c.x + r * Mathf.Cos(rad))*1000)/1000,
+                c.y,
+                Mathf.Round((c.z + r * Mathf.Sin(rad))*1000)/1000
+            );
+        }
+
+        return corners;
+    }
 }

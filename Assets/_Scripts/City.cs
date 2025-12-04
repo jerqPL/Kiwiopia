@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.UIElements.Experimental;
+using UnityEngine.UI;
 
 public class City : NetworkBehaviour
 {
     public List<Tile> cityTiles = new List<Tile>();
+    [SerializeField] private Slider recruitProgressBar;
+    [SerializeField] private LineRenderer lineRenderer;
     public NetworkVariable<int> tileIndex = new NetworkVariable<int>();
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
     public NetworkVariable<int> ownerIndex = new NetworkVariable<int>();
@@ -19,6 +21,13 @@ public class City : NetworkBehaviour
     public int money = 0;
     public int wood = 0;
     public int stone = 0;
+
+    public bool isRecruiting = false;
+
+    private int recruitedUnitType;
+    private float recruitTimeLeft;
+
+    private LineRenderer cityBorder;
 
     public override void OnNetworkSpawn()
     {
@@ -84,18 +93,145 @@ public class City : NetworkBehaviour
                 }
             }
         }
-        foreach (Tile cityTile in cityTiles)
-        {
-            cityTile.transform.position = new Vector3(cityTile.transform.position.x, .15f, cityTile.transform.position.z);
-        }
         if (owner == Global.playerHandler.GetLocalPlayer())
         {
             Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
+        }
+        CreateBorder();
+    }
+
+    private void CreateBorder()
+    {
+        foreach (Tile cityTile in cityTiles)
+        {
+            //ITS MAKING IT THE SAME
+            cityTile.transform.position = new Vector3(cityTile.transform.position.x, -.5f, cityTile.transform.position.z);
+        }
+
+        // store all edges, remove duplicates
+        Dictionary<Edge, int> edgeCount = new Dictionary<Edge, int>();
+
+        foreach (var tile in cityTiles)
+        {
+            Vector3[] corners = tile.GetCorners(); // returns 6 positions
+
+            for (int i = 0; i < 6; i++)
+            {
+                Vector3 a = corners[i];
+                Vector3 b = corners[(i + 1) % 6];
+
+                Edge e = new Edge(a, b);
+
+                if (edgeCount.ContainsKey(e))
+                    edgeCount[e]++;
+                else
+                    edgeCount[e] = 1;
+            }
+        }
+
+        // collect only outer edges (appear once)
+        List<Edge> borderEdges = new List<Edge>();
+        foreach (var p in edgeCount)
+        {
+            if (p.Value == 1)
+                borderEdges.Add(p.Key);
+        }
+
+        // now sort edges into a continuous loop
+        List<Vector3> borderPoints = BuildContinuousLoop(borderEdges);
+
+        // assign to line renderer
+        if (cityBorder == null)
+        {
+            cityBorder = Instantiate(lineRenderer);
+        }
+        cityBorder.positionCount = borderPoints.Count;
+        cityBorder.SetPositions(borderPoints.ToArray());
+
+    }
+
+    List<Vector3> BuildContinuousLoop(List<Edge> edges)
+    {
+        List<Vector3> result = new List<Vector3>();
+
+        Edge start = edges[0];
+        edges.RemoveAt(0);
+
+        result.Add(start.a);
+        result.Add(start.b);
+
+        Vector3 current = start.b;
+
+        while (edges.Count > 0)
+        {
+            for (int i = 0; i < edges.Count; i++)
+            {
+                Edge e = edges[i];
+
+                if (Vector3.Distance(current, e.a) < 0.001f)
+                {
+                    result.Add(e.b);
+                    current = e.b;
+                    edges.RemoveAt(i);
+                    break;
+                }
+                if (Vector3.Distance(current, e.b) < 0.001f)
+                {
+                    result.Add(e.a);
+                    current = e.a;
+                    edges.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    struct Edge : System.IEquatable<Edge>
+    {
+        public Vector3 a;
+        public Vector3 b;
+        private const float EPSILON = 0.001f;
+
+        public Edge(Vector3 a, Vector3 b)
+        {
+            // sort to make undirected comparison
+            if (a.x < b.x || (a.x == b.x && a.z < b.z))
+            {
+                this.a = a;
+                this.b = b;
+            }
+            else
+            {
+                this.a = b;
+                this.b = a;
+            }
+        }
+
+        public bool Equals(Edge other)
+        {
+            return (Vector3.Distance(a, other.a) < EPSILON &&
+                    Vector3.Distance(b, other.b) < EPSILON);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Edge other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            // Round positions to reduce floating point errors
+            int hashA = Mathf.RoundToInt(a.x * 1000f) ^ Mathf.RoundToInt(a.y * 1000f) ^ Mathf.RoundToInt(a.z * 1000f);
+            int hashB = Mathf.RoundToInt(b.x * 1000f) ^ Mathf.RoundToInt(b.y * 1000f) ^ Mathf.RoundToInt(b.z * 1000f);
+            return hashA ^ hashB;
         }
     }
 
     private void Update()
     {
+        if (isRecruiting) RecruitingProgress();
         if (!IsServer) return;
         SendResourcesToPlayer();
     }
@@ -117,5 +253,43 @@ public class City : NetworkBehaviour
         money += rMoney;
         wood += rWood;
         stone += rStone;
+    }
+
+    private void RecruitingProgress()
+    {
+        recruitTimeLeft -= Time.deltaTime;
+        recruitProgressBar.value = (Global.unitTypes[recruitedUnitType].recruitTime - recruitTimeLeft) / Global.unitTypes[recruitedUnitType].recruitTime;
+        if (recruitTimeLeft < 0)
+        {
+            isRecruiting = false;
+            recruitProgressBar.gameObject.SetActive(false);
+            if (IsServer)
+            {
+                Global.unitsHandler.RecruitUnit(ownerIndex.Value, tileIndex.Value, recruitedUnitType);
+            }
+        }
+    }
+
+    public void StartRecruiting(int unitType)
+    {
+        isRecruiting = true;
+        recruitedUnitType = unitType;
+        recruitTimeLeft = Global.unitTypes[unitType].recruitTime;
+        recruitProgressBar.gameObject.SetActive(true);
+    }
+
+    void LateUpdate()
+    {
+        UpdateRecruitProgressBarRotation();
+    }
+
+    private void UpdateRecruitProgressBarRotation()
+    {
+        float camY = Camera.main.transform.eulerAngles.y;
+
+        // rotation around local X only
+        Quaternion localRot = Quaternion.Euler(camY + 90f, 0f, 0f);
+
+        recruitProgressBar.transform.localRotation = localRot;
     }
 }
