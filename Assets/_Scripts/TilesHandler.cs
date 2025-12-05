@@ -114,7 +114,7 @@ public class TilesHandler : MonoBehaviour
     public List<Tile> shortestPath(Tile source, Tile end)
     {
         Unit unit = source.unit;
-        if (source == null || end == null)
+        if (source == null || end == null || unit == null || unit.isMoving.Value)
             return new List<Tile>();
 
         // BFS kolejka

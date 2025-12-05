@@ -38,10 +38,11 @@ public class SelectionHandler : MonoBehaviour
         {
             return;
         }
-       
+
         if (tile == lastClickedTile)
         {
             howManyTimesClickedSame++;
+            
             //////TO-DO
         }
         else
@@ -49,6 +50,17 @@ public class SelectionHandler : MonoBehaviour
             howManyTimesClickedSame = 0;
             if (state == 3)
             {
+                state = 0;
+                if (lastClickedTile.unit == null)
+                {
+                    uIHandler.ClickedTile(lastClickedTile, 0);
+                    return;
+                }
+                if (lastClickedTile.unit != null && lastClickedTile.unit.isMoving.Value)
+                {
+                    uIHandler.ClickedTile(lastClickedTile, 0);
+                    return;
+                }
                 lastClickedTile.unit.RequestMove(tilesHandler.shortestPath(lastClickedTile, tile));
                 state = 0;
                 uIHandler.ClickedTile(lastClickedTile, 0);
@@ -76,6 +88,11 @@ public class SelectionHandler : MonoBehaviour
             if (tile != null)
             {
                 return tile;
+            }
+            Unit unit = hit.collider.GetComponent<Unit>();
+            if (unit != null)
+            {
+                return unit.tile;
             }
         }
         return null;

@@ -72,6 +72,7 @@ public class Unit : NetworkBehaviour
     public void KillUnitClientRpc()
     {
         isDead = true;
+        CancelMovementClientRpc(tileIndex.Value);
         healthBar.transform.gameObject.SetActive(false);
         DestroyProgressLine();
         tile.SetUnit(null);
@@ -275,6 +276,13 @@ public class Unit : NetworkBehaviour
 
         DestroyProgressLine();
         if (IsServer) isMoving.Value = false;
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    public void CancelMovementServerRpc(int unitIndex)
+    {
+        isMoving.Value = false;
+        CancelMovementClientRpc(Global.unitsHandler.GetUnitAt(unitIndex).tileIndex.Value);
     }
 
     [ClientRpc]

@@ -18,6 +18,8 @@ public class UIHandler : MonoBehaviour
 
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
+    private Unit clickedUnit;
+
     private void Start()
     {
         DisableAll();
@@ -27,19 +29,22 @@ public class UIHandler : MonoBehaviour
         if (tile.unit != null )
         {
             cityMenuUnits.gameObject.SetActive(false);
+            clickedUnit = tile.unit;
         }
         else
         {
             cityMenuUnits.gameObject.SetActive(true);
+            clickedUnit = null;
         }
 
         if (tile == null) return;
         DisableAll();
 
         menus.Clear();
+        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
         if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
         if (tile.city != null) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
-        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
+        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && !tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
 
         ActivateMenu(num_of_times);
         //Debug.Log($"Clicked tile: {tile.transform.name}, {num_of_times} times");
@@ -79,7 +84,12 @@ public class UIHandler : MonoBehaviour
 
     public void DestroyUnit()
     {
-        Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(Global.selectionHandler.lastClickedTile.unit));
+        Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
+    }
+
+    public void StopUnit()
+    {
+        clickedUnit.CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
     }
 
     public void UpgradeCity()
