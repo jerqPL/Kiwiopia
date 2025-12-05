@@ -35,6 +35,7 @@ public class City : NetworkBehaviour
         Debug.Log($"tile index: {tileIndex.Value}");
         owner.citys.Add(this);
         tile.city = this;
+        tile.underCity = this;
         Global.cityHandler.cities.Add(this);
     }
 
@@ -68,6 +69,9 @@ public class City : NetworkBehaviour
         }
         cityTiles.Clear();
         cityTiles.Add(tile);
+        tile.underCity = this;
+        tile.city = this;
+        tile.GetDefaultOwner();
         foreach (Tile neighbour in tile.neighbors)
         {
             if (neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
@@ -85,7 +89,7 @@ public class City : NetworkBehaviour
                 Tile cityTile = cityTiles[j];
                 foreach (Tile neighbour in cityTile.neighbors)
                 {
-                    if (!cityTiles.Contains(neighbour) && neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null) && neighbour != tile)
+                    if (!cityTiles.Contains(neighbour) && neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
                     {
                         neighbour.underCity = this;
                         cityTiles.Add(neighbour);

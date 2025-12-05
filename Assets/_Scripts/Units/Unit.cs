@@ -232,7 +232,7 @@ public class Unit : NetworkBehaviour
         progressLine.material = Global.inProgressLineMaterial;
         progressLine.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
-            progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), 0.05f));
+            progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
 
         transform.parent = null;
         tile.SetUnit(null);
@@ -292,7 +292,7 @@ public class Unit : NetworkBehaviour
 
     private void MoveToTile(int fromIndex, int toIndex)
     {
-        if (!Global.tilesHandler.GetTileAt(fromIndex).hasCity && Global.tilesHandler.GetTileAt(fromIndex).underCity == null) Global.tilesHandler.GetTileAt(fromIndex).owner = null;
+        Global.tilesHandler.GetTileAt(fromIndex).GetDefaultOwner();
         Global.tilesHandler.GetTileAt(fromIndex).SetUnit(null);
         Global.tilesHandler.GetTileAt(toIndex).SetUnit(this);
         Global.tilesHandler.GetTileAt(toIndex).owner = owner;

@@ -24,6 +24,7 @@ public class CityHandler : NetworkBehaviour
         }
 
         tile.owner = owner;
+        
 
         int money = Global.newCityResourceCost[owner.citys.Count, 0];
         int wood = Global.newCityResourceCost[owner.citys.Count, 1];

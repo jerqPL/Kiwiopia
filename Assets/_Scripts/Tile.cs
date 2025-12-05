@@ -40,6 +40,22 @@ public class Tile : MonoBehaviour
         generationTimer1 = Random.Range(0, 100) * 0.01f;
     }
 
+    public void GetDefaultOwner()
+    {
+        if (unit != null)
+        {
+            owner = unit.owner;
+        }
+        else if (underCity != null)
+        {
+            owner = underCity.owner;
+        }
+        else
+        {
+            owner = null;
+        }
+    }
+
     void Update()
     {
         if (!NetworkManager.Singleton.IsServer) return;
