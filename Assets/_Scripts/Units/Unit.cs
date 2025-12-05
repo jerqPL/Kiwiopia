@@ -232,7 +232,7 @@ public class Unit : NetworkBehaviour
         progressLine.material = Global.inProgressLineMaterial;
         progressLine.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
-            progressLine.SetPosition(i, path[i].transform.position + Vector3.up * 0.55f);
+            progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), 0.05f));
 
         transform.parent = null;
         tile.SetUnit(null);

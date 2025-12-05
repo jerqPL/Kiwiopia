@@ -67,6 +67,7 @@ public class City : NetworkBehaviour
             cityTile.owner = null;
         }
         cityTiles.Clear();
+        cityTiles.Add(tile);
         foreach (Tile neighbour in tile.neighbors)
         {
             if (neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
@@ -90,6 +91,7 @@ public class City : NetworkBehaviour
                         cityTiles.Add(neighbour);
                         neighbour.owner = tile.owner;
                     }
+                    
                 }
             }
         }
@@ -100,25 +102,24 @@ public class City : NetworkBehaviour
         CreateBorder();
     }
 
+
+
     private void CreateBorder()
     {
-        foreach (Tile cityTile in cityTiles)
-        {
-            //ITS MAKING IT THE SAME
-            cityTile.transform.position = new Vector3(cityTile.transform.position.x, -.5f, cityTile.transform.position.z);
-        }
-
         // store all edges, remove duplicates
         Dictionary<Edge, int> edgeCount = new Dictionary<Edge, int>();
 
         foreach (var tile in cityTiles)
         {
             Vector3[] corners = tile.GetCorners(); // returns 6 positions
-
+            
+            
             for (int i = 0; i < 6; i++)
             {
-                Vector3 a = corners[i];
-                Vector3 b = corners[(i + 1) % 6];
+                Vector3 a = Global.AddToYVector3(corners[i], Global.lineHegithAboveTiles);
+                Vector3 b = Global.AddToYVector3(corners[(i + 1) % 6], Global.lineHegithAboveTiles);
+
+                
 
                 Edge e = new Edge(a, b);
 
@@ -127,27 +128,34 @@ public class City : NetworkBehaviour
                 else
                     edgeCount[e] = 1;
             }
+            
         }
+        
 
         // collect only outer edges (appear once)
         List<Edge> borderEdges = new List<Edge>();
         foreach (var p in edgeCount)
         {
             if (p.Value == 1)
+            {
                 borderEdges.Add(p.Key);
+                Debug.DrawRay(p.Key.a, Vector3.up * 100f, Color.purple, 4f, false);
+            }
+            else
+            {
+                Debug.DrawRay(p.Key.a, Vector3.up * 100f, Color.yellow, 4f, false);
+            }
         }
-
+        
         // now sort edges into a continuous loop
         List<Vector3> borderPoints = BuildContinuousLoop(borderEdges);
 
         // assign to line renderer
-        if (cityBorder == null)
-        {
-            cityBorder = Instantiate(lineRenderer);
-        }
+        Destroy(cityBorder);
+        (cityBorder = Instantiate(lineRenderer, Vector3.zero, Quaternion.Euler(90, 0, 0))).transform.SetParent(transform);
+        
         cityBorder.positionCount = borderPoints.Count;
         cityBorder.SetPositions(borderPoints.ToArray());
-
     }
 
     List<Vector3> BuildContinuousLoop(List<Edge> edges)
@@ -161,21 +169,21 @@ public class City : NetworkBehaviour
         result.Add(start.b);
 
         Vector3 current = start.b;
-
-        while (edges.Count > 0)
+        int safe = 1000;
+        while (edges.Count > 0 && safe > 0)
         {
             for (int i = 0; i < edges.Count; i++)
             {
                 Edge e = edges[i];
 
-                if (Vector3.Distance(current, e.a) < 0.001f)
+                if (Vector3.Distance(current, e.a) < 0.1f)
                 {
                     result.Add(e.b);
                     current = e.b;
                     edges.RemoveAt(i);
                     break;
                 }
-                if (Vector3.Distance(current, e.b) < 0.001f)
+                if (Vector3.Distance(current, e.b) < 0.1f)
                 {
                     result.Add(e.a);
                     current = e.a;
@@ -183,6 +191,11 @@ public class City : NetworkBehaviour
                     break;
                 }
             }
+            safe--;
+        }
+        if (safe < 10)
+        {
+            Debug.LogError("Safe trigerred");
         }
 
         return result;
@@ -192,7 +205,7 @@ public class City : NetworkBehaviour
     {
         public Vector3 a;
         public Vector3 b;
-        private const float EPSILON = 0.001f;
+        private const float EPSILON = 0.1f;
 
         public Edge(Vector3 a, Vector3 b)
         {

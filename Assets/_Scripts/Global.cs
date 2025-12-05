@@ -92,6 +92,8 @@ public class Global : MonoBehaviour
     public static CityHandler cityHandler;
     [SerializeField] private CityHandler cityHandlerReference;
 
+    public static float lineHegithAboveTiles = 0.05f;
+
 
     public static int[,] newCityResourceCost = {
         {20, 5, 5},
@@ -104,13 +106,21 @@ public class Global : MonoBehaviour
     };
 
     public static int[,] cityUpgradeCostMultiplayer = {
-        {2, 2, 2},
+        /*{2, 2, 2},
         {4, 4, 4},
         {8, 8, 8},
         {16, 16, 16},
         {32, 32, 32},
         {64, 64, 64},
-        {128, 128, 128}
+        {128, 128, 128}*/
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 },
+        {0,0,0 }
     };
 
     void Awake()
@@ -150,4 +160,6 @@ public class Global : MonoBehaviour
     {
         return new Vector3(vector.x, 0f, vector.z);
     }
+
+    public static Vector3 AddToYVector3(Vector3 vector, float value) { return new Vector3(vector.x, vector.y + value, vector.z); }
 }
