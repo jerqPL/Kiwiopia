@@ -96,6 +96,9 @@ public class Global : MonoBehaviour
 
     public static float timeToCaptureCity = 20f;
 
+    public static SessionHandler sessionHandler;
+    [SerializeField] private SessionHandler sessionHandlerReference;
+
 
     public static int[,] newCityResourceCost = {
         {20, 5, 5},
@@ -148,6 +151,7 @@ public class Global : MonoBehaviour
         unitsHandler = unitsHandlerReference;
         selectionHandler = selectionHandlerReference;
         cityHandler = cityHandlerReference;
+        sessionHandler = sessionHandlerReference;
     }
 
     public static Vector3 ZeroYVector3(Vector3 vector)

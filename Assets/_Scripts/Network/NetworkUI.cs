@@ -1,15 +1,17 @@
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
 public class NetworkUI : MonoBehaviour
 {
+    [SerializeField] private TMP_InputField joinCode;
     public void StartHost()
     {
-        NetworkManager.Singleton.StartHost();
+        Global.sessionHandler.StartSessionAsHost();
     }
 
     public void StartClient()
     {
-        NetworkManager.Singleton.StartClient();
+        Global.sessionHandler.JoinSessionByCode(joinCode.text.ToUpper());
     }
 }
