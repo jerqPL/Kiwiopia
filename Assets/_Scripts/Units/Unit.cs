@@ -72,6 +72,7 @@ public class Unit : NetworkBehaviour
     public void KillUnitClientRpc()
     {
         isDead = true;
+        owner.units.Remove(this);
         CancelMovementClientRpc(tileIndex.Value);
         healthBar.transform.gameObject.SetActive(false);
         DestroyProgressLine();
@@ -306,6 +307,17 @@ public class Unit : NetworkBehaviour
         Global.tilesHandler.GetTileAt(toIndex).owner = owner;
         MoveTo(Global.tilesHandler.GetTileAt(toIndex).transform.position);
         UpdateTilesInRange();
+        if (owner == Global.playerHandler.GetLocalPlayer())
+        {
+            Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
+        }
+        if (IsServer)
+        {
+            if (Global.tilesHandler.GetTileAt(toIndex).city != null && Global.tilesHandler.GetTileAt(toIndex).city.owner != owner)
+            {
+                Global.tilesHandler.GetTileAt(toIndex).city.StartCapturing(Global.unitsHandler.GetIndexOf(this));
+            }
+        }
         Global.unitsHandler.AttackEnemies();
     }
 

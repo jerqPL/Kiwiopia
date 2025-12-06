@@ -59,10 +59,10 @@ public class UnitsHandler : NetworkBehaviour
                 Debug.Log("not enough resources");
                 return;
             }
-            StartRecruitingClientRpc(playerIndex, tileIndex, unitType, new ClientRpcParams
+            StartRecruitingClientRpc(playerIndex, tileIndex, unitType/*, new ClientRpcParams
             {
                 Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { Global.playerHandler.GetPlayerAt(playerIndex).OwnerClientId } }
-            });
+            }*/);
         }
     }
 

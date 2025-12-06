@@ -16,6 +16,9 @@ public class UIHandler : MonoBehaviour
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text stoneText;
 
+    [SerializeField] private RectTransform wonScreen;
+    [SerializeField] private RectTransform lostScreen;
+
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
@@ -43,7 +46,7 @@ public class UIHandler : MonoBehaviour
         menus.Clear();
         if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
         if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
-        if (tile.city != null) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
+        if (tile.city != null && tile.city.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
         if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && !tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
 
         ActivateMenu(num_of_times);
@@ -110,5 +113,17 @@ public class UIHandler : MonoBehaviour
     public void UpdateStoneText(int value)
     {
         stoneText.text = value.ToString();
+    }
+
+    public void Lost()
+    {
+        DisableAll();
+        lostScreen.gameObject.SetActive(true);
+    }
+
+    public void Won()
+    {
+        DisableAll();
+        wonScreen.gameObject.SetActive(true);
     }
 }

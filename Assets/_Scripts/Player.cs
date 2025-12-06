@@ -23,6 +23,7 @@ public class Player : NetworkBehaviour
     public List<Unit> units = new List<Unit>();
     public List<City> citys = new List<City>();
 
+
     public override void OnNetworkSpawn()
     {
         Global.playerHandler.players.Add(this);
@@ -182,5 +183,19 @@ public class Player : NetworkBehaviour
         }
 
         Global.tilesHandler.SetVisibility(visibleTiles);
+    }
+
+    [ClientRpc]
+    public void LostClientRpc()
+    {
+        if (this == Global.playerHandler.GetLocalPlayer())
+            Global.uIHandler.Lost();
+    }
+
+    [ClientRpc]
+    public void WonClientRpc()
+    {
+        if (this == Global.playerHandler.GetLocalPlayer())
+            Global.uIHandler.Won();
     }
 }

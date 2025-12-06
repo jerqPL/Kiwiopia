@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class City : NetworkBehaviour
 {
     public List<Tile> cityTiles = new List<Tile>();
     [SerializeField] private Slider recruitProgressBar;
+    [SerializeField] private Slider captureProgressBar;
     [SerializeField] private LineRenderer lineRenderer;
     public NetworkVariable<int> tileIndex = new NetworkVariable<int>();
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
@@ -18,6 +20,9 @@ public class City : NetworkBehaviour
                                            NetworkVariableReadPermission.Owner,
                                            NetworkVariableWritePermission.Server);
 
+    public NetworkVariable<bool> isBeingCaptured = new NetworkVariable<bool>(false);
+    public NetworkVariable<int> capturingUnitIndex = new NetworkVariable<int>();
+
     public int money = 0;
     public int wood = 0;
     public int stone = 0;
@@ -26,6 +31,9 @@ public class City : NetworkBehaviour
 
     private int recruitedUnitType;
     private float recruitTimeLeft;
+
+    public float capturingTime = 0f;
+    
 
     private LineRenderer cityBorder;
 
@@ -37,6 +45,71 @@ public class City : NetworkBehaviour
         tile.city = this;
         tile.underCity = this;
         Global.cityHandler.cities.Add(this);
+        
+        ownerIndex.OnValueChanged += ChangeOwnership;
+    }
+
+    private void ChangeOwnership(int prev, int curr)
+    {
+        Global.playerHandler.GetPlayerAt(prev).citys.Remove(this);
+        Global.playerHandler.GetPlayerAt(curr).citys.Add(this);
+        foreach(Tile tile in cityTiles)
+        {
+            tile.owner = owner;
+            
+        }
+        if (prev == Global.playerHandler.GetLocalPlayerIndex())
+        {
+            Global.playerHandler.GetPlayerAt(prev).UpdateVisibleTiles();
+        }
+        if (curr == Global.playerHandler.GetLocalPlayerIndex())
+        {
+            Global.playerHandler.GetPlayerAt(curr).UpdateVisibleTiles();
+        }
+    }
+
+    public void StartCapturing(int unitIndex)
+    {
+        if (!IsServer) return;
+        isBeingCaptured.Value = true;
+        capturingUnitIndex.Value = unitIndex;
+    }
+
+    private void Update()
+    {
+        if (isRecruiting) RecruitingProgress();
+        if (isBeingCaptured.Value) CapturingProcess();
+        if (!IsServer) return;
+        SendResourcesToPlayer();
+    }
+
+    private void CapturingProcess()
+    {
+        if (tile.unit == null)
+        {
+            capturingTime = 0f;
+            captureProgressBar.gameObject.SetActive(false);
+            if (IsServer) isBeingCaptured.Value = false;
+            return;
+        }
+        if (Global.unitsHandler.GetIndexOf(tile.unit) != capturingUnitIndex.Value)
+        {
+            capturingTime = 0f;
+            if (IsServer) capturingUnitIndex.Value = Global.unitsHandler.GetIndexOf(tile.unit);
+        }
+        captureProgressBar.gameObject.SetActive(true);
+        capturingTime += Time.deltaTime;
+        captureProgressBar.value = capturingTime / Global.timeToCaptureCity;
+        if (capturingTime > Global.timeToCaptureCity)
+        {
+            capturingTime = 0f;
+            captureProgressBar.gameObject.SetActive(false);
+            if (IsServer)
+            {
+                isBeingCaptured.Value = false;
+                ownerIndex.Value = Global.playerHandler.GetIndexOf(Global.unitsHandler.GetUnitAt(capturingUnitIndex.Value).owner);
+            }
+        }
     }
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
@@ -246,12 +319,7 @@ public class City : NetworkBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (isRecruiting) RecruitingProgress();
-        if (!IsServer) return;
-        SendResourcesToPlayer();
-    }
+    
 
     void SendResourcesToPlayer()
     {
