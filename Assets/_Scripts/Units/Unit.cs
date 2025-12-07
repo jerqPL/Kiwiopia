@@ -26,6 +26,7 @@ public class Unit : NetworkBehaviour
 
     [SerializeField] private LineRenderer lineRendererPrefab;
     [SerializeField] private Slider healthBar;
+    [SerializeField] private Slider attackCooldownBar;
 
     public NetworkVariable<int> health = new NetworkVariable<int>(1);
 
@@ -59,6 +60,16 @@ public class Unit : NetworkBehaviour
         }  
     }
 
+    private void UpdateAttackCooldownBar()
+    {
+        attackCooldownBar.value = (unitType.attackCooldown - (float)attackCooldown) / unitType.attackCooldown;
+    }
+
+    private void ChangeVisibilityAttackCooldown(bool prev, bool curr)
+    {
+        attackCooldownBar.gameObject.SetActive(curr);
+    }
+
     public void RecieveDamage(int damage)
     {
         health.Value -= Math.Max(0, damage - unitType.resistance);
@@ -90,22 +101,35 @@ public class Unit : NetworkBehaviour
         owner.AddUnit(this);
         tile.SetUnit(this);
         health.OnValueChanged += UpdateHealthBar;
+        inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
+        isMoving.OnValueChanged += AnimateMovement;
         MoveTo(tile.transform.position);
+    }
+
+    private void AnimateMovement(bool prev, bool curr)
+    {
+        model.GetComponent<Animator>().SetBool("isMoving", curr);
     }
 
     private void Update()
     {
         if (isDead) return;
-        if (inCombat.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
+        if (inCombat.Value && !isMoving.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
+        TakeCooldown();
         if (!IsServer) return;
         TakeMoney();
-        TakeCooldown();
+        
         AttackEnemies();
     }
 
     void LateUpdate()
     {
         UpdateHealthBarRotation();
+        if (inCombat.Value)
+        {
+            UpdateAttackCooldownBar();
+            UpdateAttackCooldownBarRotation();
+        }
     }
 
     private void UpdateHealthBarRotation()
@@ -119,6 +143,19 @@ public class Unit : NetworkBehaviour
 
         // create rotation only around Y
         healthBar.transform.rotation = Quaternion.LookRotation(camDir);
+    }
+
+    private void UpdateAttackCooldownBarRotation()
+    {
+        // get camera forward direction
+        Vector3 camDir = Camera.main.transform.forward;
+
+        // flatten (remove vertical influence)
+        camDir.y = 0f;
+        camDir.Normalize();
+
+        // create rotation only around Y
+        attackCooldownBar.transform.rotation = Quaternion.LookRotation(camDir);
     }
 
     private void RotateTowards(Vector3 vector)
@@ -144,28 +181,43 @@ public class Unit : NetworkBehaviour
 
     public void AttackEnemies()
     {
-        if (!IsServer) return;
-        if (isMoving.Value) return;
-        if (attackCooldown > 0) return;
-        bool foundTarget = false;
-        foreach (Tile tileInRange in tilesInRange)
+        if (!IsServer)
         {
-            if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+            if (isMoving.Value) return;
+            if (attackCooldown > 0) return;
+            foreach (Tile tileInRange in tilesInRange)
             {
-                foundTarget = true;
-                enemyIndex.Value = Global.unitsHandler.GetIndexOf(tileInRange.unit);
-                attackCooldown = unitType.attackCooldown;
-                Global.unitsHandler.DealDamage(Global.unitsHandler.GetIndexOf(this), Global.unitsHandler.GetIndexOf(tileInRange.unit));
-                break;
+                if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+                {
+                    attackCooldown = unitType.attackCooldown;
+                    break;
+                }
             }
-        }
-        if (foundTarget)
-        {
-            inCombat.Value = true;
         }
         else
         {
-            inCombat.Value = false;
+            if (isMoving.Value) return;
+            if (attackCooldown > 0) return;
+            bool foundTarget = false;
+            foreach (Tile tileInRange in tilesInRange)
+            {
+                if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+                {
+                    foundTarget = true;
+                    enemyIndex.Value = Global.unitsHandler.GetIndexOf(tileInRange.unit);
+                    attackCooldown = unitType.attackCooldown;
+                    Global.unitsHandler.DealDamage(Global.unitsHandler.GetIndexOf(this), Global.unitsHandler.GetIndexOf(tileInRange.unit));
+                    break;
+                }
+            }
+            if (foundTarget)
+            {
+                inCombat.Value = true;
+            }
+            else
+            {
+                inCombat.Value = false;
+            }
         }
     }
 
@@ -246,6 +298,7 @@ public class Unit : NetworkBehaviour
             Vector3 start = path[i].transform.position;
             Vector3 end = path[i + 1].transform.position;
             float elapsed = 0f;
+            RotateTowards(end);
             while (elapsed < moveTime)
             {
                 MoveTo(Vector3.Lerp(start, end, elapsed / moveTime));
