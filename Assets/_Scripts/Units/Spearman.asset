@@ -25,4 +25,4 @@ MonoBehaviour:
   cost: 2
   timePerCoin: 2
   scoutDistance: 1
-  model: {fileID: 7214466155585409510, guid: 42c6187c0160e904fbae85b92df3249b, type: 3}
+  model: {fileID: 919132149155446097, guid: b1b5da6ff79b1ee0dafa9dfd0b8ac136, type: 3}

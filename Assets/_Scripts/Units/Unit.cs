@@ -102,7 +102,7 @@ public class Unit : NetworkBehaviour
         tile.SetUnit(this);
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
-        isMoving.OnValueChanged += AnimateMovement;
+        //isMoving.OnValueChanged += AnimateMovement;
         MoveTo(tile.transform.position);
     }
 

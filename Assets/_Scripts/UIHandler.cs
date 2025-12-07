@@ -19,9 +19,18 @@ public class UIHandler : MonoBehaviour
     [SerializeField] private RectTransform wonScreen;
     [SerializeField] private RectTransform lostScreen;
 
+    [SerializeField] private RectTransform gameMenu;
+    [SerializeField] private RectTransform gameUI;
+
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
+
+    public void HideGameMenu()
+    {
+        gameMenu.gameObject.SetActive(false);
+        gameUI.gameObject.SetActive(true);
+    }
 
     private void Start()
     {

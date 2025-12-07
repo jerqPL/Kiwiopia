@@ -58,6 +58,7 @@ public class SessionHandler : MonoBehaviour
 
         ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
         Debug.Log($"Session {ActiveSession.Id} created! Join code: {ActiveSession.Code}");
+        Global.networkUI.DisplayJoinCode(ActiveSession.Code);
     }
 
     public async void JoinSessionById(string sessionId)

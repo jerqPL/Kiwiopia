@@ -99,6 +99,9 @@ public class Global : MonoBehaviour
     public static SessionHandler sessionHandler;
     [SerializeField] private SessionHandler sessionHandlerReference;
 
+    public static NetworkUI networkUI;
+    [SerializeField] private NetworkUI networkUIReference;
+
 
     public static int[,] newCityResourceCost = {
         {20, 5, 5},
@@ -139,6 +142,7 @@ public class Global : MonoBehaviour
         timePerCoinPerTile = timePerCoinPerTileReference;
         timePerLogPerForest = timePerLogPerForestReference;
         timePerStonePerMountain = timePerStonePerMountainReference;
+        networkUI = networkUIReference;
 
         unitTypes = unitTypesReference;
 
