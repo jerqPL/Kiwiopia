@@ -63,13 +63,34 @@ public class SessionHandler : MonoBehaviour
 
     public async void JoinSessionById(string sessionId)
     {
-        ActiveSession = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionId);
+        try
+        {
+            Global.uIHandler.EnableJoinStatusConnecting();
+            ActiveSession = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionId);
+            Global.uIHandler.EnableJoinStatusSuccess();
+        }
+        catch (Exception e)
+        {
+            Global.uIHandler.EnableJoinStatusError();
+            Debug.LogException(e);
+        }
         Debug.Log($"Session {ActiveSession.Id} joined!");
+
     }
 
     public async void JoinSessionByCode(string sessionCode)
-    {
-        ActiveSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
+    { 
+        try
+        {
+            Global.uIHandler.EnableJoinStatusConnecting();
+            ActiveSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
+            Global.uIHandler.EnableJoinStatusSuccess();
+        }
+        catch (Exception e)
+        {
+            Global.uIHandler.EnableJoinStatusError();
+            Debug.LogException(e);
+        }
         Debug.Log($"Session {ActiveSession.Id} joined!");
     }
 

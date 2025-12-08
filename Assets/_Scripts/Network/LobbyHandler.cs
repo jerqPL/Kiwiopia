@@ -42,6 +42,7 @@ public class LobbyHandler : NetworkBehaviour
     public void StartGame()
     {
         if (!IsServer) return;
+        Global.uIHandler.HideGameMenuClientRpc();
         gameStarted = true;
         Debug.Log("All players connected! Generating map...");
         // call your TerrainGeneration / TilesHandler generation
