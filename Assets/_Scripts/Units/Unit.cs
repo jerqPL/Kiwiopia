@@ -104,6 +104,7 @@ public class Unit : NetworkBehaviour
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
         //isMoving.OnValueChanged += AnimateMovement;
         MoveTo(tile.transform.position);
+        UpdateTilesInRange();
     }
 
     private void AnimateMovement(bool prev, bool curr)
@@ -326,6 +327,17 @@ public class Unit : NetworkBehaviour
             {
                 Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
             }
+
+            //THIS DOSNT WORKKK - ERROR NOT FIXED
+            /*
+            if (IsServer)
+            {
+                owner.UpdateVisibleTIlesClientRpc(
+                new ClientRpcParams
+                {
+                    Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { owner.OwnerClientId } }
+                });
+            }*/
         }
 
         DestroyProgressLine();

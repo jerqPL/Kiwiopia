@@ -29,6 +29,12 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform JoinStatusError;
     [SerializeField] private RectTransform JoinStatusSuccess;
 
+    [SerializeField] private RectTransform CreateStatusConnecting;
+    [SerializeField] private RectTransform CreateStatusError;
+    [SerializeField] private RectTransform CreateStatusSuccess;
+
+    [SerializeField] private TMP_Text errorText;
+
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
@@ -44,6 +50,11 @@ public class UIHandler : NetworkBehaviour
     {
         DisableAll();
         DisableJoinStatus();
+    }
+
+    public void SetErrorText(string text)
+    {
+        errorText.text = text;
     }
 
     public void DisableJoinStatus()
@@ -71,9 +82,34 @@ public class UIHandler : NetworkBehaviour
         JoinStatusSuccess.gameObject.SetActive(true);
     }
 
+    public void DisableCreateStatus()
+    {
+        CreateStatusConnecting.gameObject.SetActive(false);
+        CreateStatusError.gameObject.SetActive(false);
+        CreateStatusSuccess.gameObject.SetActive(false);
+    }
+
+    public void EnableCreateStatusConnecting()
+    {
+        DisableCreateStatus();
+        CreateStatusConnecting.gameObject.SetActive(true);
+    }
+
+    public void EnableCreateStatusError()
+    {
+        DisableCreateStatus();
+        CreateStatusError.gameObject.SetActive(true);
+    }
+
+    public void EnableCreateStatusSuccess()
+    {
+        DisableCreateStatus();
+        CreateStatusSuccess.gameObject.SetActive(true);
+    }
+
     public void ClickedTile(Tile tile, int num_of_times)
     {
-        if (tile.unit != null )
+        if (tile.unit != null)
         {
             cityMenuUnits.gameObject.SetActive(false);
             clickedUnit = tile.unit;

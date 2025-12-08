@@ -150,6 +150,12 @@ public class Player : NetworkBehaviour
         units.Remove(unit);
     }
 
+    [ClientRpc]
+    public void UpdateVisibleTIlesClientRpc(ClientRpcParams clientRpcParams = default)
+    {
+        UpdateVisibleTiles();
+    }
+
     public void UpdateVisibleTiles()
     {
         List<Tile> visibleTiles = new List<Tile>();

@@ -32,6 +32,7 @@ public class SessionHandler : MonoBehaviour
         }
         catch (Exception e)
         {
+            Global.uIHandler.SetErrorText(e.Message);
             Debug.LogException(e);
         }
     }
@@ -46,17 +47,28 @@ public class SessionHandler : MonoBehaviour
 
     public async void StartSessionAsHost()
     {
-        var playerProperties = await GetPlayerProperties();
-
-        var options = new SessionOptions
+        try
         {
-            MaxPlayers = 2,
-            IsLocked = false,
-            IsPrivate = false,
-            PlayerProperties = playerProperties
-        }.WithRelayNetwork(); // or WithDistributedAuthorityNetwork() to use Distributed Authority instead of Relay
+            Global.uIHandler.EnableCreateStatusConnecting();
+            var playerProperties = await GetPlayerProperties();
 
-        ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+            var options = new SessionOptions
+            {
+                MaxPlayers = 4,
+                IsLocked = false,
+                IsPrivate = false,
+                PlayerProperties = playerProperties
+            }.WithRelayNetwork(); // or WithDistributedAuthorityNetwork() to use Distributed Authority instead of Relay
+
+            ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+            Global.uIHandler.EnableCreateStatusSuccess();
+        }
+        catch (Exception e)
+        {
+            Global.uIHandler.SetErrorText(e.Message);
+            Global.uIHandler.EnableCreateStatusError();
+            Debug.LogException(e);
+        }
         Debug.Log($"Session {ActiveSession.Id} created! Join code: {ActiveSession.Code}");
         Global.networkUI.DisplayJoinCode(ActiveSession.Code);
     }
@@ -71,6 +83,7 @@ public class SessionHandler : MonoBehaviour
         }
         catch (Exception e)
         {
+            Global.uIHandler.SetErrorText(e.Message);
             Global.uIHandler.EnableJoinStatusError();
             Debug.LogException(e);
         }
@@ -88,6 +101,7 @@ public class SessionHandler : MonoBehaviour
         }
         catch (Exception e)
         {
+            Global.uIHandler.SetErrorText(e.Message);
             Global.uIHandler.EnableJoinStatusError();
             Debug.LogException(e);
         }

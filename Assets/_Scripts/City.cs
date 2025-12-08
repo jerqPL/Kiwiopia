@@ -343,8 +343,8 @@ public class City : NetworkBehaviour
     private void RecruitingProgress()
     {
         recruitTimeLeft -= Time.deltaTime;
-        recruitProgressBar.value = (Global.unitTypes[recruitedUnitType].recruitTime - recruitTimeLeft) / Global.unitTypes[recruitedUnitType].recruitTime;
-        if (recruitTimeLeft < 0)
+        recruitProgressBar.value = Mathf.Max((Global.unitTypes[recruitedUnitType].recruitTime - recruitTimeLeft) / Global.unitTypes[recruitedUnitType].recruitTime, 0);
+        if (recruitTimeLeft <= 0 && tile.unit == null)
         {
             isRecruiting = false;
             recruitProgressBar.gameObject.SetActive(false);
