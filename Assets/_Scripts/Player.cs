@@ -23,10 +23,21 @@ public class Player : NetworkBehaviour
     public List<Unit> units = new List<Unit>();
     public List<City> citys = new List<City>();
 
+    private GameObject playerCard;
+
 
     public override void OnNetworkSpawn()
     {
         Global.playerHandler.players.Add(this);
+        if (IsLocalPlayer)
+        {
+            playerCard = Global.uIHandler.AddPlayer(this.OwnerClientId.ToString(), Global.localPlayerColor);
+        }
+        else
+        {
+            playerCard = Global.uIHandler.AddPlayer(this.OwnerClientId.ToString(), Color.white);
+        }
+            
 
         if (IsServer)
         {
@@ -34,6 +45,12 @@ public class Player : NetworkBehaviour
             wood.Value = Global.startingWood;
             stone.Value = Global.startingStone;
         }
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        Destroy(playerCard);
+        base.OnNetworkDespawn();
     }
 
     public void SpawnPlayer()
@@ -150,11 +167,11 @@ public class Player : NetworkBehaviour
         units.Remove(unit);
     }
 
-    [ClientRpc]
-    public void UpdateVisibleTIlesClientRpc(ClientRpcParams clientRpcParams = default)
+    /*[Rpc(SendTo.SpecifiedInParams, InvokePermission = RpcInvokePermission.Server)]
+    public void UpdateVisibleTIlesClientRpc(RpcParams clientRpcParams = default)
     {
         UpdateVisibleTiles();
-    }
+    }*/
 
     public void UpdateVisibleTiles()
     {

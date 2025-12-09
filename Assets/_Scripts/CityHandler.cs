@@ -23,6 +23,12 @@ public class CityHandler : NetworkBehaviour
             return;
         }
 
+        if (tile.underCity != null)
+        {
+            Debug.Log("Under city, alr");
+            return ;
+        }
+
         tile.owner = owner;
         
 

@@ -480,6 +480,7 @@ MonoBehaviour:
   CreateStatusConnecting: {fileID: 2110110097}
   CreateStatusError: {fileID: 1064969522}
   CreateStatusSuccess: {fileID: 2069369213}
+  startButton: {fileID: 1842523340}
   errorText: {fileID: 1127002312}
   uIPlayers: {fileID: 1087528592}
   uiPlayerPrefab: {fileID: 3520097610418643914, guid: 24586c359ae346c4e96d647edbcc3963, type: 3}
@@ -5556,7 +5557,7 @@ MonoBehaviour:
   cityHandlerReference: {fileID: 2121364154}
   sessionHandlerReference: {fileID: 781752971}
   networkUIReference: {fileID: 207599523}
-  localPlayerColorReference: {r: 0.25784478, g: 0.82641506, b: 0.13565677, a: 0}
+  localPlayerColorReference: {r: 0.65882355, g: 0.8039216, b: 0.28235295, a: 1}
 --- !u!4 &1450353043
 Transform:
   m_ObjectHideFlags: 0
@@ -6853,7 +6854,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1842523340
 RectTransform:
   m_ObjectHideFlags: 0

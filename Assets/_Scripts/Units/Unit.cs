@@ -39,7 +39,7 @@ public class Unit : NetworkBehaviour
 
     public NetworkVariable<bool> inCombat = new NetworkVariable<bool>(false);
     public NetworkVariable<int> enemyIndex = new NetworkVariable<int>(0);
-    private bool isDead = false;
+    public bool isDead = false;
     public float attackCooldown = 0f;
 
     public void DestroyProgressLine()
@@ -87,11 +87,13 @@ public class Unit : NetworkBehaviour
         CancelMovementClientRpc(tileIndex.Value);
         healthBar.transform.gameObject.SetActive(false);
         DestroyProgressLine();
+        this.GetComponent<BoxCollider>().enabled = false;
         tile.SetUnit(null);
         MoveTo(tile.transform.position);
         transform.localScale = Vector3.one * 0.3f;
         transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), -90f);
         healthBar.transform.gameObject.SetActive(false);
+
     }
 
     public override void OnNetworkSpawn()
@@ -110,9 +112,18 @@ public class Unit : NetworkBehaviour
         tile.SetUnit(this);
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
+        tileIndex.OnValueChanged += ChangePlayerVisibility;
         //isMoving.OnValueChanged += AnimateMovement;
         MoveTo(tile.transform.position);
         UpdateTilesInRange();
+    }
+
+    private void ChangePlayerVisibility(int prev, int curr)
+    {
+        if (owner == Global.playerHandler.GetLocalPlayer())
+        {
+            owner.UpdateVisibleTiles();
+        }
     }
 
     private void AnimateMovement(bool prev, bool curr)
@@ -253,6 +264,7 @@ public class Unit : NetworkBehaviour
 
     public void RequestMove(List<Tile> path)
     {
+        if (isDead) return;
         if (path == null || path.Count < 2) return;
 
         // Send request to server
@@ -263,6 +275,7 @@ public class Unit : NetworkBehaviour
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
     public void MoveUnitServerRpc(int[] tileIndices)
     {
+        if (isDead) return;
         if (isMoving.Value) return;
 
         List<int> validIndices = new List<int>();
@@ -327,25 +340,10 @@ public class Unit : NetworkBehaviour
                     break;
                 }
                 tileIndex.Value = Global.tilesHandler.GetIndexOf(path[i + 1]);
+
             }
 
             MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
-
-            if (owner == Global.playerHandler.GetLocalPlayer())
-            {
-                Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
-            }
-
-            //THIS DOSNT WORKKK - ERROR NOT FIXED
-            /*
-            if (IsServer)
-            {
-                owner.UpdateVisibleTIlesClientRpc(
-                new ClientRpcParams
-                {
-                    Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { owner.OwnerClientId } }
-                });
-            }*/
         }
 
         DestroyProgressLine();

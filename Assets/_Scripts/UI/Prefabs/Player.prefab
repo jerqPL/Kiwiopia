@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerUI
   playerID: {fileID: 2062107964208212783}
+  background: {fileID: 2295200419789698524}
 --- !u!1 &3902291766595720047
 GameObject:
   m_ObjectHideFlags: 0

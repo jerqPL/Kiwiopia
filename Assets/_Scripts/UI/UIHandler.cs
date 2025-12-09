@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
-using System.Runtime.InteropServices;
 
 public class UIHandler : NetworkBehaviour
 {
@@ -35,34 +34,36 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform CreateStatusError;
     [SerializeField] private RectTransform CreateStatusSuccess;
 
+    [SerializeField] private RectTransform startButton;
+
     [SerializeField] private TMP_Text errorText;
 
     [SerializeField] private RectTransform uIPlayers;
     [SerializeField] private GameObject uiPlayerPrefab;
-    private List<GameObject> uiPlayersList = new List<GameObject>();
 
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
 
-    public void AddPlayer(string playerID)
+    public override void OnNetworkSpawn()
+    {
+        if (IsClient)
+        {
+            startButton.gameObject.SetActive(false);
+        }
+        if (IsServer)
+        {
+            startButton.gameObject.SetActive(true);
+        }
+    }
+
+    public GameObject AddPlayer(string playerID, Color color)
     {
         GameObject newPlayer = Instantiate(uiPlayerPrefab);
         newPlayer.GetComponent<PlayerUI>().playerID.text = playerID;
+        newPlayer.GetComponent<PlayerUI>().background.color = color;
         newPlayer.transform.SetParent(uIPlayers);
-        uiPlayersList.Add(newPlayer);
-    }
-
-    public void RemovePlayer(string playerID) 
-    {
-        foreach (GameObject uiplayer in uiPlayersList) 
-        { 
-            if (uiplayer.GetComponent<PlayerUI>().playerID.text == playerID)
-            {
-                Destroy(uiplayer);
-                return;
-            }  
-        }
+        return newPlayer;
     }
 
 
@@ -157,10 +158,10 @@ public class UIHandler : NetworkBehaviour
         DisableAll();
 
         menus.Clear();
-        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
-        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
+        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
+        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
         if (tile.city != null && tile.city.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
-        if (tile.unit != null && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && !tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
+        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && !tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
 
         ActivateMenu(num_of_times);
         //Debug.Log($"Clicked tile: {tile.transform.name}, {num_of_times} times");
@@ -201,6 +202,8 @@ public class UIHandler : NetworkBehaviour
     public void DestroyUnit()
     {
         Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
+        Global.selectionHandler.state = 0;
+
     }
 
     public void StopUnit()

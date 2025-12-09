@@ -24,12 +24,12 @@ public class SessionHandler : MonoBehaviour
 
     private void PlayerJoined(string playerId)
     {
-        Global.uIHandler.AddPlayer(playerId.ToString());
+        return;
     }
 
     private void PlayerDisconnected(string playerId)
     {
-        Global.uIHandler.RemovePlayer(playerId.ToString());
+        return;
     }
 
     async void Start()
@@ -72,8 +72,6 @@ public class SessionHandler : MonoBehaviour
 
             ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
 
-
-            Global.uIHandler.AddPlayer(activeSession.CurrentPlayer.Id);
             activeSession.PlayerJoined += PlayerJoined;
             activeSession.PlayerHasLeft += PlayerDisconnected;
 
@@ -135,12 +133,6 @@ public class SessionHandler : MonoBehaviour
         }
         Debug.Log($"Session {ActiveSession.Id} joined!");
         Global.uIHandler.SwichToLobbyMenu();
-
-        foreach (var player in ActiveSession.Players)
-        {
-            Debug.Log(player);
-            Global.uIHandler.AddPlayer(player.Id);
-        }
         Global.networkUI.DisplayJoinCode(activeSession.Code);
     }
 
