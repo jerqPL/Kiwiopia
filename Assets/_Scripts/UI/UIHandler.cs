@@ -22,6 +22,8 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform lostScreen;
 
     [SerializeField] private RectTransform gameMenu;
+    [SerializeField] private RectTransform mainMenu;
+    [SerializeField] private RectTransform lobbyMenu;
     [SerializeField] private RectTransform gameUI;
 
 
@@ -35,15 +37,46 @@ public class UIHandler : NetworkBehaviour
 
     [SerializeField] private TMP_Text errorText;
 
+    [SerializeField] private RectTransform uIPlayers;
+    [SerializeField] private GameObject uiPlayerPrefab;
+    private List<GameObject> uiPlayersList = new List<GameObject>();
+
     private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
+
+    public void AddPlayer(string playerID)
+    {
+        GameObject newPlayer = Instantiate(uiPlayerPrefab);
+        newPlayer.GetComponent<PlayerUI>().playerID.text = playerID;
+        newPlayer.transform.SetParent(uIPlayers);
+        uiPlayersList.Add(newPlayer);
+    }
+
+    public void RemovePlayer(string playerID) 
+    {
+        foreach (GameObject uiplayer in uiPlayersList) 
+        { 
+            if (uiplayer.GetComponent<PlayerUI>().playerID.text == playerID)
+            {
+                Destroy(uiplayer);
+                return;
+            }  
+        }
+    }
+
 
     [ClientRpc]
     public void HideGameMenuClientRpc()
     {
         gameMenu.gameObject.SetActive(false);
         gameUI.gameObject.SetActive(true);
+    }
+
+    public void SwichToLobbyMenu()
+    {
+        mainMenu.gameObject.SetActive(false);
+        lobbyMenu.gameObject.SetActive(true);
     }
 
     private void Start()

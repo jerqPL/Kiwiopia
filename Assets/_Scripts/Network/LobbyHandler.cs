@@ -26,17 +26,14 @@ public class LobbyHandler : NetworkBehaviour
     {
         connectedClients.Add(clientId);
         Debug.Log($"Client connected: {clientId}");
-
-        if (connectedClients.Count == maxPlayers)
-        {
-            StartGame();
-        }
+        
     }
 
     private void OnClientDisconnected(ulong clientId)
     {
         connectedClients.Remove(clientId);
         Debug.Log($"Client disconnected: {clientId}");
+        
     }
 
     public void StartGame()
@@ -53,6 +50,7 @@ public class LobbyHandler : NetworkBehaviour
 
     private void Update()
     {
+        return;
         if (!IsServer) return;
         List<Player> lost = new List<Player>();
         foreach(Player player in playersPlaying)

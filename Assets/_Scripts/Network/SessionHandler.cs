@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine;
-using System.Threading.Tasks;
 
 public class SessionHandler : MonoBehaviour
 {
@@ -21,6 +21,16 @@ public class SessionHandler : MonoBehaviour
     }
 
     const string playerNamePropertyKey = "playerName";
+
+    private void PlayerJoined(string playerId)
+    {
+        Global.uIHandler.AddPlayer(playerId.ToString());
+    }
+
+    private void PlayerDisconnected(string playerId)
+    {
+        Global.uIHandler.RemovePlayer(playerId.ToString());
+    }
 
     async void Start()
     {
@@ -61,6 +71,12 @@ public class SessionHandler : MonoBehaviour
             }.WithRelayNetwork(); // or WithDistributedAuthorityNetwork() to use Distributed Authority instead of Relay
 
             ActiveSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+
+
+            Global.uIHandler.AddPlayer(activeSession.CurrentPlayer.Id);
+            activeSession.PlayerJoined += PlayerJoined;
+            activeSession.PlayerHasLeft += PlayerDisconnected;
+
             Global.uIHandler.EnableCreateStatusSuccess();
         }
         catch (Exception e)
@@ -71,9 +87,10 @@ public class SessionHandler : MonoBehaviour
         }
         Debug.Log($"Session {ActiveSession.Id} created! Join code: {ActiveSession.Code}");
         Global.networkUI.DisplayJoinCode(ActiveSession.Code);
+        Global.uIHandler.SwichToLobbyMenu();
     }
 
-    public async void JoinSessionById(string sessionId)
+    /*public async void JoinSessionById(string sessionId)
     {
         try
         {
@@ -88,8 +105,15 @@ public class SessionHandler : MonoBehaviour
             Debug.LogException(e);
         }
         Debug.Log($"Session {ActiveSession.Id} joined!");
+        Global.uIHandler.SwichToLobbyMenu();
+        
+        foreach (var player in ActiveSession.Players)
+        {
+            Debug.Log(player);
+            Global.uIHandler.AddPlayer(player.Id);
+        }
 
-    }
+    }*/
 
     public async void JoinSessionByCode(string sessionCode)
     { 
@@ -97,6 +121,10 @@ public class SessionHandler : MonoBehaviour
         {
             Global.uIHandler.EnableJoinStatusConnecting();
             ActiveSession = await MultiplayerService.Instance.JoinSessionByCodeAsync(sessionCode);
+
+            activeSession.PlayerJoined += PlayerJoined;
+            activeSession.PlayerHasLeft += PlayerDisconnected;
+
             Global.uIHandler.EnableJoinStatusSuccess();
         }
         catch (Exception e)
@@ -106,6 +134,14 @@ public class SessionHandler : MonoBehaviour
             Debug.LogException(e);
         }
         Debug.Log($"Session {ActiveSession.Id} joined!");
+        Global.uIHandler.SwichToLobbyMenu();
+
+        foreach (var player in ActiveSession.Players)
+        {
+            Debug.Log(player);
+            Global.uIHandler.AddPlayer(player.Id);
+        }
+        Global.networkUI.DisplayJoinCode(activeSession.Code);
     }
 
     public async void KickPlayer(string playerId)

@@ -102,6 +102,9 @@ public class Global : MonoBehaviour
     public static NetworkUI networkUI;
     [SerializeField] private NetworkUI networkUIReference;
 
+    public static Color localPlayerColor;
+    [SerializeField] private Color localPlayerColorReference;
+
 
     public static int[,] newCityResourceCost = {
         {20, 5, 5},
@@ -145,6 +148,7 @@ public class Global : MonoBehaviour
         networkUI = networkUIReference;
 
         unitTypes = unitTypesReference;
+        localPlayerColor = localPlayerColorReference;
 
         //SCRIPTS
         tilesHandler = tilesHandlerReference;

@@ -99,6 +99,14 @@ public class Unit : NetworkBehaviour
         (model = Instantiate(unitType.model, transform.position, Quaternion.identity)).transform.SetParent(transform);
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
+        if (owner == Global.playerHandler.GetLocalPlayer())
+        {
+            List<GameObject> unitParts = model.GetComponent<UnitParts>().parts;
+            foreach(var part in unitParts)
+            {
+                part.GetComponent<Renderer>().material.color = Global.localPlayerColor;
+            }
+        }
         tile.SetUnit(this);
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
