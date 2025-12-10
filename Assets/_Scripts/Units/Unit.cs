@@ -87,7 +87,6 @@ public class Unit : NetworkBehaviour
         CancelMovementClientRpc(tileIndex.Value);
         healthBar.transform.gameObject.SetActive(false);
         DestroyProgressLine();
-        this.GetComponent<BoxCollider>().enabled = false;
         tile.SetUnit(null);
         MoveTo(tile.transform.position);
         transform.localScale = Vector3.one * 0.3f;

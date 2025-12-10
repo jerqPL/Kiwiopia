@@ -1389,12 +1389,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fe7acb280e0a74bb3a475f92c09154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraMovement
-  movementSpeed: 20
-  maxDistance: 30
+  movementSpeed: 10
+  zoomSpeed: 300
+  rotationSpeed: 50
   minDistance: 5
-  rotationSpeed: 35
+  maxDistance: 50
   tilesHandler: {fileID: 487156672}
-  focusPoint: {fileID: 0}
 --- !u!1 &337972355
 GameObject:
   m_ObjectHideFlags: 0

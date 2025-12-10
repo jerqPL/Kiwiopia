@@ -93,7 +93,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
             ""id"": ""5906cac9-e446-46fc-800d-ee6b1c508108"",
             ""actions"": [
                 {
-                    ""name"": ""Forward"",
+                    ""name"": ""Move Forward"",
                     ""type"": ""Button"",
                     ""id"": ""e80e1eb0-dddf-40cc-9b58-9fa2f5cedff3"",
                     ""expectedControlType"": """",
@@ -102,7 +102,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Backward"",
+                    ""name"": ""Move Backward"",
                     ""type"": ""Button"",
                     ""id"": ""ce46ce52-0ad3-4b3c-849a-fd5cafcec04a"",
                     ""expectedControlType"": """",
@@ -111,7 +111,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Left"",
+                    ""name"": ""Move Left"",
                     ""type"": ""Button"",
                     ""id"": ""e071ced0-36c6-4de5-ad9a-19ac053cda1b"",
                     ""expectedControlType"": """",
@@ -120,7 +120,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Rotate Right"",
+                    ""name"": ""Move Right"",
                     ""type"": ""Button"",
                     ""id"": ""f7ccf29f-ced6-483d-a9e6-2d7d8ab61aba"",
                     ""expectedControlType"": """",
@@ -129,9 +129,18 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Move"",
+                    ""type"": ""Button"",
+                    ""id"": ""59e15254-348f-463e-ad4b-92e1107a602a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Rotate Up"",
                     ""type"": ""Button"",
-                    ""id"": ""4d8ded87-2fe5-4ab6-b4c6-a6be227ca2b4"",
+                    ""id"": ""3c2b0ec1-f805-4b0b-9070-f2fbe3126d29"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -140,11 +149,38 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""Rotate Down"",
                     ""type"": ""Button"",
-                    ""id"": ""ead8ba64-2c42-4ae4-a4cc-be3805d9bad2"",
+                    ""id"": ""f41f5a7d-61fa-4f09-bd09-cfc6ceb418ca"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Left"",
+                    ""type"": ""Button"",
+                    ""id"": ""0e977423-2d13-4033-b48e-26cab2476052"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Rotate Right"",
+                    ""type"": ""Button"",
+                    ""id"": ""b491dbd3-ceaa-4ec2-9b74-f4c05f478a66"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Zoom"",
+                    ""type"": ""Value"",
+                    ""id"": ""62bd72ac-be03-4373-9dce-fbad5bc70ef3"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -155,7 +191,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Forward"",
+                    ""action"": ""Move Forward"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -166,7 +202,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Backward"",
+                    ""action"": ""Move Backward"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -177,7 +213,7 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate Left"",
+                    ""action"": ""Move Left"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -188,13 +224,24 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Rotate Right"",
+                    ""action"": ""Move Right"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c02965b7-f4e5-4e67-88e1-d54399828d85"",
+                    ""id"": ""73d20c43-c5c8-4678-8027-462cb97ba32e"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""44d07111-09d2-43bb-9c60-ad5bc0470aaf"",
                     ""path"": ""<Keyboard>/z"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -205,12 +252,45 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""71af5446-dab5-4df5-9587-715b63dd81ce"",
+                    ""id"": ""e07d8b8b-4d01-4325-acb7-d8a889392f41"",
                     ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Rotate Down"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""947b7690-2669-47b7-9d2c-8ba1dd63e145"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate Left"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""498b958c-40a5-478e-a156-9074b0af2a5a"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Rotate Right"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4fe7971-705e-49da-95eb-edf8afeff046"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Zoom"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -280,12 +360,16 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
 }");
         // Camera
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
-        m_Camera_Forward = m_Camera.FindAction("Forward", throwIfNotFound: true);
-        m_Camera_Backward = m_Camera.FindAction("Backward", throwIfNotFound: true);
-        m_Camera_RotateLeft = m_Camera.FindAction("Rotate Left", throwIfNotFound: true);
-        m_Camera_RotateRight = m_Camera.FindAction("Rotate Right", throwIfNotFound: true);
+        m_Camera_MoveForward = m_Camera.FindAction("Move Forward", throwIfNotFound: true);
+        m_Camera_MoveBackward = m_Camera.FindAction("Move Backward", throwIfNotFound: true);
+        m_Camera_MoveLeft = m_Camera.FindAction("Move Left", throwIfNotFound: true);
+        m_Camera_MoveRight = m_Camera.FindAction("Move Right", throwIfNotFound: true);
+        m_Camera_Move = m_Camera.FindAction("Move", throwIfNotFound: true);
         m_Camera_RotateUp = m_Camera.FindAction("Rotate Up", throwIfNotFound: true);
         m_Camera_RotateDown = m_Camera.FindAction("Rotate Down", throwIfNotFound: true);
+        m_Camera_RotateLeft = m_Camera.FindAction("Rotate Left", throwIfNotFound: true);
+        m_Camera_RotateRight = m_Camera.FindAction("Rotate Right", throwIfNotFound: true);
+        m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
         // Selection
         m_Selection = asset.FindActionMap("Selection", throwIfNotFound: true);
         m_Selection_Select = m_Selection.FindAction("Select", throwIfNotFound: true);
@@ -371,12 +455,16 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
     // Camera
     private readonly InputActionMap m_Camera;
     private List<ICameraActions> m_CameraActionsCallbackInterfaces = new List<ICameraActions>();
-    private readonly InputAction m_Camera_Forward;
-    private readonly InputAction m_Camera_Backward;
-    private readonly InputAction m_Camera_RotateLeft;
-    private readonly InputAction m_Camera_RotateRight;
+    private readonly InputAction m_Camera_MoveForward;
+    private readonly InputAction m_Camera_MoveBackward;
+    private readonly InputAction m_Camera_MoveLeft;
+    private readonly InputAction m_Camera_MoveRight;
+    private readonly InputAction m_Camera_Move;
     private readonly InputAction m_Camera_RotateUp;
     private readonly InputAction m_Camera_RotateDown;
+    private readonly InputAction m_Camera_RotateLeft;
+    private readonly InputAction m_Camera_RotateRight;
+    private readonly InputAction m_Camera_Zoom;
     /// <summary>
     /// Provides access to input actions defined in input action map "Camera".
     /// </summary>
@@ -389,13 +477,33 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
         /// </summary>
         public CameraActions(@GameInputSystem wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Camera/Forward".
+        /// Provides access to the underlying input action "Camera/MoveForward".
         /// </summary>
-        public InputAction @Forward => m_Wrapper.m_Camera_Forward;
+        public InputAction @MoveForward => m_Wrapper.m_Camera_MoveForward;
         /// <summary>
-        /// Provides access to the underlying input action "Camera/Backward".
+        /// Provides access to the underlying input action "Camera/MoveBackward".
         /// </summary>
-        public InputAction @Backward => m_Wrapper.m_Camera_Backward;
+        public InputAction @MoveBackward => m_Wrapper.m_Camera_MoveBackward;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/MoveLeft".
+        /// </summary>
+        public InputAction @MoveLeft => m_Wrapper.m_Camera_MoveLeft;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/MoveRight".
+        /// </summary>
+        public InputAction @MoveRight => m_Wrapper.m_Camera_MoveRight;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/Move".
+        /// </summary>
+        public InputAction @Move => m_Wrapper.m_Camera_Move;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/RotateUp".
+        /// </summary>
+        public InputAction @RotateUp => m_Wrapper.m_Camera_RotateUp;
+        /// <summary>
+        /// Provides access to the underlying input action "Camera/RotateDown".
+        /// </summary>
+        public InputAction @RotateDown => m_Wrapper.m_Camera_RotateDown;
         /// <summary>
         /// Provides access to the underlying input action "Camera/RotateLeft".
         /// </summary>
@@ -405,13 +513,9 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @RotateRight => m_Wrapper.m_Camera_RotateRight;
         /// <summary>
-        /// Provides access to the underlying input action "Camera/RotateUp".
+        /// Provides access to the underlying input action "Camera/Zoom".
         /// </summary>
-        public InputAction @RotateUp => m_Wrapper.m_Camera_RotateUp;
-        /// <summary>
-        /// Provides access to the underlying input action "Camera/RotateDown".
-        /// </summary>
-        public InputAction @RotateDown => m_Wrapper.m_Camera_RotateDown;
+        public InputAction @Zoom => m_Wrapper.m_Camera_Zoom;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -438,24 +542,36 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_CameraActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_CameraActionsCallbackInterfaces.Add(instance);
-            @Forward.started += instance.OnForward;
-            @Forward.performed += instance.OnForward;
-            @Forward.canceled += instance.OnForward;
-            @Backward.started += instance.OnBackward;
-            @Backward.performed += instance.OnBackward;
-            @Backward.canceled += instance.OnBackward;
-            @RotateLeft.started += instance.OnRotateLeft;
-            @RotateLeft.performed += instance.OnRotateLeft;
-            @RotateLeft.canceled += instance.OnRotateLeft;
-            @RotateRight.started += instance.OnRotateRight;
-            @RotateRight.performed += instance.OnRotateRight;
-            @RotateRight.canceled += instance.OnRotateRight;
+            @MoveForward.started += instance.OnMoveForward;
+            @MoveForward.performed += instance.OnMoveForward;
+            @MoveForward.canceled += instance.OnMoveForward;
+            @MoveBackward.started += instance.OnMoveBackward;
+            @MoveBackward.performed += instance.OnMoveBackward;
+            @MoveBackward.canceled += instance.OnMoveBackward;
+            @MoveLeft.started += instance.OnMoveLeft;
+            @MoveLeft.performed += instance.OnMoveLeft;
+            @MoveLeft.canceled += instance.OnMoveLeft;
+            @MoveRight.started += instance.OnMoveRight;
+            @MoveRight.performed += instance.OnMoveRight;
+            @MoveRight.canceled += instance.OnMoveRight;
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
             @RotateUp.started += instance.OnRotateUp;
             @RotateUp.performed += instance.OnRotateUp;
             @RotateUp.canceled += instance.OnRotateUp;
             @RotateDown.started += instance.OnRotateDown;
             @RotateDown.performed += instance.OnRotateDown;
             @RotateDown.canceled += instance.OnRotateDown;
+            @RotateLeft.started += instance.OnRotateLeft;
+            @RotateLeft.performed += instance.OnRotateLeft;
+            @RotateLeft.canceled += instance.OnRotateLeft;
+            @RotateRight.started += instance.OnRotateRight;
+            @RotateRight.performed += instance.OnRotateRight;
+            @RotateRight.canceled += instance.OnRotateRight;
+            @Zoom.started += instance.OnZoom;
+            @Zoom.performed += instance.OnZoom;
+            @Zoom.canceled += instance.OnZoom;
         }
 
         /// <summary>
@@ -467,24 +583,36 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="CameraActions" />
         private void UnregisterCallbacks(ICameraActions instance)
         {
-            @Forward.started -= instance.OnForward;
-            @Forward.performed -= instance.OnForward;
-            @Forward.canceled -= instance.OnForward;
-            @Backward.started -= instance.OnBackward;
-            @Backward.performed -= instance.OnBackward;
-            @Backward.canceled -= instance.OnBackward;
-            @RotateLeft.started -= instance.OnRotateLeft;
-            @RotateLeft.performed -= instance.OnRotateLeft;
-            @RotateLeft.canceled -= instance.OnRotateLeft;
-            @RotateRight.started -= instance.OnRotateRight;
-            @RotateRight.performed -= instance.OnRotateRight;
-            @RotateRight.canceled -= instance.OnRotateRight;
+            @MoveForward.started -= instance.OnMoveForward;
+            @MoveForward.performed -= instance.OnMoveForward;
+            @MoveForward.canceled -= instance.OnMoveForward;
+            @MoveBackward.started -= instance.OnMoveBackward;
+            @MoveBackward.performed -= instance.OnMoveBackward;
+            @MoveBackward.canceled -= instance.OnMoveBackward;
+            @MoveLeft.started -= instance.OnMoveLeft;
+            @MoveLeft.performed -= instance.OnMoveLeft;
+            @MoveLeft.canceled -= instance.OnMoveLeft;
+            @MoveRight.started -= instance.OnMoveRight;
+            @MoveRight.performed -= instance.OnMoveRight;
+            @MoveRight.canceled -= instance.OnMoveRight;
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
             @RotateUp.started -= instance.OnRotateUp;
             @RotateUp.performed -= instance.OnRotateUp;
             @RotateUp.canceled -= instance.OnRotateUp;
             @RotateDown.started -= instance.OnRotateDown;
             @RotateDown.performed -= instance.OnRotateDown;
             @RotateDown.canceled -= instance.OnRotateDown;
+            @RotateLeft.started -= instance.OnRotateLeft;
+            @RotateLeft.performed -= instance.OnRotateLeft;
+            @RotateLeft.canceled -= instance.OnRotateLeft;
+            @RotateRight.started -= instance.OnRotateRight;
+            @RotateRight.performed -= instance.OnRotateRight;
+            @RotateRight.canceled -= instance.OnRotateRight;
+            @Zoom.started -= instance.OnZoom;
+            @Zoom.performed -= instance.OnZoom;
+            @Zoom.canceled -= instance.OnZoom;
         }
 
         /// <summary>
@@ -633,19 +761,54 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
     public interface ICameraActions
     {
         /// <summary>
-        /// Method invoked when associated input action "Forward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Move Forward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnForward(InputAction.CallbackContext context);
+        void OnMoveForward(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Backward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Move Backward" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnBackward(InputAction.CallbackContext context);
+        void OnMoveBackward(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Move Left" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveLeft(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Move Right" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMoveRight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMove(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Rotate Up" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotateUp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Rotate Down" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotateDown(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Rotate Left" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -661,19 +824,12 @@ public partial class @GameInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRotateRight(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Rotate Up" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Zoom" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotateUp(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "Rotate Down" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnRotateDown(InputAction.CallbackContext context);
+        void OnZoom(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Selection" which allows adding and removing callbacks.

@@ -7,7 +7,7 @@
             "id": "5906cac9-e446-46fc-800d-ee6b1c508108",
             "actions": [
                 {
-                    "name": "Forward",
+                    "name": "Move Forward",
                     "type": "Button",
                     "id": "e80e1eb0-dddf-40cc-9b58-9fa2f5cedff3",
                     "expectedControlType": "",
@@ -16,7 +16,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Backward",
+                    "name": "Move Backward",
                     "type": "Button",
                     "id": "ce46ce52-0ad3-4b3c-849a-fd5cafcec04a",
                     "expectedControlType": "",
@@ -25,7 +25,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Rotate Left",
+                    "name": "Move Left",
                     "type": "Button",
                     "id": "e071ced0-36c6-4de5-ad9a-19ac053cda1b",
                     "expectedControlType": "",
@@ -34,7 +34,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Rotate Right",
+                    "name": "Move Right",
                     "type": "Button",
                     "id": "f7ccf29f-ced6-483d-a9e6-2d7d8ab61aba",
                     "expectedControlType": "",
@@ -43,9 +43,18 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Move",
+                    "type": "Button",
+                    "id": "59e15254-348f-463e-ad4b-92e1107a602a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Rotate Up",
                     "type": "Button",
-                    "id": "4d8ded87-2fe5-4ab6-b4c6-a6be227ca2b4",
+                    "id": "3c2b0ec1-f805-4b0b-9070-f2fbe3126d29",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -54,11 +63,38 @@
                 {
                     "name": "Rotate Down",
                     "type": "Button",
-                    "id": "ead8ba64-2c42-4ae4-a4cc-be3805d9bad2",
+                    "id": "f41f5a7d-61fa-4f09-bd09-cfc6ceb418ca",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate Left",
+                    "type": "Button",
+                    "id": "0e977423-2d13-4033-b48e-26cab2476052",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Rotate Right",
+                    "type": "Button",
+                    "id": "b491dbd3-ceaa-4ec2-9b74-f4c05f478a66",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "62bd72ac-be03-4373-9dce-fbad5bc70ef3",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -69,7 +105,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Forward",
+                    "action": "Move Forward",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -80,7 +116,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Backward",
+                    "action": "Move Backward",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -91,7 +127,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate Left",
+                    "action": "Move Left",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -102,13 +138,24 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Rotate Right",
+                    "action": "Move Right",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "c02965b7-f4e5-4e67-88e1-d54399828d85",
+                    "id": "73d20c43-c5c8-4678-8027-462cb97ba32e",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44d07111-09d2-43bb-9c60-ad5bc0470aaf",
                     "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
@@ -119,12 +166,45 @@
                 },
                 {
                     "name": "",
-                    "id": "71af5446-dab5-4df5-9587-715b63dd81ce",
+                    "id": "e07d8b8b-4d01-4325-acb7-d8a889392f41",
                     "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Rotate Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "947b7690-2669-47b7-9d2c-8ba1dd63e145",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "498b958c-40a5-478e-a156-9074b0af2a5a",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rotate Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c4fe7971-705e-49da-95eb-edf8afeff046",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

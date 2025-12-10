@@ -1,124 +1,125 @@
-using System.Collections;
-using Unity.VisualScripting;
-using UnityEditor.Analytics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
     [SerializeField] private float movementSpeed;
-    [SerializeField] private float maxDistance;
-    [SerializeField] private float minDistance;
-
+    [SerializeField] private float zoomSpeed;
     [SerializeField] private float rotationSpeed;
 
+    [SerializeField] private float minDistance;
+    [SerializeField] private float maxDistance;
+
     [SerializeField] private TilesHandler tilesHandler;
-
-    public Transform focusPoint;
-    private Coroutine movementCoroutine;
-    private bool coroutineEnded = true;
-    private Vector3 targetDestination;
-
  
     private InputActionMap cameraMap;
-    private InputAction cameraForward;
-    private InputAction cameraBackward;
-    private InputAction cameraRotateLeft;
-    private InputAction cameraRotateRight;
+    private InputAction cameraMoveForward;
+    private InputAction cameraMoveBackward;
+    private InputAction cameraMoveLeft;
+    private InputAction cameraMoveRight;
+
+    private InputAction cameraZoom;
+
     private InputAction cameraRotateUp;
     private InputAction cameraRotateDown;
+    private InputAction cameraRotateLeft;
+    private InputAction cameraRotateRight;
+    private InputAction cameraMove;
+
+    private Vector2 scrollDelta;
+
+    private float xRotation;
+    private float yRotation;
+
+    Vector3 moveStartPosition;
 
     void Start()
     {
         cameraMap = InputSystem.actions.FindActionMap("Camera");
-        cameraForward = cameraMap.FindAction("Forward");
-        cameraBackward = cameraMap.FindAction("Backward");
-        cameraRotateLeft = cameraMap.FindAction("Rotate Left");
-        cameraRotateRight = cameraMap.FindAction("Rotate Right");
+        cameraMoveForward = cameraMap.FindAction("Move Forward");
+        cameraMoveBackward = cameraMap.FindAction("Move Backward");
+        cameraMoveLeft = cameraMap.FindAction("Move Left");
+        cameraMoveRight = cameraMap.FindAction("Move Right");
+
+        cameraZoom = cameraMap.FindAction("Zoom");
+
         cameraRotateUp = cameraMap.FindAction("Rotate Up");
         cameraRotateDown = cameraMap.FindAction("Rotate Down");
+        cameraRotateLeft = cameraMap.FindAction("Rotate Left");
+        cameraRotateRight = cameraMap.FindAction("Rotate Right");
+        cameraMove = cameraMap.FindAction("Move");
+        xRotation = transform.rotation.eulerAngles.x;
+        yRotation = transform.rotation.eulerAngles.y;
+
+        cameraMove.started += setMoveStartPosition;
+        cameraZoom.performed += ctx => { scrollDelta = ctx.ReadValue<Vector2>(); };
+    }
+
+    private void setMoveStartPosition(InputAction.CallbackContext c)
+    {
+        moveStartPosition = Global.selectionHandler.getPositionOnPlaneOnMouse();
     }
 
     void Update()
     {
-        if (cameraForward.IsPressed() && Vector3.Distance(transform.position, focusPoint.position) > minDistance)
+
+        float MoveSpeedModifier = transform.position.y/minDistance;
+        if (cameraMoveForward.IsPressed())
         {
-            transform.position += (focusPoint.position - transform.position).normalized * movementSpeed * Time.deltaTime;
+            transform.position += Global.ZeroYVector3(Camera.main.transform.forward).normalized * movementSpeed * MoveSpeedModifier * Time.deltaTime;
         }
-        if (cameraBackward.IsPressed() && Vector3.Distance(transform.position, focusPoint.position) < maxDistance)
+        if (cameraMoveBackward.IsPressed())
         {
-            transform.position += (focusPoint.position - transform.position).normalized * movementSpeed * Time.deltaTime * -1;
+            transform.position += Global.ZeroYVector3(Camera.main.transform.forward).normalized * movementSpeed * MoveSpeedModifier * Time.deltaTime * -1;
         }
 
-        if (cameraRotateLeft.IsPressed())
+        if (cameraMoveLeft.IsPressed())
         {
-            transform.RotateAround(focusPoint.position, Vector3.up, rotationSpeed * Time.deltaTime);
+            transform.position += Global.ZeroYVector3(Camera.main.transform.right).normalized * movementSpeed * MoveSpeedModifier * Time.deltaTime * -1;
         }
-        if (cameraRotateRight.IsPressed())
+        if (cameraMoveRight.IsPressed())
         {
-            transform.RotateAround(focusPoint.position, Vector3.up, rotationSpeed * Time.deltaTime * -1);
+            transform.position += Global.ZeroYVector3(Camera.main.transform.right).normalized * movementSpeed * MoveSpeedModifier * Time.deltaTime;
         }
+
+        transform.position += transform.forward * scrollDelta.y * zoomSpeed * Time.deltaTime;
+        if (transform.position.y < minDistance)
+        {
+            transform.position += transform.forward * ((minDistance - transform.position.y) / transform.forward.y);
+        }
+        if (transform.position.y > maxDistance)
+        {
+            transform.position += transform.forward * ((maxDistance - transform.position.y) / transform.forward.y);
+        }
+
+        scrollDelta = Vector2.zero;
 
         if (cameraRotateUp.IsPressed())
         {
-            transform.Rotate(new Vector3(rotationSpeed * Time.deltaTime * -1, 0 ,0));
+            xRotation += rotationSpeed * Time.deltaTime * -1;
         }
         if (cameraRotateDown.IsPressed())
         {
-            transform.Rotate(new Vector3(rotationSpeed * Time.deltaTime, 0, 0));
+            xRotation += rotationSpeed * Time.deltaTime;
         }
-
-        Vector3 angles = transform.rotation.eulerAngles;
-        float x = angles.x;
-        x = Mathf.Clamp(x, 45f, 75f);
-        
-        transform.rotation = Quaternion.Euler(x, angles.y, angles.z);
-
-    }
-
-    public void UpdateFocusPoint(Transform newFocusPoint)
-    {
-        if (focusPoint == null)
+        if (cameraRotateLeft.IsPressed())
         {
-            focusPoint = tilesHandler.centerTile.transform;
+            yRotation += rotationSpeed * Time.deltaTime * 2f * -1;
         }
-
-        Vector3 deltaCamPosition = transform.position - focusPoint.position;
-
-        if (!coroutineEnded)
+        if (cameraRotateRight.IsPressed())
         {
-            deltaCamPosition = targetDestination - focusPoint.position;
+            yRotation += rotationSpeed * Time.deltaTime * 2f;
         }
 
-        
-        focusPoint = newFocusPoint;
+        xRotation = Mathf.Clamp(xRotation, 45f, 89f);
 
-        if (movementCoroutine != null)
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
+
+        if (cameraMove.IsPressed())
         {
-            StopCoroutine(movementCoroutine);
+            Vector3 moveCurrentPosition = Global.selectionHandler.getPositionOnPlaneOnMouse();
+            Vector3 delta = moveStartPosition - moveCurrentPosition;
+            transform.position += delta;
         }
-
-        targetDestination = newFocusPoint.position + deltaCamPosition;
-        movementCoroutine = StartCoroutine(animateCameraMovement(newFocusPoint.position + deltaCamPosition, newFocusPoint));
-        coroutineEnded = false;
-    }
-
-    private IEnumerator animateCameraMovement(Vector3 destination, Transform target)
-    {
-        float duration = .4f;
-        float time = 0f;
-
-        Vector3 source = transform.position;
-        Vector3 targetPos = target.position;
-
-        while (time < duration)
-        {
-            transform.position = Vector3.Lerp(source, destination, time / duration);
-            time += Time.deltaTime;
-            yield return null;
-        }
-        transform.position = destination;
-        //transform.LookAt(targetPos);
-        coroutineEnded = true;
     }
 }

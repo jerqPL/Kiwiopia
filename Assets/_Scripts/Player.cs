@@ -87,7 +87,7 @@ public class Player : NetworkBehaviour
     private void InitializePlayerClientRpc(int tileIndex, ClientRpcParams clientRpcParams = default)
     {
         Tile tile = Global.tilesHandler.GetTileAt(tileIndex);
-        Global.cameraMovement.UpdateFocusPoint(tile.transform);
+        //Global.cameraMovement.UpdateFocusPoint(tile.transform); - DEPRICATED
         UpdateVisibleTiles();
     }
 

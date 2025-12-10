@@ -71,7 +71,7 @@ public class SelectionHandler : MonoBehaviour
 
         uIHandler.ClickedTile(tile, howManyTimesClickedSame);
 
-        cameraMovement.UpdateFocusPoint(tile.transform);
+        //cameraMovement.UpdateFocusPoint(tile.transform); - DEPRICATED
         lastClickedTile = tile;   
     }
 
@@ -90,13 +90,24 @@ public class SelectionHandler : MonoBehaviour
             {
                 return tile;
             }
-            Unit unit = hit.collider.GetComponent<Unit>();
-            if (unit != null)
-            {
-                return unit.tile;
-            }
         }
         return null;
+    }
+
+    public Vector3 getPositionOnPlaneOnMouse()
+    {
+        Vector2 mousePos = mousePosition.ReadValue<Vector2>();
+        Ray ray = mainCamera.ScreenPointToRay(mousePos);
+
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+
+        if (groundPlane.Raycast(ray, out float distance))
+        {
+            Vector3 hitPoint = ray.GetPoint(distance);
+            return hitPoint;
+        }
+
+        return Vector3.zero;
     }
 
     void Update()
