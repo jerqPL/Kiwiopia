@@ -11,6 +11,8 @@ public class UnitsHandler : NetworkBehaviour
     private List<Unit> units = new List<Unit>();
     private GameObject tmpLineRenderer;
     private Tile lastHoveredTile;
+
+    private List<Tile> path;
     
     void Update()
     {
@@ -23,13 +25,15 @@ public class UnitsHandler : NetworkBehaviour
                 {
                     return;
                 }
+                
+                path = Global.tilesHandler.shortestPath(Global.selectionHandler.lastClickedTile, target);
+                if (path == null) return;
 
                 if (tmpLineRenderer != null)
                 {
                     Destroy(tmpLineRenderer);
                 }
-                
-                List<Tile> path = Global.tilesHandler.shortestPath(Global.selectionHandler.lastClickedTile, target);
+
                 LineRenderer newLineRenderer = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
                 newLineRenderer.numCornerVertices = 8;
                 newLineRenderer.numCapVertices = 8;
@@ -126,5 +130,10 @@ public class UnitsHandler : NetworkBehaviour
         {
             unit.AttackEnemies();
         }
+    }
+
+    public void RequesUnitMovement(int unitIndex)
+    {
+        GetUnitAt(unitIndex).RequestMove(path);
     }
 }

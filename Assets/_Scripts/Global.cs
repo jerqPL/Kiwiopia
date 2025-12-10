@@ -168,4 +168,13 @@ public class Global : MonoBehaviour
     }
 
     public static Vector3 AddToYVector3(Vector3 vector, float value) { return new Vector3(vector.x, vector.y + value, vector.z); }
+
+    public static void Shuffle<T>(IList<T> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int rnd = Random.Range(0, i + 1);
+            (list[i], list[rnd]) = (list[rnd], list[i]);
+        }
+    }
 }

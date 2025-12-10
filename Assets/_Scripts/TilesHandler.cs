@@ -134,8 +134,9 @@ public class TilesHandler : MonoBehaviour
                 break; // znaleziono cel
             }
 
-
-            foreach (Tile neighbor in current.neighbors)
+            List<Tile> neighbors = new List<Tile>(current.neighbors);
+            Global.Shuffle(neighbors);
+            foreach (Tile neighbor in neighbors)
             {
                 if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb))
                 {

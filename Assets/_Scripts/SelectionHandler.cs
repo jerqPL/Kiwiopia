@@ -61,7 +61,8 @@ public class SelectionHandler : MonoBehaviour
                     uIHandler.ClickedTile(lastClickedTile, 0);
                     return;
                 }
-                lastClickedTile.unit.RequestMove(tilesHandler.shortestPath(lastClickedTile, tile));
+                Global.unitsHandler.RequesUnitMovement(Global.unitsHandler.GetIndexOf(lastClickedTile.unit));
+                //lastClickedTile.unit.RequestMove(tilesHandler.shortestPath(lastClickedTile, tile));
                 state = 0;
                 uIHandler.ClickedTile(lastClickedTile, 0);
                 return;
