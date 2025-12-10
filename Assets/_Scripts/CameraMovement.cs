@@ -1,8 +1,12 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CameraMovement : MonoBehaviour
 {
+    private Vector3 startingPosition;
+    private Quaternion startingRotation;
+
     [SerializeField] private float movementSpeed;
     [SerializeField] private float zoomSpeed;
     [SerializeField] private float rotationSpeed;
@@ -13,6 +17,8 @@ public class CameraMovement : MonoBehaviour
     [SerializeField] private TilesHandler tilesHandler;
  
     private InputActionMap cameraMap;
+
+    private InputAction cameraReset;
     private InputAction cameraMoveForward;
     private InputAction cameraMoveBackward;
     private InputAction cameraMoveLeft;
@@ -25,7 +31,7 @@ public class CameraMovement : MonoBehaviour
     private InputAction cameraRotateLeft;
     private InputAction cameraRotateRight;
     private InputAction cameraMove;
-
+    
     private Vector2 scrollDelta;
 
     private float xRotation;
@@ -33,9 +39,17 @@ public class CameraMovement : MonoBehaviour
 
     Vector3 moveStartPosition;
 
+    private Coroutine cameraMovement;
+
     void Start()
     {
+        startingPosition = transform.position;
+        startingRotation = transform.rotation;
+
         cameraMap = InputSystem.actions.FindActionMap("Camera");
+
+        cameraReset = cameraMap.FindAction("Reset");
+
         cameraMoveForward = cameraMap.FindAction("Move Forward");
         cameraMoveBackward = cameraMap.FindAction("Move Backward");
         cameraMoveLeft = cameraMap.FindAction("Move Left");
@@ -52,7 +66,11 @@ public class CameraMovement : MonoBehaviour
         yRotation = transform.rotation.eulerAngles.y;
 
         cameraMove.started += setMoveStartPosition;
-        cameraZoom.performed += ctx => { scrollDelta = ctx.ReadValue<Vector2>(); };
+        cameraZoom.performed += ctx => scrollDelta = ctx.ReadValue<Vector2>();
+        cameraReset.started += ctx => { transform.position = startingPosition;
+                                        transform.rotation = startingRotation;
+                                        xRotation = transform.rotation.eulerAngles.x;
+                                        yRotation = transform.rotation.eulerAngles.y; };
     }
 
     private void setMoveStartPosition(InputAction.CallbackContext c)
@@ -121,5 +139,29 @@ public class CameraMovement : MonoBehaviour
             Vector3 delta = moveStartPosition - moveCurrentPosition;
             transform.position += delta;
         }
+    }
+
+    public void focousOnTile(Tile tile)
+    {
+        if (cameraMovement != null)
+        {
+            StopCoroutine(cameraMovement);
+        }
+        cameraMovement = StartCoroutine(MovementAnimation(tile.transform.position, 2f));
+    }
+
+    IEnumerator MovementAnimation(Vector3 position, float duration)
+    {
+        Vector3 middleOnPlane = Global.selectionHandler.getPositionOnPlaneOnMiddle();
+        Vector3 delta = position - middleOnPlane;
+        Vector3 startingPos = transform.position;
+        float time = 0f;
+        while (time < duration)
+        {
+            yield return null;
+            time += Time.deltaTime;
+            transform.position = startingPos + Vector3.Lerp(Vector3.zero, delta, time/duration);
+        }
+        transform.position = startingPos + delta;
     }
 }

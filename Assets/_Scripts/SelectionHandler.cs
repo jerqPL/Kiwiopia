@@ -110,6 +110,22 @@ public class SelectionHandler : MonoBehaviour
         return Vector3.zero;
     }
 
+    public Vector3 getPositionOnPlaneOnMiddle()
+    {
+        // ray from the center of the camera instead of mouse
+        Vector2 center = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Ray ray = mainCamera.ScreenPointToRay(center);
+
+        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+
+        if (groundPlane.Raycast(ray, out float distance))
+        {
+            return ray.GetPoint(distance);
+        }
+
+        return Vector3.zero;
+    }
+
     void Update()
     {
         if (clicked)
