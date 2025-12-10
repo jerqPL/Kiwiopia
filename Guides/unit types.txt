@@ -1,0 +1,14 @@
+spearman
+swordman
+shieldbearer
+
+archer
+crossbowman
+
+light cavalry
+mounted archer
+lancer
+
+catapult
+
+medic
