@@ -108,6 +108,7 @@ public class Unit : NetworkBehaviour
                 part.GetComponent<Renderer>().material.color = Global.localPlayerColor;
             }
         }
+        
         tile.SetUnit(this);
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;

@@ -7,6 +7,7 @@ public class UnitType : ScriptableObject
     public string description;
 
     public float recruitTime;
+    public int cost;
 
     public int health;
     public int range;
@@ -17,7 +18,6 @@ public class UnitType : ScriptableObject
     public float speed;
     public bool canClimb;
 
-    public int cost;
     public float timePerCoin;
 
     public int scoutDistance;
