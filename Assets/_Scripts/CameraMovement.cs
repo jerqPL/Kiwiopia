@@ -147,7 +147,7 @@ public class CameraMovement : MonoBehaviour
         {
             StopCoroutine(cameraMovement);
         }
-        cameraMovement = StartCoroutine(MovementAnimation(tile.transform.position, 2f));
+        cameraMovement = StartCoroutine(MovementAnimation(tile.transform.position, 0.5f));
     }
 
     IEnumerator MovementAnimation(Vector3 position, float duration)

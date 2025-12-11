@@ -3,20 +3,52 @@ using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine.UI;
 
 public class UIHandler : NetworkBehaviour
 {
-    [SerializeField] private RectTransform tileMenu;
-    [SerializeField] private RectTransform cityMenu;
-    [SerializeField] private RectTransform cityMenuUnits;
-
-    [SerializeField] private RectTransform unitMenu;
-
-
+    [Header("Resources UI")]
     [SerializeField] private TMP_Text moneyText;
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text stoneText;
 
+    [Header("City UI")]
+    [SerializeField] private TMP_Text cityTier;
+    [SerializeField] private Image cityOwner;
+    [SerializeField] private TMP_Text cityMoneyYield;
+    [SerializeField] private TMP_Text cityWoodYield;
+    [SerializeField] private TMP_Text cityStoneYield;
+    [SerializeField] private RectTransform recruitmentQueueLayoutGroup;
+    [SerializeField] private List<RectTransform> unitPrefabs;
+    private List<RectTransform> unitsInQueue;
+
+    [Header("Tile UI")]
+    [SerializeField] private TMP_Text tileType;
+    [SerializeField] private Image tileOwner;
+    [SerializeField] private TMP_Text tileMoneyYield;
+    [SerializeField] private TMP_Text tileWoodYield;
+    [SerializeField] private TMP_Text tileStoneYield;
+
+    [Header("Unit UI")]
+    [SerializeField] private TMP_Text unitType;
+    [SerializeField] private Image unitOwner;
+    [SerializeField] private TMP_Text unitHealth;
+    [SerializeField] private TMP_Text unitAttackCooldown;
+    [SerializeField] private TMP_Text unitRange;
+    [SerializeField] private TMP_Text unitDamage;
+    [SerializeField] private TMP_Text unitResistance;
+    [SerializeField] private TMP_Text unitSpeed;
+    [SerializeField] private TMP_Text unitCanClimb;
+    [SerializeField] private TMP_Text unitUpkeapCost;
+    [SerializeField] private TMP_Text unitScoutDistance;
+    [SerializeField] private TMP_Text unitDescription;
+
+    [Header("Menus")]
+    [SerializeField] private RectTransform tileMenu;
+    [SerializeField] private RectTransform cityMenu;
+    [SerializeField] private RectTransform unitMenu;
+
+    [Header("Endgame Screens")]
     [SerializeField] private RectTransform wonScreen;
     [SerializeField] private RectTransform lostScreen;
 
@@ -40,8 +72,6 @@ public class UIHandler : NetworkBehaviour
 
     [SerializeField] private RectTransform uIPlayers;
     [SerializeField] private GameObject uiPlayerPrefab;
-
-    private List<KeyValuePair<int, RectTransform>> menus = new List<KeyValuePair<int, RectTransform>>();
 
     private Unit clickedUnit;
 
@@ -82,8 +112,10 @@ public class UIHandler : NetworkBehaviour
 
     private void Start()
     {
-        DisableAll();
+        DisableAllMenus();
         DisableJoinStatus();
+        gameMenu.gameObject.SetActive(true);
+        gameUI.gameObject.SetActive(false);
     }
 
     public void SetErrorText(string text)
@@ -141,62 +173,157 @@ public class UIHandler : NetworkBehaviour
         CreateStatusSuccess.gameObject.SetActive(true);
     }
 
-    public void ClickedTile(Tile tile, int num_of_times)
-    {
-        if (tile.unit != null)
-        {
-            cityMenuUnits.gameObject.SetActive(false);
-            clickedUnit = tile.unit;
-        }
-        else
-        {
-            cityMenuUnits.gameObject.SetActive(true);
-            clickedUnit = null;
-        }
-
-        if (tile == null) return;
-        DisableAll();
-
-        menus.Clear();
-        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
-        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(1 ,tileMenu));
-        if (tile.city != null && tile.city.owner == Global.playerHandler.GetLocalPlayer()) menus.Add(new KeyValuePair<int, RectTransform>(2, cityMenu));
-        if ((tile.unit != null && tile.unit.isDead == false) && tile.unit.owner == Global.playerHandler.GetLocalPlayer() && !tile.unit.isMoving.Value) menus.Add(new KeyValuePair<int, RectTransform>(3, unitMenu));
-
-        ActivateMenu(num_of_times);
-        //Debug.Log($"Clicked tile: {tile.transform.name}, {num_of_times} times");
-    }
-
-    private void DisableAll()
+    private void DisableAllMenus()
     {
         cityMenu.gameObject.SetActive(false);
         unitMenu.gameObject.SetActive(false);
         tileMenu.gameObject.SetActive(false);
     }
-
-    private void ActivateMenu(int num_of_times)
+    public void ClickedTile(Tile tile, int num_of_times)
     {
-        int menu_index = num_of_times % (menus.Count + 1);
-        if (menu_index < menus.Count) {
-            menus[menu_index].Value.gameObject.SetActive(true);
-            Global.selectionHandler.state = menus[menu_index].Key;
+        DisableAllMenus();
+        if (tile != null)
+        {
+            tileMenu.gameObject.SetActive(true);
+            UpdateTileMenu(tile);
+            if (tile.unit != null)
+            {
+                unitMenu.gameObject.SetActive(true);
+                clickedUnit = tile.unit;
+                UpdateUnitMenu(tile.unit);
+            }
+            if (tile.city != null)
+            {
+                cityMenu.gameObject.SetActive(true);
+                UpdateCityMenu(tile.city);
+            }
+        }
+    }
+
+    private void UpdateTileMenu(Tile tile)
+    {
+        if (!tile.localPlayerHasSeen)
+        {
+            tileType.text = "Unknown";
+        }
+        else {
+            if (tile.hasForest && tile.hasMountains)
+            {
+                tileType.text = "Forest Mountains";
+            }
+            else if (tile.hasMountains)
+            {
+                tileType.text = "Mountains";
+            }
+            else if (tile.hasForest)
+            {
+                tileType.text = "Forest";
+            }
+            else
+            {
+                tileType.text = "Field";
+            }
+        }
+
+        if (!tile.localPlayerHasSeen)
+        {
+            tileMoneyYield.text = "?";
+            tileWoodYield.text = "?";
+            tileStoneYield.text = "?";
         }
         else
         {
-            Global.selectionHandler.state = 0;
+            if (tile.hasForest && tile.hasMountains)
+            {
+                tileMoneyYield.text = "0";
+                tileWoodYield.text = ((int)(1f / Global.timePerLogPerForest * 10) / 10f).ToString();
+                tileStoneYield.text = ((int)(1f / Global.timePerStonePerMountain * 10) / 10f).ToString();
+            }
+            else if (tile.hasMountains)
+            {
+                tileMoneyYield.text = "0";
+                tileWoodYield.text = "0";
+                tileStoneYield.text = ((int)(1f / Global.timePerStonePerMountain * 10) / 10f).ToString();
+            }
+            else if (tile.hasForest)
+            {
+                tileMoneyYield.text = "0";
+                tileWoodYield.text = ((int)(1f / Global.timePerLogPerForest * 10) / 10f).ToString();
+                tileStoneYield.text = "0";
+            }
+            else
+            {
+                tileMoneyYield.text = ((int)(1f / Global.timePerCoinPerTile * 10) / 10f).ToString();
+                tileWoodYield.text = "0";
+                tileStoneYield.text = "0";
+            }
         }
+    }
+
+    private void UpdateUnitMenu(Unit unit)
+    {
+
+        unitType.text = unit.unitType.name;
+        //[SerializeField] private Image unitOwner;
+        unitHealth.text = unit.health.Value.ToString() + "/" + unit.unitType.health.ToString();
+        unitAttackCooldown.text = ((int)(unit.attackCooldown * 10)/10f).ToString() + "/" + ((int)(unit.unitType.attackCooldown * 10) / 10f).ToString();
+        unitRange.text = unit.unitType.range.ToString();
+        unitDamage.text = unit.unitType.damage.ToString();
+        unitResistance.text = unit.unitType.resistance.ToString();
+        unitSpeed.text = ((int)(1/unit.unitType.speed * 10)/10f).ToString();
+        unitCanClimb.text = unit.unitType.canClimb ? "yes" : "no";
+        unitUpkeapCost.text = ((int)(1 / unit.unitType.timePerCoin * 10) / 10f).ToString();
+        unitScoutDistance.text = unit.unitType.scoutDistance.ToString();
+        unitDescription.text = unit.unitType.description;
+    }
+
+    private void UpdateCityMenu(City city)
+    {
+        cityTier.text = city.size.Value.ToString();
+        //[SerializeField] private Image cityOwner;
+
+        float moneyYield = 0f;
+        float woodYield = 0f;
+        float stoneYield = 0f;
+
+        foreach(Tile tile in city.cityTiles)
+        {
+            if (tile.hasForest && tile.hasMountains)
+            {
+                woodYield += 1f / Global.timePerLogPerForest;
+                stoneYield += 1f / Global.timePerStonePerMountain;
+            }
+            else if (tile.hasMountains)
+            {
+                stoneYield += 1f / Global.timePerStonePerMountain;
+            }
+            else if (tile.hasForest)
+            {
+                woodYield += 1f / Global.timePerLogPerForest;
+            }
+            else
+            {
+                moneyYield += 1f / Global.timePerCoinPerTile;
+            }
+        }
+
+        cityMoneyYield.text = ((int)(moneyYield * 10) / 10f).ToString();
+        cityWoodYield.text = ((int)(woodYield * 10) / 10f).ToString();
+        cityStoneYield.text = ((int)(stoneYield * 10) / 10f).ToString();
+
     }
 
 
     public void BuildCity()
     {
         Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile));
+        ClickedTile(Global.selectionHandler.lastClickedTile, 0);
     }
 
     public void RecruitUnit(int type)
     {
         Global.unitsHandler.StartRecruitingServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
-        cityMenuUnits.gameObject.SetActive(false);
+        unitMenu.gameObject.SetActive(false);
     }
 
     public void DestroyUnit()
@@ -233,13 +360,23 @@ public class UIHandler : NetworkBehaviour
 
     public void Lost()
     {
-        DisableAll();
+        DisableAllMenus();
         lostScreen.gameObject.SetActive(true);
     }
 
     public void Won()
     {
-        DisableAll();
+        DisableAllMenus();
         wonScreen.gameObject.SetActive(true);
+    }
+
+    public void FocusOnTile()
+    {
+        Global.cameraMovement.focousOnTile(Global.selectionHandler.lastClickedTile);
+    }
+
+    public void MoveUnit()
+    {
+        Global.selectionHandler.state = 3;
     }
 }
