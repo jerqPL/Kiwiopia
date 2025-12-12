@@ -153,8 +153,25 @@ public class CameraMovement : MonoBehaviour
     IEnumerator MovementAnimation(Vector3 position, float duration)
     {
         Vector3 middleOnPlane = Global.selectionHandler.getPositionOnPlaneOnMiddle();
-        Vector3 delta = position - middleOnPlane;
-        Vector3 startingPos = transform.position;
+        Vector3 delta = Global.ZeroYVector3(position) - middleOnPlane;
+
+        Vector3 toAdd = delta;
+        Vector3 added = Vector3.zero;
+
+        float time = 0f;
+        while (time < duration)
+        {
+            Vector3 thisFrameAdded = (Time.deltaTime / duration) * toAdd;
+            transform.position += thisFrameAdded;
+            added += thisFrameAdded;
+
+            time += Time.deltaTime;
+            yield return null;
+        }
+        transform.position += toAdd - added;
+        
+
+        /*Vector3 startingPos = transform.position;
         float time = 0f;
         while (time < duration)
         {
@@ -163,5 +180,6 @@ public class CameraMovement : MonoBehaviour
             transform.position = startingPos + Vector3.Lerp(Vector3.zero, delta, time/duration);
         }
         transform.position = startingPos + delta;
+        */
     }
 }

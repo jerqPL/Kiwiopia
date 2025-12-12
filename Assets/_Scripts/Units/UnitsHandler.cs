@@ -52,7 +52,7 @@ public class UnitsHandler : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    /*[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void StartRecruitingServerRpc(int playerIndex, int tileIndex, int unitType)
     {
         if (Global.tilesHandler.GetTileAt(tileIndex).city.owner == Global.playerHandler.GetPlayerAt(playerIndex))
@@ -63,10 +63,11 @@ public class UnitsHandler : NetworkBehaviour
                 Debug.Log("not enough resources");
                 return;
             }
-            StartRecruitingClientRpc(playerIndex, tileIndex, unitType/*, new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { Global.playerHandler.GetPlayerAt(playerIndex).OwnerClientId } }
-            }*/);
+            StartRecruitingClientRpc(playerIndex, tileIndex, unitType//, new ClientRpcParams
+            //{
+                //Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { Global.playerHandler.GetPlayerAt(playerIndex).OwnerClientId } }
+            //}
+            );
         }
     }
 
@@ -74,6 +75,27 @@ public class UnitsHandler : NetworkBehaviour
     public void StartRecruitingClientRpc(int playerIndex, int tileIndex, int unitType, ClientRpcParams clientRpcParams = default)
     {
         Global.tilesHandler.GetTileAt(tileIndex).city.StartRecruiting(unitType);
+    }*/
+    
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void AddToRecruitmentQueueServerRpc(int playerIndex, int tileIndex, int unitType)
+    {
+        City city = Global.tilesHandler.GetTileAt(tileIndex).city;
+        if (city != null && city.ownerIndex.Value == playerIndex)
+        {
+            city.recruitmentQueue.Add(unitType);
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RemoveFromRecruitmentQueueServerRpc(int playerIndex, int tileIndex, int index)
+    {
+        City city = Global.tilesHandler.GetTileAt(tileIndex).city;
+        if (city != null && city.ownerIndex.Value == playerIndex)
+        {
+            city.recruitmentQueue.RemoveAt(index);
+        }
     }
 
     public void RecruitUnit(int playerIndex, int tileIndex, int unitType)

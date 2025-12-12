@@ -100,16 +100,15 @@ public class Unit : NetworkBehaviour
         (model = Instantiate(unitType.model, transform.position, Quaternion.identity)).transform.SetParent(transform);
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
-        if (owner == Global.playerHandler.GetLocalPlayer())
+        Color color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(owner));
+        List<GameObject> unitParts = model.GetComponent<UnitParts>().parts;
+        foreach(var part in unitParts)
         {
-            List<GameObject> unitParts = model.GetComponent<UnitParts>().parts;
-            foreach(var part in unitParts)
-            {
-                part.GetComponent<Renderer>().material.color = Global.localPlayerColor;
-            }
+            part.GetComponent<Renderer>().material.color = color;
         }
         
         tile.SetUnit(this);
+        tile.owner = owner;
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
         tileIndex.OnValueChanged += ChangePlayerVisibility;
@@ -272,7 +271,7 @@ public class Unit : NetworkBehaviour
     }
 
     // ServerRPC to move the unit
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner | RpcInvokePermission.Server)]
     public void MoveUnitServerRpc(int[] tileIndices)
     {
         if (isDead) return;
@@ -309,9 +308,6 @@ public class Unit : NetworkBehaviour
         progressLine.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
             progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
-
-        transform.parent = null;
-        tile.SetUnit(null);
 
         float moveTime = 1f;
 
@@ -418,5 +414,24 @@ public class Unit : NetworkBehaviour
     private void MoveTo(Vector3 position)
     {
         transform.position = Global.ZeroYVector3(position);
+    }
+
+    public void MoveToEmptyTile(int playerIndex)
+    {
+        if (!IsServer) return;
+        if (playerIndex != ownerIndex.Value) return;
+        if (isMoving.Value) return;
+        List<Tile> neighbourTiles = tile.neighbors;
+        Global.Shuffle(neighbourTiles);
+        foreach(Tile neighbour in neighbourTiles)
+        {
+            if (neighbour.unit == null && neighbour.underCity.owner == owner)
+            {
+                int[] tileIndices = {Global.tilesHandler.GetIndexOf(tile), Global.tilesHandler.GetIndexOf(neighbour) };
+                MoveUnitServerRpc(tileIndices);
+                return;
+            }
+        }
+        return;
     }
 }

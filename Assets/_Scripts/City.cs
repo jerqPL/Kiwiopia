@@ -3,6 +3,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEditor;
+using Unity.VisualScripting;
 
 public class City : NetworkBehaviour
 {
@@ -37,6 +38,10 @@ public class City : NetworkBehaviour
 
     private LineRenderer cityBorder;
 
+    public NetworkList<int> recruitmentQueue = new NetworkList<int>(default,
+                                                   NetworkVariableReadPermission.Everyone,
+                                                   NetworkVariableWritePermission.Server);
+
     public override void OnNetworkSpawn()
     {
         transform.position = tile.transform.position;
@@ -47,10 +52,15 @@ public class City : NetworkBehaviour
         Global.cityHandler.cities.Add(this);
         
         ownerIndex.OnValueChanged += ChangeOwnership;
+        recruitmentQueue.OnListChanged += ctx => { Debug.Log("req list changed"); if (tile == Global.selectionHandler.lastClickedTile) Global.uIHandler.UpdateCityMenu(this); };
     }
 
     private void ChangeOwnership(int prev, int curr)
     {
+        if (IsServer)
+        {
+            this.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.GetPlayerAt(curr).OwnerClientId);
+        }
         Global.playerHandler.GetPlayerAt(prev).citys.Remove(this);
         Global.playerHandler.GetPlayerAt(curr).citys.Add(this);
         foreach(Tile tile in cityTiles)
@@ -77,10 +87,19 @@ public class City : NetworkBehaviour
 
     private void Update()
     {
+        PullRecruitmentQueue();
         if (isRecruiting) RecruitingProgress();
         if (isBeingCaptured.Value) CapturingProcess();
         if (!IsServer) return;
         SendResourcesToPlayer();
+    }
+
+    private void PullRecruitmentQueue()
+    {
+        if (!isRecruiting && recruitmentQueue.Count > 0)
+        {
+            StartRecruiting(recruitmentQueue[0]);
+        }
     }
 
     private void CapturingProcess()
@@ -344,18 +363,29 @@ public class City : NetworkBehaviour
     {
         recruitTimeLeft -= Time.deltaTime;
         recruitProgressBar.value = Mathf.Max((Global.unitTypes[recruitedUnitType].recruitTime - recruitTimeLeft) / Global.unitTypes[recruitedUnitType].recruitTime, 0);
-        if (recruitTimeLeft <= 0 && tile.unit == null)
+        if (recruitTimeLeft <= 0)
         {
-            isRecruiting = false;
-            recruitProgressBar.gameObject.SetActive(false);
-            if (IsServer)
+            if (tile.unit == null)
             {
-                Global.unitsHandler.RecruitUnit(ownerIndex.Value, tileIndex.Value, recruitedUnitType);
+                isRecruiting = false;
+                recruitProgressBar.gameObject.SetActive(false);
+                if (IsServer)
+                {
+                    Global.unitsHandler.RecruitUnit(ownerIndex.Value, tileIndex.Value, recruitedUnitType);
+                    recruitmentQueue.RemoveAt(0);
+                }
+            }
+            else
+            {
+                if (IsServer)
+                {
+                    tile.unit.MoveToEmptyTile(ownerIndex.Value);
+                }
             }
         }
     }
 
-    public void StartRecruiting(int unitType)
+    private void StartRecruiting(int unitType)
     {
         isRecruiting = true;
         recruitedUnitType = unitType;
@@ -376,5 +406,10 @@ public class City : NetworkBehaviour
         Quaternion localRot = Quaternion.Euler(camY + 90f, 0f, 0f);
 
         recruitProgressBar.transform.localRotation = localRot;
+    }
+
+    public void AddToRecruitmentQueue(int index)
+    {
+        recruitmentQueue.Add(index);
     }
 }

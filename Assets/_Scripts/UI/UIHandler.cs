@@ -20,11 +20,12 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private TMP_Text cityStoneYield;
     [SerializeField] private RectTransform recruitmentQueueLayoutGroup;
     [SerializeField] private List<RectTransform> unitPrefabs;
-    private List<RectTransform> unitsInQueue;
+    private List<RectTransform> unitsInQueue = new List<RectTransform>();
 
     [Header("Tile UI")]
     [SerializeField] private TMP_Text tileType;
     [SerializeField] private Image tileOwner;
+    [SerializeField] private TMP_Text unknownTileOwner;
     [SerializeField] private TMP_Text tileMoneyYield;
     [SerializeField] private TMP_Text tileWoodYield;
     [SerializeField] private TMP_Text tileStoneYield;
@@ -258,13 +259,25 @@ public class UIHandler : NetworkBehaviour
                 tileStoneYield.text = "0";
             }
         }
+
+        if (tile.owner == null)
+        {
+            tileOwner.gameObject.SetActive(false);
+            unknownTileOwner.gameObject.SetActive(true);
+        }
+        else
+        {
+            tileOwner.gameObject.SetActive(true);
+            unknownTileOwner.gameObject.SetActive(false);
+            tileOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(tile.owner));
+        }  
     }
 
     private void UpdateUnitMenu(Unit unit)
     {
 
         unitType.text = unit.unitType.name;
-        //[SerializeField] private Image unitOwner;
+        unitOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(unit.owner));
         unitHealth.text = unit.health.Value.ToString() + "/" + unit.unitType.health.ToString();
         unitAttackCooldown.text = ((int)(unit.attackCooldown * 10)/10f).ToString() + "/" + ((int)(unit.unitType.attackCooldown * 10) / 10f).ToString();
         unitRange.text = unit.unitType.range.ToString();
@@ -277,10 +290,10 @@ public class UIHandler : NetworkBehaviour
         unitDescription.text = unit.unitType.description;
     }
 
-    private void UpdateCityMenu(City city)
+    public void UpdateCityMenu(City city)
     {
-        cityTier.text = city.size.Value.ToString();
-        //[SerializeField] private Image cityOwner;
+        cityTier.text = "Tier: " + city.size.Value.ToString();
+        cityOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(city.owner));
 
         float moneyYield = 0f;
         float woodYield = 0f;
@@ -311,19 +324,56 @@ public class UIHandler : NetworkBehaviour
         cityWoodYield.text = ((int)(woodYield * 10) / 10f).ToString();
         cityStoneYield.text = ((int)(stoneYield * 10) / 10f).ToString();
 
+        foreach(RectTransform unitQ in unitsInQueue)
+        {
+            Destroy(unitQ.gameObject);
+        }
+        unitsInQueue.Clear();
+
+        for(int i = 0; i < city.recruitmentQueue.Count; i++)
+        {
+            int unitQ = city.recruitmentQueue[i];
+            RectTransform newUnitQ = Instantiate(unitPrefabs[unitQ]);
+            newUnitQ.SetParent(recruitmentQueueLayoutGroup);
+            unitsInQueue.Add(newUnitQ);
+
+            int unitIndex = i;
+            newUnitQ.GetComponent<Button>().onClick.AddListener(() => 
+            {   
+                Global.unitsHandler.RemoveFromRecruitmentQueueServerRpc(
+                    Global.playerHandler.GetLocalPlayerIndex(),
+                    Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile),
+                    unitsInQueue.IndexOf(newUnitQ));
+                unitsInQueue.Remove(newUnitQ);
+                Destroy(newUnitQ.gameObject);
+            });
+        }
     }
 
 
     public void BuildCity()
     {
-        Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile));
+        if (clickedUnit != null)
+        {
+            Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), clickedUnit.tileIndex.Value);
+        }
+        else
+        {
+            Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile));
+        }
         ClickedTile(Global.selectionHandler.lastClickedTile, 0);
     }
 
-    public void RecruitUnit(int type)
+    public void AddUnitToQueue(int type)
     {
-        Global.unitsHandler.StartRecruitingServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
-        unitMenu.gameObject.SetActive(false);
+        Global.unitsHandler.AddToRecruitmentQueueServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), type);
+        UpdateCityMenu(Global.selectionHandler.lastClickedTile.city);
+    }
+
+    public void RemoveUnitFromQueue(int index)
+    {
+        Global.unitsHandler.RemoveFromRecruitmentQueueServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile), index);
+        UpdateCityMenu(Global.selectionHandler.lastClickedTile.city);
     }
 
     public void DestroyUnit()

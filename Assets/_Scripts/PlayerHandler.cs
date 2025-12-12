@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerHandler : NetworkBehaviour
 {
     public List<Player> players = new List<Player>();
+    public List<Color> playerColors = new List<Color>();
+    public Color localPlayerColor;
+    public Color defaultColor;
     
     public Player GetPlayerAt(int index)
     {
@@ -36,5 +39,18 @@ public class PlayerHandler : NetworkBehaviour
         {
             player.SpawnPlayer();
         }
+    }
+
+    public Color GetPlayerColor(int index)
+    {
+        if (GetLocalPlayerIndex() == index)
+        {
+            return localPlayerColor;
+        }
+        if (index < playerColors.Count && index >= 0)
+        {
+            return playerColors[index];
+        }
+        return defaultColor;
     }
 }
