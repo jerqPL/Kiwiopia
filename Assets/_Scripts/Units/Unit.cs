@@ -92,11 +92,10 @@ public class Unit : NetworkBehaviour
         DestroyProgressLine();
         tile.SetUnit(null);
         MoveTo(tile.transform.position);
-        Invoke("SetRandomRotation", 8f);
         healthBar.transform.gameObject.SetActive(false);
     }
 
-    private void SetRandomRotation()
+    public void SetRandomRotation()
     {
         transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
     }
@@ -108,7 +107,7 @@ public class Unit : NetworkBehaviour
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         Color color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(owner));
-        List<GameObject> unitParts = model.GetComponent<UnitParts>().parts;
+        List<GameObject> unitParts = model.GetComponent<UnitParts>().armor;
         foreach(var part in unitParts)
         {
             part.GetComponent<Renderer>().material.color = color;
@@ -118,10 +117,29 @@ public class Unit : NetworkBehaviour
         tile.owner = owner;
         health.OnValueChanged += UpdateHealthBar;
         inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
+        inCombat.OnValueChanged += UpdateWeaponTransform;
         tileIndex.OnValueChanged += ChangePlayerVisibility;
         //isMoving.OnValueChanged += AnimateMovement;
         MoveTo(tile.transform.position);
         UpdateTilesInRange();
+        UpdateWeaponTransform(false, false);
+    }
+
+    private void UpdateWeaponTransform(bool prev, bool curr)
+    {
+        UnitParts parts = model.GetComponent<UnitParts>();
+        if (curr)
+        {
+            parts.weapon.transform.SetParent(parts.rightHand.transform);
+            parts.weapon.transform.localPosition = parts.positionOffsetFighting;
+            parts.weapon.transform.localRotation = Quaternion.Euler(parts.rotationOffsetFighting);
+        }else
+        {
+            parts.weapon.transform.SetParent(parts.boneWhileNotFighting.transform);
+            parts.weapon.transform.localPosition = parts.positionOffsetNotFighting;
+            parts.weapon.transform.localRotation = Quaternion.Euler(parts.rotationOffsetNotFighting);
+        }
+        parts.weapon.transform.localScale = Vector3.one * parts.scaleFactor;
     }
 
     private void ChangePlayerVisibility(int prev, int curr)
@@ -139,10 +157,9 @@ public class Unit : NetworkBehaviour
         
         if (inCombat.Value && !isMoving.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);   
         TakeCooldown();
-        if (!IsServer) return;
-        TakeMoney();
-        
         AttackEnemies();
+        if (!IsServer) return;
+        TakeMoney();      
     }
 
     void LateUpdate()
@@ -211,6 +228,7 @@ public class Unit : NetworkBehaviour
             {
                 if (tileInRange.unit != null && tileInRange.unit.owner != owner)
                 {
+                    SetAttackAnimationTrigger();
                     attackCooldown = unitType.attackCooldown;
                     break;
                 }
@@ -225,6 +243,7 @@ public class Unit : NetworkBehaviour
             {
                 if (tileInRange.unit != null && tileInRange.unit.owner != owner)
                 {
+                    SetAttackAnimationTrigger();
                     foundTarget = true;
                     enemyIndex.Value = Global.unitsHandler.GetIndexOf(tileInRange.unit);
                     attackCooldown = unitType.attackCooldown;
@@ -240,6 +259,14 @@ public class Unit : NetworkBehaviour
             {
                 inCombat.Value = false;
             }
+        }
+    }
+
+    private void SetAttackAnimationTrigger()
+    {
+        if (unitType.name == "Spearman")
+        {
+            animator.SetTrigger("spear attack");
         }
     }
 
@@ -444,5 +471,6 @@ public class Unit : NetworkBehaviour
 
         animator.SetBool("isMoving", isMoving.Value);
         animator.SetBool("isDead", isDead);
+        animator.SetBool("inCombat", inCombat.Value);
     }
 }
