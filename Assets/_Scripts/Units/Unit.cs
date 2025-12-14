@@ -139,7 +139,19 @@ public class Unit : NetworkBehaviour
             parts.weapon.transform.localPosition = parts.positionOffsetNotFighting;
             parts.weapon.transform.localRotation = Quaternion.Euler(parts.rotationOffsetNotFighting);
         }
-        parts.weapon.transform.localScale = Vector3.one * parts.scaleFactor;
+
+        Transform weapon = parts.weapon.transform;
+        Transform parent = weapon.parent;
+
+        Vector3 parentScale = parent.lossyScale;
+
+        Vector3 targetWorldScale = Vector3.one * parts.scaleFactor;
+
+        weapon.localScale = new Vector3(
+            targetWorldScale.x / parentScale.x,
+            targetWorldScale.y / parentScale.y,
+            targetWorldScale.z / parentScale.z
+        );
     }
 
     private void ChangePlayerVisibility(int prev, int curr)

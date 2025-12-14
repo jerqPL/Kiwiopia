@@ -15,6 +15,7 @@ MonoBehaviour:
   id: 0
   description: Has a sword
   recruitTime: 8
+  cost: 4
   health: 28
   range: 1
   damage: 7
@@ -22,7 +23,6 @@ MonoBehaviour:
   attackCooldown: 5
   speed: 5
   canClimb: 0
-  cost: 4
   timePerCoin: 1
   scoutDistance: 1
-  model: {fileID: 2993018492089508936, guid: 92317fbdda990b7409fdc32002b6a418, type: 3}
+  model: {fileID: 51745742829502549, guid: 9c2d9b123b18f9a4f829187318a11e56, type: 3}
