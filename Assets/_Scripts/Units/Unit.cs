@@ -5,6 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class Unit : NetworkBehaviour
 {
@@ -41,6 +42,8 @@ public class Unit : NetworkBehaviour
     public NetworkVariable<int> enemyIndex = new NetworkVariable<int>(0);
     public bool isDead = false;
     public float attackCooldown = 0f;
+
+    private Animator animator;
 
     public void DestroyProgressLine()
     {
@@ -89,15 +92,19 @@ public class Unit : NetworkBehaviour
         DestroyProgressLine();
         tile.SetUnit(null);
         MoveTo(tile.transform.position);
-        transform.localScale = Vector3.one * 0.3f;
-        transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), -90f);
+        Invoke("SetRandomRotation", 8f);
         healthBar.transform.gameObject.SetActive(false);
+    }
 
+    private void SetRandomRotation()
+    {
+        transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
     }
 
     public override void OnNetworkSpawn()
     {
         (model = Instantiate(unitType.model, transform.position, Quaternion.identity)).transform.SetParent(transform);
+        animator = model.GetComponent<Animator>();
         Global.unitsHandler.AddUnit(this);
         owner.AddUnit(this);
         Color color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(owner));
@@ -125,15 +132,12 @@ public class Unit : NetworkBehaviour
         }
     }
 
-    private void AnimateMovement(bool prev, bool curr)
-    {
-        model.GetComponent<Animator>().SetBool("isMoving", curr);
-    }
-
     private void Update()
     {
+        SetAnimationVariables();
         if (isDead) return;
-        if (inCombat.Value && !isMoving.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
+        
+        if (inCombat.Value && !isMoving.Value) RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);   
         TakeCooldown();
         if (!IsServer) return;
         TakeMoney();
@@ -186,8 +190,7 @@ public class Unit : NetworkBehaviour
             return;
         }
         Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
-        Quaternion offsetRotation = Quaternion.Euler(0, 90, 0);
-        transform.rotation = rotation * offsetRotation;
+        transform.rotation = rotation;
     }
 
     private void TakeCooldown()
@@ -433,5 +436,13 @@ public class Unit : NetworkBehaviour
             }
         }
         return;
+    }
+
+    private void SetAnimationVariables()
+    {
+        if (animator == null) return;
+
+        animator.SetBool("isMoving", isMoving.Value);
+        animator.SetBool("isDead", isDead);
     }
 }

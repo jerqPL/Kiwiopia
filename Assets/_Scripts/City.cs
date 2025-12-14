@@ -4,6 +4,7 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEditor;
 using Unity.VisualScripting;
+using TMPro;
 
 public class City : NetworkBehaviour
 {
@@ -52,7 +53,18 @@ public class City : NetworkBehaviour
         Global.cityHandler.cities.Add(this);
         
         ownerIndex.OnValueChanged += ChangeOwnership;
-        recruitmentQueue.OnListChanged += ctx => { Debug.Log("req list changed"); if (tile == Global.selectionHandler.lastClickedTile) Global.uIHandler.UpdateCityMenu(this); };
+        recruitmentQueue.OnListChanged += ctx =>
+        {
+            if (tile == Global.selectionHandler.lastClickedTile) Global.uIHandler.UpdateCityMenu(this);
+            if (ctx.Index == 0) StopRecruiting();
+        };
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
+    }
+
+    private void StopRecruiting()
+    {
+        isRecruiting = false;
+        recruitProgressBar.gameObject.SetActive(false);
     }
 
     private void ChangeOwnership(int prev, int curr)
@@ -76,6 +88,7 @@ public class City : NetworkBehaviour
         {
             Global.playerHandler.GetPlayerAt(curr).UpdateVisibleTiles();
         }
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
     }
 
     public void StartCapturing(int unitIndex)
@@ -196,6 +209,7 @@ public class City : NetworkBehaviour
             Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
         }
         CreateBorder();
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
     }
 
 

@@ -15,6 +15,7 @@ MonoBehaviour:
   id: 1
   description: Has a spear
   recruitTime: 5
+  cost: 2
   health: 28
   range: 2
   damage: 4
@@ -22,7 +23,6 @@ MonoBehaviour:
   attackCooldown: 5
   speed: 1
   canClimb: 1
-  cost: 2
   timePerCoin: 2
   scoutDistance: 1
-  model: {fileID: 580017324739457603, guid: 868539e8904cbd844970f44f48e02e98, type: 3}
+  model: {fileID: 51745742829502549, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}

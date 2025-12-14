@@ -361,7 +361,6 @@ public class UIHandler : NetworkBehaviour
         {
             Global.cityHandler.BuildCityServerRpc(Global.playerHandler.GetLocalPlayerIndex(), Global.tilesHandler.GetIndexOf(Global.selectionHandler.lastClickedTile));
         }
-        ClickedTile(Global.selectionHandler.lastClickedTile, 0);
     }
 
     public void AddUnitToQueue(int type)
