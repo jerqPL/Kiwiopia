@@ -84,6 +84,7 @@ public class UnitsHandler : NetworkBehaviour
         City city = Global.tilesHandler.GetTileAt(tileIndex).city;
         if (city != null && city.ownerIndex.Value == playerIndex)
         {
+            if (Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
             city.recruitmentQueue.Add(unitType);
         }
     }
@@ -94,6 +95,7 @@ public class UnitsHandler : NetworkBehaviour
         City city = Global.tilesHandler.GetTileAt(tileIndex).city;
         if (city != null && city.ownerIndex.Value == playerIndex)
         {
+            Global.playerHandler.GetPlayerAt(playerIndex).RecieveResources(Global.unitTypes[city.recruitmentQueue[index]].cost, 0, 0);
             city.recruitmentQueue.RemoveAt(index);
         }
     }
@@ -156,6 +158,7 @@ public class UnitsHandler : NetworkBehaviour
 
     public void RequesUnitMovement(int unitIndex)
     {
-        GetUnitAt(unitIndex).RequestMove(path);
+        if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
+            GetUnitAt(unitIndex).RequestMove(path);
     }
 }

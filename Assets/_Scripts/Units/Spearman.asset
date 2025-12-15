@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790345ce90f41e345938bc39473a25e3, type: 3}
   m_Name: Spearman
   m_EditorClassIdentifier: Assembly-CSharp::UnitType
-  id: 1
-  description: Has a spear
-  recruitTime: 5
-  cost: 2
-  health: 28
+  id: 0
+  description: Cheapes unit, bad at everything besides climbing mountains
+  recruitTime: 12
+  cost: 8
+  health: 80
   range: 2
-  damage: 4
-  resistance: 1
+  damage: 12
+  resistance: 2
   attackCooldown: 5
-  speed: 1
+  speed: 0.25
   canClimb: 1
-  timePerCoin: 2
-  scoutDistance: 1
+  timePerCoin: 3
+  scoutDistance: 2
   model: {fileID: 51745742829502549, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}

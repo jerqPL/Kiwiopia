@@ -21,6 +21,7 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform recruitmentQueueLayoutGroup;
     [SerializeField] private List<RectTransform> unitPrefabs;
     private List<RectTransform> unitsInQueue = new List<RectTransform>();
+    [SerializeField] private List<RectTransform> cityVisibleOnlyAsOwner;
 
     [Header("Tile UI")]
     [SerializeField] private TMP_Text tileType;
@@ -29,6 +30,7 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private TMP_Text tileMoneyYield;
     [SerializeField] private TMP_Text tileWoodYield;
     [SerializeField] private TMP_Text tileStoneYield;
+    [SerializeField] private List<RectTransform> tileVisibleOnlyAsOwner;
 
     [Header("Unit UI")]
     [SerializeField] private TMP_Text unitType;
@@ -43,6 +45,9 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private TMP_Text unitUpkeapCost;
     [SerializeField] private TMP_Text unitScoutDistance;
     [SerializeField] private TMP_Text unitDescription;
+    [SerializeField] private List<RectTransform> unitVisibleOnlyAsOwner;
+    [SerializeField] private RectTransform unitMoveButton;
+    [SerializeField] private RectTransform unitStopMovementButton;
 
     [Header("Menus")]
     [SerializeField] private RectTransform tileMenu;
@@ -203,11 +208,28 @@ public class UIHandler : NetworkBehaviour
 
     private void UpdateTileMenu(Tile tile)
     {
+        if (tile.owner == Global.playerHandler.GetLocalPlayer()) 
+        { 
+            foreach (RectTransform v in tileVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(true);
+            }    
+        }
+        else
+        {
+            foreach (RectTransform v in tileVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(false);
+            }
+        }
+
+
         if (!tile.localPlayerHasSeen)
         {
             tileType.text = "Unknown";
         }
-        else {
+        else
+        {
             if (tile.hasForest && tile.hasMountains)
             {
                 tileType.text = "Forest Mountains";
@@ -275,6 +297,22 @@ public class UIHandler : NetworkBehaviour
 
     private void UpdateUnitMenu(Unit unit)
     {
+        if (unit.owner == Global.playerHandler.GetLocalPlayer())
+        {
+            foreach (RectTransform v in unitVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            foreach (RectTransform v in unitVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(false);
+            }
+        }
+
+
 
         unitType.text = unit.unitType.name;
         unitOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(unit.owner));
@@ -288,10 +326,37 @@ public class UIHandler : NetworkBehaviour
         unitUpkeapCost.text = ((int)(1 / unit.unitType.timePerCoin * 10) / 10f).ToString();
         unitScoutDistance.text = unit.unitType.scoutDistance.ToString();
         unitDescription.text = unit.unitType.description;
+
+        if (unit.isMoving.Value)
+        {
+            unitMoveButton.gameObject.SetActive(false);
+            unitStopMovementButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            unitMoveButton.gameObject.SetActive(true);
+            unitStopMovementButton.gameObject.SetActive(false);
+        }
     }
 
     public void UpdateCityMenu(City city)
     {
+        if (city.owner == Global.playerHandler.GetLocalPlayer())
+        {
+            foreach (RectTransform v in cityVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            foreach (RectTransform v in cityVisibleOnlyAsOwner)
+            {
+                v.gameObject.SetActive(false);
+            }
+        }
+
+
         cityTier.text = "Tier: " + city.size.Value.ToString();
         cityOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(city.owner));
 
@@ -385,6 +450,7 @@ public class UIHandler : NetworkBehaviour
     public void StopUnit()
     {
         clickedUnit.CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
+        UpdateUnitMenu(clickedUnit);
     }
 
     public void UpgradeCity()
@@ -426,6 +492,8 @@ public class UIHandler : NetworkBehaviour
 
     public void MoveUnit()
     {
-        Global.selectionHandler.state = 3;
+        if (clickedUnit != null && clickedUnit.owner == Global.playerHandler.GetLocalPlayer())
+            Global.selectionHandler.state = 3;
+        UpdateUnitMenu(clickedUnit);
     }
 }

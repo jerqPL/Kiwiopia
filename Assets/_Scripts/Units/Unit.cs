@@ -238,7 +238,7 @@ public class Unit : NetworkBehaviour
             if (attackCooldown > 0) return;
             foreach (Tile tileInRange in tilesInRange)
             {
-                if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+                if (tileInRange.unit != null && tileInRange.unit.owner != owner && !tileInRange.unit.isDead)
                 {
                     SetAttackAnimationTrigger();
                     attackCooldown = unitType.attackCooldown;
@@ -253,7 +253,7 @@ public class Unit : NetworkBehaviour
             bool foundTarget = false;
             foreach (Tile tileInRange in tilesInRange)
             {
-                if (tileInRange.unit != null && tileInRange.unit.owner != owner)
+                if (tileInRange.unit != null && tileInRange.unit.owner != owner && !tileInRange.unit.isDead)
                 {
                     SetAttackAnimationTrigger();
                     foundTarget = true;
@@ -279,6 +279,10 @@ public class Unit : NetworkBehaviour
         if (unitType.name == "Spearman")
         {
             animator.SetTrigger("spear attack");
+        }
+        if (unitType.name == "Swordman")
+        {
+            animator.SetTrigger("sword attack");
         }
     }
 
@@ -351,7 +355,7 @@ public class Unit : NetworkBehaviour
         for (int i = 0; i < path.Count; i++)
             progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
 
-        float moveTime = 1f;
+        float moveTime = 1/unitType.speed;
 
         for (int i = 0; i < path.Count - 1; i++)
         {

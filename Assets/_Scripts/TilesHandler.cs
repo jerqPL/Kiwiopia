@@ -138,7 +138,7 @@ public class TilesHandler : MonoBehaviour
             Global.Shuffle(neighbors);
             foreach (Tile neighbor in neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb))
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && (neighbor == end || neighbor.unit == null || neighbor.unit.owner != unit.owner || (neighbor.unit.owner == unit.owner && neighbor.unit.isMoving.Value)))
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);

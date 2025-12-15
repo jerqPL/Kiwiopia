@@ -12,17 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790345ce90f41e345938bc39473a25e3, type: 3}
   m_Name: Swordman
   m_EditorClassIdentifier: Assembly-CSharp::UnitType
-  id: 0
-  description: Has a sword
-  recruitTime: 8
-  cost: 4
-  health: 28
+  id: 1
+  description: Most basic unit, god for killing spearmans (when they aren on mountains)
+  recruitTime: 16
+  cost: 12
+  health: 100
   range: 1
-  damage: 7
-  resistance: 2
-  attackCooldown: 5
-  speed: 5
+  damage: 24
+  resistance: 3
+  attackCooldown: 6
+  speed: 0.25
   canClimb: 0
-  timePerCoin: 1
+  timePerCoin: 2
   scoutDistance: 1
   model: {fileID: 51745742829502549, guid: 9c2d9b123b18f9a4f829187318a11e56, type: 3}
