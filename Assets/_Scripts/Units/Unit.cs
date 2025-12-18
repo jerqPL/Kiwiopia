@@ -284,6 +284,10 @@ public class Unit : NetworkBehaviour
         {
             animator.SetTrigger("sword attack");
         }
+        if(unitType.name == "Shieldbearer")
+        {
+            animator.SetTrigger("shield attack");
+        }
     }
 
     private void TakeMoney()

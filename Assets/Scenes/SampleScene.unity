@@ -10945,12 +10945,12 @@ MonoBehaviour:
   completedLineMaterialReference: {fileID: 2100000, guid: fb750fde732e961468eae32cec1147da, type: 2}
   inProgressLineMaterialReference: {fileID: 2100000, guid: ae9d5e1c112cfda48b10bc2af131fd7a, type: 2}
   notScoutedTileMaterialReference: {fileID: 2100000, guid: 02c41d5c9e3011948add5d7110e0e8fd, type: 2}
-  startingMoneyReference: 20
-  startingWoodReference: 5
-  startingStoneReference: 5
-  timePerCoinPerTileReference: 4
-  timePerLogPerForestReference: 3
-  timePerStonePerMountainReference: 3
+  startingMoneyReference: 25
+  startingWoodReference: 10
+  startingStoneReference: 10
+  timePerCoinPerTileReference: 6
+  timePerLogPerForestReference: 4
+  timePerStonePerMountainReference: 4
   unitTypesReference:
   - {fileID: 11400000, guid: 836e3fd7e6f7e7a4a884991eaa8c636b, type: 2}
   - {fileID: 11400000, guid: e90c8fefd1eb72346911ab832d71f40c, type: 2}
@@ -10968,7 +10968,7 @@ MonoBehaviour:
   cityHandlerReference: {fileID: 2121364154}
   sessionHandlerReference: {fileID: 781752971}
   networkUIReference: {fileID: 207599523}
-  localPlayerColorReference: {r: 0.65882355, g: 0.8039216, b: 0.28235295, a: 1}
+  localPlayerColorReference: {r: 0.0627451, g: 0.6862745, b: 0.8509804, a: 1}
 --- !u!4 &1450353043
 Transform:
   m_ObjectHideFlags: 0
