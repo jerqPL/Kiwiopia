@@ -15,7 +15,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5918045887242042563
 RectTransform:
   m_ObjectHideFlags: 0
@@ -46,13 +46,14 @@ GameObject:
   m_Component:
   - component: {fileID: 3126197640278867159}
   - component: {fileID: 4663524115028355164}
+  - component: {fileID: 8434017303358532472}
   m_Layer: 5
   m_Name: Attack Cooldown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3126197640278867159
 RectTransform:
   m_ObjectHideFlags: 0
@@ -125,6 +126,20 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8434017303358532472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 964162215483694238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0117488eef053f54384337a207eb884e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarUI
+  fillArea: {fileID: 5918045887242042563}
+  background: {fileID: 8779072686389470774}
 --- !u!1 &3263359734812727314
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,7 +173,7 @@ RectTransform:
   m_Father: {fileID: 5918045887242042563}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.572, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -217,7 +232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8779072686389470774
 RectTransform:
   m_ObjectHideFlags: 0
@@ -321,7 +336,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4061720827
+  GlobalObjectIdHash: 1354590462
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -358,8 +373,8 @@ MonoBehaviour:
   isLeader:
     m_InternalValue: 0
   lineRendererPrefab: {fileID: 5312008685315154619, guid: e93f7352b7ed8f84d907ce1edcb9ea8a, type: 3}
-  healthBar: {fileID: 8318416673725893987}
-  attackCooldownBar: {fileID: 4663524115028355164}
+  healthBar: {fileID: 1893124908201642988}
+  attackCooldownBar: {fileID: 8434017303358532472}
   health:
     m_InternalValue: 1
   inCombat:
@@ -378,11 +393,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 347304426353290540, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 347304426353290540, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2390168416505360740, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       propertyPath: m_Name
@@ -394,7 +409,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3469029660602724269, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5221742899145535229, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       propertyPath: m_Pivot.x
@@ -476,27 +491,52 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8336758999912771199, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 5221742899145535229, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3126197640278867159}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3469029660602724269, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1893124908201642988}
   m_SourcePrefab: {fileID: 100100000, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+--- !u!224 &756992553166221520 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 739590279650055116, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+  m_PrefabInstance: {fileID: 54867587603440412}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3523668543596776625 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3469029660602724269, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+  m_PrefabInstance: {fileID: 54867587603440412}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1893124908201642988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3523668543596776625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0117488eef053f54384337a207eb884e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BarUI
+  fillArea: {fileID: 756992553166221520}
+  background: {fileID: 3905679420455135313}
+--- !u!224 &3905679420455135313 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3958997752259611469, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
+  m_PrefabInstance: {fileID: 54867587603440412}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5239294159977041377 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5221742899145535229, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
   m_PrefabInstance: {fileID: 54867587603440412}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8318416673725893987 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8336758999912771199, guid: 01ddca7da06e21a49aa052561d39c0a4, type: 3}
-  m_PrefabInstance: {fileID: 54867587603440412}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider

@@ -193,4 +193,58 @@ public class TilesHandler : MonoBehaviour
     {
         return tiles.IndexOf(tile);
     }
+
+    public List<Tile> shortestPathSeeingVisible(Tile source, Tile end)
+    {
+        Unit unit = source.unit;
+        if (source == null || end == null || unit == null || unit.isMoving.Value)
+            return new List<Tile>();
+
+        // BFS kolejka
+        Queue<Tile> queue = new Queue<Tile>();
+        queue.Enqueue(source);
+
+        // S³ownik przechowuj¹cy poprzednika ka¿dego odwiedzonego wêz³a
+        Dictionary<Tile, Tile> cameFrom = new Dictionary<Tile, Tile>();
+        cameFrom[source] = null;
+
+        while (queue.Count > 0)
+        {
+            Tile current = queue.Dequeue();
+
+            if (current == end)
+            {
+                break; // znaleziono cel
+            }
+
+            List<Tile> neighbors = new List<Tile>(current.neighbors);
+            Global.Shuffle(neighbors);
+            foreach (Tile neighbor in neighbors)
+            {
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && (neighbor == end || neighbor.unit == null || neighbor.unit.owner != unit.owner || (neighbor.unit.owner == unit.owner && neighbor.unit.isMoving.Value)))
+                {
+                    cameFrom[neighbor] = current;
+                    queue.Enqueue(neighbor);
+                }
+            }
+        }
+
+        // Odtworzenie œcie¿ki od end do source
+        List<Tile> path = new List<Tile>();
+        Tile temp = end;
+        while (temp != null)
+        {
+            path.Add(temp);
+            cameFrom.TryGetValue(temp, out temp);
+        }
+
+        path.Reverse(); // od source do end
+        if (path.Count > 0 && path[0] != source)
+        {
+            // brak po³¹czenia miêdzy source a end
+            return new List<Tile>();
+        }
+
+        return path;
+    }
 }

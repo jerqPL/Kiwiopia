@@ -26,8 +26,8 @@ public class Unit : NetworkBehaviour
     public NetworkVariable<bool> isLeader = new NetworkVariable<bool>(false);
 
     [SerializeField] private LineRenderer lineRendererPrefab;
-    [SerializeField] private Slider healthBar;
-    [SerializeField] private Slider attackCooldownBar;
+    [SerializeField] private BarUI healthBar;
+    [SerializeField] private BarUI attackCooldownBar;
 
     public NetworkVariable<int> health = new NetworkVariable<int>(1);
 
@@ -54,23 +54,30 @@ public class Unit : NetworkBehaviour
     {
         if (curr == unitType.health || curr == 0)
         {
-            healthBar.transform.gameObject.SetActive(false);
+            healthBar.Disable();
         }
         else
         {
-            healthBar.transform.gameObject.SetActive(true);
-            healthBar.value = (float)curr / unitType.health;
+            healthBar.Enable();
+            healthBar.UpdateValue((float)curr / unitType.health);
         }  
     }
 
     private void UpdateAttackCooldownBar()
     {
-        attackCooldownBar.value = (unitType.attackCooldown - (float)attackCooldown) / unitType.attackCooldown;
+        attackCooldownBar.UpdateValue((unitType.attackCooldown - (float)attackCooldown) / unitType.attackCooldown);
     }
 
     private void ChangeVisibilityAttackCooldown(bool prev, bool curr)
     {
-        attackCooldownBar.gameObject.SetActive(curr);
+        if (curr)
+        {
+            attackCooldownBar.Enable();
+        }
+        else
+        {
+            attackCooldownBar.Disable();
+        }
     }
 
     public void RecieveDamage(int damage)
@@ -176,38 +183,10 @@ public class Unit : NetworkBehaviour
 
     void LateUpdate()
     {
-        UpdateHealthBarRotation();
         if (inCombat.Value)
         {
             UpdateAttackCooldownBar();
-            UpdateAttackCooldownBarRotation();
         }
-    }
-
-    private void UpdateHealthBarRotation()
-    {
-        // get camera forward direction
-        Vector3 camDir = Camera.main.transform.forward;
-
-        // flatten (remove vertical influence)
-        camDir.y = 0f;
-        camDir.Normalize();
-
-        // create rotation only around Y
-        healthBar.transform.rotation = Quaternion.LookRotation(camDir);
-    }
-
-    private void UpdateAttackCooldownBarRotation()
-    {
-        // get camera forward direction
-        Vector3 camDir = Camera.main.transform.forward;
-
-        // flatten (remove vertical influence)
-        camDir.y = 0f;
-        camDir.Normalize();
-
-        // create rotation only around Y
-        attackCooldownBar.transform.rotation = Quaternion.LookRotation(camDir);
     }
 
     private void RotateTowards(Vector3 vector)
@@ -390,6 +369,8 @@ public class Unit : NetworkBehaviour
             }
 
             MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
+
+            //analizuj cala trase i sprawdz czy nadal jest przejezdna, jak nie to zadzwoñ po getShortestPath(); i guess its fine
         }
 
         DestroyProgressLine();
