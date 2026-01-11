@@ -52,32 +52,6 @@ public class UnitsHandler : NetworkBehaviour
         }
     }
 
-    /*[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void StartRecruitingServerRpc(int playerIndex, int tileIndex, int unitType)
-    {
-        if (Global.tilesHandler.GetTileAt(tileIndex).city.owner == Global.playerHandler.GetPlayerAt(playerIndex))
-        {
-            if (Global.tilesHandler.GetTileAt(tileIndex).city.isRecruiting) return;
-            if (!Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
-            {
-                Debug.Log("not enough resources");
-                return;
-            }
-            StartRecruitingClientRpc(playerIndex, tileIndex, unitType//, new ClientRpcParams
-            //{
-                //Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { Global.playerHandler.GetPlayerAt(playerIndex).OwnerClientId } }
-            //}
-            );
-        }
-    }
-
-    [ClientRpc]
-    public void StartRecruitingClientRpc(int playerIndex, int tileIndex, int unitType, ClientRpcParams clientRpcParams = default)
-    {
-        Global.tilesHandler.GetTileAt(tileIndex).city.StartRecruiting(unitType);
-    }*/
-    
-
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void AddToRecruitmentQueueServerRpc(int playerIndex, int tileIndex, int unitType)
     {
@@ -106,10 +80,12 @@ public class UnitsHandler : NetworkBehaviour
         
         GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
+        Health health = unitObject.GetComponent<Health>();
+        health.SetUnitType(unitType);
+        health.SetHealth(Global.unitTypes[unitType].health);
         unit.typeIndex.Value = unitType;
         unit.tileIndex.Value = tileIndex;
         unit.ownerIndex.Value = playerIndex;
-        unit.health.Value = Global.unitTypes[unitType].health;
         unitObject.GetComponent<NetworkObject>().Spawn();
         unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
     }
@@ -123,7 +99,7 @@ public class UnitsHandler : NetworkBehaviour
     {
         Unit dealingUnit = Global.unitsHandler.GetUnitAt(dealing);
         Unit recievingUnit = Global.unitsHandler.GetUnitAt(recieving);
-        recievingUnit.RecieveDamage(dealingUnit.unitType.damage);
+        recievingUnit.health.RecieveDamage(dealingUnit.unitType.damage);
     }
 
 
@@ -132,7 +108,7 @@ public class UnitsHandler : NetworkBehaviour
     {
         if (GetUnitAt(unitIndex) != null)
         {
-            GetUnitAt(unitIndex).inCombat.Value = false;
+            GetUnitAt(unitIndex).unitAttack.inCombat.Value = false;
             GetUnitAt(unitIndex).KillUnitClientRpc();
         }
     }
@@ -145,15 +121,6 @@ public class UnitsHandler : NetworkBehaviour
     public int GetIndexOf(Unit unit)
     {
         return units.IndexOf(unit);
-    }
-
-    public void AttackEnemies()
-    {
-        if (!NetworkManager.Singleton.IsServer) return;
-        foreach (Unit unit in units)
-        {
-            unit.AttackEnemies();
-        }
     }
 
     public void RequesUnitMovement(int unitIndex)

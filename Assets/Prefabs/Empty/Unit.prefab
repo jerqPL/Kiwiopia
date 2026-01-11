@@ -301,6 +301,11 @@ GameObject:
   - component: {fileID: 2946877012308167209}
   - component: {fileID: 4884675539186254645}
   - component: {fileID: 6274189264977172717}
+  - component: {fileID: 4476102219350037912}
+  - component: {fileID: 8680593158911971457}
+  - component: {fileID: 8081195864259869893}
+  - component: {fileID: 6031176393887325556}
+  - component: {fileID: 7848787840929459957}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -372,17 +377,87 @@ MonoBehaviour:
     m_InternalValue: 0
   isLeader:
     m_InternalValue: 0
+  model: {fileID: 0}
+  isDead: 0
+  health: {fileID: 6031176393887325556}
+  unitAttack: {fileID: 7848787840929459957}
+  unitUI: {fileID: 8081195864259869893}
+--- !u!114 &4476102219350037912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8660dd18cfb3b3f4d97bc9a25ad00f61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitPay
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &8680593158911971457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 400b70f9e15a8494d93151b81f566e21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAnimations
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &8081195864259869893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0575384afa3fbe4d8c74c38ed20e692, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitUI
+  ShowTopMostFoldoutHeaderGroup: 1
   lineRendererPrefab: {fileID: 5312008685315154619, guid: e93f7352b7ed8f84d907ce1edcb9ea8a, type: 3}
   healthBar: {fileID: 1893124908201642988}
   attackCooldownBar: {fileID: 8434017303358532472}
+--- !u!114 &6031176393887325556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4959168c618009941871c0ed5b3ab78d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  ShowTopMostFoldoutHeaderGroup: 1
+  unitType: {fileID: 0}
   health:
     m_InternalValue: 1
-  inCombat:
-    m_InternalValue: 0
+--- !u!114 &7848787840929459957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 387c1168172fb6040bfa270972011081, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitAttack
+  ShowTopMostFoldoutHeaderGroup: 1
+  attackCooldown: 0
   enemyIndex:
     m_InternalValue: 0
-  isDead: 0
-  attackCooldown: 0
+  inCombat:
+    m_InternalValue: 0
 --- !u!1001 &54867587603440412
 PrefabInstance:
   m_ObjectHideFlags: 0

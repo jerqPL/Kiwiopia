@@ -316,8 +316,8 @@ public class UIHandler : NetworkBehaviour
 
         unitType.text = unit.unitType.name;
         unitOwner.color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(unit.owner));
-        unitHealth.text = unit.health.Value.ToString() + "/" + unit.unitType.health.ToString();
-        unitAttackCooldown.text = ((int)(unit.attackCooldown * 10)/10f).ToString() + "/" + ((int)(unit.unitType.attackCooldown * 10) / 10f).ToString();
+        unitHealth.text = unit.health.health.Value.ToString() + "/" + unit.unitType.health.ToString();
+        unitAttackCooldown.text = ((int)(unit.unitAttack.attackCooldown * 10)/10f).ToString() + "/" + ((int)(unit.unitType.attackCooldown * 10) / 10f).ToString();
         unitRange.text = unit.unitType.range.ToString();
         unitDamage.text = unit.unitType.damage.ToString();
         unitResistance.text = unit.unitType.resistance.ToString();
