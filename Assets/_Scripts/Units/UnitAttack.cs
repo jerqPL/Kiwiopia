@@ -4,9 +4,11 @@ using Unity.Netcode;
 using UnityEngine;
 
 [RequireComponent(typeof(Unit))]
+[RequireComponent(typeof(UnitMovement))]
 public class UnitAttack : NetworkBehaviour
 {
     Unit unit;
+    UnitMovement unitMovement;
     public float attackCooldown = 0f;
     private List<Tile> tilesInRange = new List<Tile>();
     public NetworkVariable<int> enemyIndex = new NetworkVariable<int>(0);
@@ -17,8 +19,9 @@ public class UnitAttack : NetworkBehaviour
     void Awake()
     {
         unit = GetComponent<Unit>();
+        unitMovement = GetComponent<UnitMovement>();
         unit.AfterNetworkSpawn += UpdateTilesInRange;
-        unit.AfterMove += UpdateTilesInRange;
+        unitMovement.AfterMove += UpdateTilesInRange;
     }
     private void TakeCooldown()
     {
@@ -32,7 +35,7 @@ public class UnitAttack : NetworkBehaviour
     {
         if (!IsServer)
         {
-            if (unit.isMoving.Value) return;
+            if (unitMovement.isMoving.Value) return;
             if (attackCooldown > 0) return;
             foreach (Tile tileInRange in tilesInRange)
             {
@@ -46,7 +49,7 @@ public class UnitAttack : NetworkBehaviour
         }
         else
         {
-            if (unit.isMoving.Value) return;
+            if (unitMovement.isMoving.Value) return;
             if (attackCooldown > 0) return;
             bool foundTarget = false;
             foreach (Tile tileInRange in tilesInRange)
@@ -76,7 +79,7 @@ public class UnitAttack : NetworkBehaviour
     {
         if (unit.isDead) return;
 
-        if (inCombat.Value && !unit.isMoving.Value) unit.RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
+        if (inCombat.Value && !unitMovement.isMoving.Value) unit.RotateTowards(Global.unitsHandler.GetUnitAt(enemyIndex.Value).transform.position);
         TakeCooldown();
         AttackEnemies();
     }

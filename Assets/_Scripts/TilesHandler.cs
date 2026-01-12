@@ -111,10 +111,10 @@ public class TilesHandler : MonoBehaviour
         }
     }
 
-    public List<Tile> shortestPath(Tile source, Tile end)
+    /*public List<Tile> shortestPath(Tile source, Tile end)
     {
         Unit unit = source.unit;
-        if (source == null || end == null || unit == null || unit.isMoving.Value)
+        if (source == null || end == null || unit == null || unit.unitMovement.isMoving.Value)
             return new List<Tile>();
 
         // BFS kolejka
@@ -138,7 +138,7 @@ public class TilesHandler : MonoBehaviour
             Global.Shuffle(neighbors);
             foreach (Tile neighbor in neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && (neighbor == end || neighbor.unit == null || neighbor.unit.owner != unit.owner || (neighbor.unit.owner == unit.owner && neighbor.unit.isMoving.Value)))
+                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && (neighbor == end || neighbor.unit == null || neighbor.unit.owner != unit.owner || (neighbor.unit.owner == unit.owner && neighbor.unit.unitMovement.isMoving.Value)))
                 {
                     cameFrom[neighbor] = current;
                     queue.Enqueue(neighbor);
@@ -163,7 +163,7 @@ public class TilesHandler : MonoBehaviour
         }
 
         return path;
-    }
+    }*/
 
     public Tile RandomTile()
     {
@@ -194,10 +194,19 @@ public class TilesHandler : MonoBehaviour
         return tiles.IndexOf(tile);
     }
 
+    public bool CanGetThrough(Unit unit, Tile tile)
+    {
+        if (!tile.localPlayerHasSeen || ((!tile.hasMountains || unit.unitType.canClimb) && (tile.unit == null || tile.unit.owner != unit.owner || (tile.unit.owner == unit.owner && tile.unit.unitMovement.isMoving.Value))))
+        {
+            return true;
+        }
+        return false;
+    }
+
     public List<Tile> shortestPathSeeingVisible(Tile source, Tile end)
     {
         Unit unit = source.unit;
-        if (source == null || end == null || unit == null || unit.isMoving.Value)
+        if (source == null || end == null || unit == null || unit.unitMovement.isMoving.Value)
             return new List<Tile>();
 
         // BFS kolejka
@@ -221,10 +230,14 @@ public class TilesHandler : MonoBehaviour
             Global.Shuffle(neighbors);
             foreach (Tile neighbor in neighbors)
             {
-                if (!cameFrom.ContainsKey(neighbor) && (!neighbor.hasMountains || unit.unitType.canClimb) && (neighbor == end || neighbor.unit == null || neighbor.unit.owner != unit.owner || (neighbor.unit.owner == unit.owner && neighbor.unit.isMoving.Value)))
+
+                if (!cameFrom.ContainsKey(neighbor))
                 {
-                    cameFrom[neighbor] = current;
-                    queue.Enqueue(neighbor);
+                    if (CanGetThrough(unit, neighbor))
+                    {
+                        cameFrom[neighbor] = current;
+                        queue.Enqueue(neighbor);
+                    }
                 }
             }
         }

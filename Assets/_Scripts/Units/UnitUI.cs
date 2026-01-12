@@ -43,7 +43,7 @@ public class UnitUI : NetworkBehaviour
 
     public void DestroyProgressLine()
     {
-        Destroy(progressLine);
+        Destroy(progressLine.gameObject);
     }
 
     private void UpdateHealthBar(int prev, int curr)

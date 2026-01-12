@@ -56,7 +56,7 @@ public class SelectionHandler : MonoBehaviour
                     uIHandler.ClickedTile(lastClickedTile, 0);
                     return;
                 }
-                if (lastClickedTile.unit != null && lastClickedTile.unit.isMoving.Value)
+                if (lastClickedTile.unit != null && lastClickedTile.unit.unitMovement.isMoving.Value)
                 {
                     uIHandler.ClickedTile(lastClickedTile, 0);
                     return;

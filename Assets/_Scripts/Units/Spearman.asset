@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Cheapes unit, bad at everything besides climbing mountains
   recruitTime: 12
   cost: 8
-  health: 80000000
+  health: 80
   range: 2
   damage: 12
   resistance: 2

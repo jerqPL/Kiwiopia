@@ -327,7 +327,7 @@ public class UIHandler : NetworkBehaviour
         unitScoutDistance.text = unit.unitType.scoutDistance.ToString();
         unitDescription.text = unit.unitType.description;
 
-        if (unit.isMoving.Value)
+        if (unit.unitMovement.isMoving.Value)
         {
             unitMoveButton.gameObject.SetActive(false);
             unitStopMovementButton.gameObject.SetActive(true);
@@ -449,7 +449,7 @@ public class UIHandler : NetworkBehaviour
 
     public void StopUnit()
     {
-        clickedUnit.CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
+        clickedUnit.unitMovement.CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
         UpdateUnitMenu(clickedUnit);
     }
 

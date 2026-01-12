@@ -306,6 +306,7 @@ GameObject:
   - component: {fileID: 8081195864259869893}
   - component: {fileID: 6031176393887325556}
   - component: {fileID: 7848787840929459957}
+  - component: {fileID: 1174198027864408493}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -369,8 +370,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   typeIndex:
     m_InternalValue: 0
-  isMoving:
-    m_InternalValue: 0
   ownerIndex:
     m_InternalValue: 0
   tileIndex:
@@ -382,6 +381,7 @@ MonoBehaviour:
   health: {fileID: 6031176393887325556}
   unitAttack: {fileID: 7848787840929459957}
   unitUI: {fileID: 8081195864259869893}
+  unitMovement: {fileID: 1174198027864408493}
 --- !u!114 &4476102219350037912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,6 +457,21 @@ MonoBehaviour:
   enemyIndex:
     m_InternalValue: 0
   inCombat:
+    m_InternalValue: 0
+--- !u!114 &1174198027864408493
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8991019274755240810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cae767526a6d0e4cabfc90768f15cec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UnitMovement
+  ShowTopMostFoldoutHeaderGroup: 1
+  isMoving:
     m_InternalValue: 0
 --- !u!1001 &54867587603440412
 PrefabInstance:

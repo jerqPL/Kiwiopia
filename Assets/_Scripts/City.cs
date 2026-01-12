@@ -393,7 +393,7 @@ public class City : NetworkBehaviour
             {
                 if (IsServer)
                 {
-                    tile.unit.MoveToEmptyTile(ownerIndex.Value);
+                    tile.unit.unitMovement.MoveToEmptyTile(ownerIndex.Value);
                 }
             }
         }

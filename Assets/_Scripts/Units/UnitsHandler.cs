@@ -26,7 +26,7 @@ public class UnitsHandler : NetworkBehaviour
                     return;
                 }
                 
-                path = Global.tilesHandler.shortestPath(Global.selectionHandler.lastClickedTile, target);
+                path = Global.tilesHandler.shortestPathSeeingVisible(Global.selectionHandler.lastClickedTile, target);
                 if (path == null) return;
 
                 if (tmpLineRenderer != null)
@@ -126,6 +126,6 @@ public class UnitsHandler : NetworkBehaviour
     public void RequesUnitMovement(int unitIndex)
     {
         if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
-            GetUnitAt(unitIndex).RequestMove(path);
+            GetUnitAt(unitIndex).unitMovement.RequestMove(path);
     }
 }

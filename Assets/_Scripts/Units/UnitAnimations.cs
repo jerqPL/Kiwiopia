@@ -6,6 +6,7 @@ public class UnitAnimations : NetworkBehaviour
 {
     private Unit unit;
     private UnitAttack unitAttack;
+    private UnitMovement unitMovement;
     private Animator animator;
     private UnitParts parts;
 
@@ -13,6 +14,7 @@ public class UnitAnimations : NetworkBehaviour
     {
         unit = GetComponent<Unit>();
         unitAttack = GetComponent<UnitAttack>();
+        unitMovement = GetComponent<UnitMovement>();
         unit.AfterNetworkSpawn += () => { 
             animator = unit.model.GetComponent<Animator>();
             parts = unit.model.GetComponent<UnitParts>();
@@ -31,7 +33,7 @@ public class UnitAnimations : NetworkBehaviour
     {
         if (animator == null) return;
 
-        animator.SetBool("isMoving", unit.isMoving.Value);
+        animator.SetBool("isMoving", unitMovement.isMoving.Value);
         animator.SetBool("isDead", unit.isDead);
         animator.SetBool("inCombat", unitAttack.inCombat.Value);
     }
