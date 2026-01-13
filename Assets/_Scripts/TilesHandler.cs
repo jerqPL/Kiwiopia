@@ -196,7 +196,7 @@ public class TilesHandler : MonoBehaviour
 
     public bool CanGetThrough(Unit unit, Tile tile)
     {
-        if (!tile.localPlayerHasSeen || ((!tile.hasMountains || unit.unitType.canClimb) && (tile.unit == null || tile.unit.owner != unit.owner || (tile.unit.owner == unit.owner && tile.unit.unitMovement.isMoving.Value))))
+        if (!unit.owner.seenTiles.Contains(Global.tilesHandler.GetIndexOf(tile)) || ((!tile.hasMountains || unit.unitType.canClimb) && (tile.unit == null || tile.unit.owner != unit.owner || (tile.unit.owner == unit.owner && tile.unit.unitMovement.isMoving.Value))))
         {
             return true;
         }

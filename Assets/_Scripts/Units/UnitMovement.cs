@@ -105,18 +105,19 @@ public class UnitMovement : NetworkBehaviour
             MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
 
             //analizuj cala trase i sprawdz czy nadal jest przejezdna, jak nie to zadzwoñ po getShortestPath(); i guess its fine
-            if (unit.owner == Global.playerHandler.GetLocalPlayer())
+            if (IsServer)
             {
                 for (int j = i + 1; j < path.Count; j++)
                 {
                     if (!Global.tilesHandler.CanGetThrough(unit, path[j]))
                     {
                         Tile destination = path[path.Count - 1];
-                        Tile current = path[i + 1];
-                        ResetMovement(current, destination);
+                        unitUI.DestroyProgressLine();
+                        ResetMovement(destination);
                     }
                 }
             }
+
             unitUI.CreateProgressLine(path.Skip(i+1).ToList());
         }
 
@@ -124,8 +125,10 @@ public class UnitMovement : NetworkBehaviour
         if (IsServer) isMoving.Value = false;
     }
 
-    void ResetMovement(Tile current, Tile destination)
+    void ResetMovement(Tile destination)
     {
+        Debug.Log("Resetting movement");
+        Tile current = unit.tile;
         CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(unit));
         List<Tile> newPath = Global.tilesHandler.shortestPathSeeingVisible(current, destination);
         if (newPath.Count >= 2)
@@ -135,7 +138,7 @@ public class UnitMovement : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner | RpcInvokePermission.Server)]
     public void CancelMovementServerRpc(int unitIndex)
     {
         isMoving.Value = false;
@@ -163,10 +166,9 @@ public class UnitMovement : NetworkBehaviour
         Global.tilesHandler.GetTileAt(toIndex).owner = unit.owner;
         MoveTo(Global.tilesHandler.GetTileAt(toIndex).transform.position);
         AfterMove?.Invoke();
-        if (unit.owner == Global.playerHandler.GetLocalPlayer())
-        {
-            Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
-        }
+            
+        unit.owner.UpdateVisibleTiles();
+        
         if (IsServer)
         {
             if (Global.tilesHandler.GetTileAt(toIndex).city != null && Global.tilesHandler.GetTileAt(toIndex).city.owner != unit.owner)

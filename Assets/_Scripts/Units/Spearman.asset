@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Spearman
   m_EditorClassIdentifier: Assembly-CSharp::UnitType
   id: 0
-  description: Cheapes unit, bad at everything besides climbing mountains
+  description: Cheapes unit, bad at everything, but has more range
   recruitTime: 12
   cost: 8
   health: 80
@@ -22,7 +22,7 @@ MonoBehaviour:
   resistance: 2
   attackCooldown: 5
   speed: 0.25
-  canClimb: 1
+  canClimb: 0
   timePerCoin: 3
   scoutDistance: 2
   model: {fileID: 51745742829502549, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}

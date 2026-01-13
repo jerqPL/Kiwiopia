@@ -20,6 +20,8 @@ public class Player : NetworkBehaviour
         NetworkVariableReadPermission.Owner,
         NetworkVariableWritePermission.Server);
 
+    public List<int> seenTiles = new List<int>();
+
     public List<Unit> units = new List<Unit>();
     public List<City> citys = new List<City>();
 
@@ -175,37 +177,44 @@ public class Player : NetworkBehaviour
 
     public void UpdateVisibleTiles()
     {
-        List<Tile> visibleTiles = new List<Tile>();
+        List<Tile> tiles = new List<Tile>();
 
         foreach (City city in citys)
         {
-            if (!visibleTiles.Contains(city.tile)) visibleTiles.Add(city.tile);
-            visibleTiles.AddRange(city.cityTiles.Where(x => !visibleTiles.Contains(x)));
+            if (!tiles.Contains(city.tile)) tiles.Add(city.tile);
+            tiles.AddRange(city.cityTiles.Where(x => !tiles.Contains(x)));
         }
 
         foreach (Unit unit in units)
         {
             if (unit.tile != null)
             {
-                List<Tile> unitVisibleTiles = new List<Tile> { unit.tile };
+                List<Tile> unittiles = new List<Tile> { unit.tile };
                 for (int i = 0; i < unit.unitType.scoutDistance; i++)
                 {
-                    int visTiles = unitVisibleTiles.Count;
+                    int visTiles = unittiles.Count;
                     for (int j = 0; j < visTiles; j++)
                     {
-                        Tile tile = unitVisibleTiles[j];
+                        Tile tile = unittiles[j];
                         foreach (Tile neighbour in tile.neighbors)
                         {
-                            if (!unitVisibleTiles.Contains(neighbour))
-                                unitVisibleTiles.Add(neighbour);
+                            if (!unittiles.Contains(neighbour))
+                                unittiles.Add(neighbour);
                         }
                     }
                 }
-                visibleTiles.AddRange(unitVisibleTiles.Where(x => !visibleTiles.Contains(x)));
+                tiles.AddRange(unittiles.Where(x => !tiles.Contains(x)));
             }
         }
 
-        Global.tilesHandler.SetVisibility(visibleTiles);
+        foreach (Tile tile in tiles)
+        {
+            if (!seenTiles.Contains(Global.tilesHandler.GetIndexOf(tile)))
+                seenTiles.Add(Global.tilesHandler.GetIndexOf(tile));
+        }
+
+        if (this == Global.playerHandler.GetLocalPlayer())
+            Global.tilesHandler.SetVisibility(tiles);
     }
 
     [ClientRpc]

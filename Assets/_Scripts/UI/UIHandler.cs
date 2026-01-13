@@ -93,6 +93,14 @@ public class UIHandler : NetworkBehaviour
         }
     }
 
+    void Update()
+    {
+        if (clickedUnit != null)
+        {
+            UpdateUnitMenu(clickedUnit);
+        }
+    }
+
     public GameObject AddPlayer(string playerID, Color color)
     {
         GameObject newPlayer = Instantiate(uiPlayerPrefab);
