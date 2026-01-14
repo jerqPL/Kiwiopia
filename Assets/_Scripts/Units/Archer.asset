@@ -25,4 +25,4 @@ MonoBehaviour:
   canClimb: 1
   timePerCoin: 1.75
   scoutDistance: 3
-  model: {fileID: 51745742829502549, guid: 9c2d9b123b18f9a4f829187318a11e56, type: 3}
+  model: {fileID: 51745742829502549, guid: da42a15f00826f4478510c3a6a506adc, type: 3}
