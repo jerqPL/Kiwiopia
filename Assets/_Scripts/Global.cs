@@ -88,6 +88,7 @@ public class Global : MonoBehaviour
 
     public static SelectionHandler selectionHandler;
     [SerializeField] private SelectionHandler selectionHandlerReference;
+    public enum SelectionHandlerState { None, UnitMoving}
 
     public static CityHandler cityHandler;
     [SerializeField] private CityHandler cityHandlerReference;

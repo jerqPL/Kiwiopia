@@ -1209,8 +1209,6 @@ MonoBehaviour:
   errorText: {fileID: 1127002312}
   uIPlayers: {fileID: 1087528592}
   uiPlayerPrefab: {fileID: 3520097610418643914, guid: 24586c359ae346c4e96d647edbcc3963, type: 3}
-  clickedUnit: {fileID: 0}
-  perviousClickedUnit: {fileID: 0}
 --- !u!114 &207599519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1321,7 +1319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1074506205
+  GlobalObjectIdHash: 1986929827
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -3056,7 +3054,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2962379061
+  GlobalObjectIdHash: 1264424810
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -5341,7 +5339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2079088251
+  GlobalObjectIdHash: 261137166
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -5675,6 +5673,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SelectionHandler
   mainCamera: {fileID: 330585545}
+  cameraMovement: {fileID: 330585548}
+  uIHandler: {fileID: 207599518}
+  unitsHandler: {fileID: 1277345734}
+  tilesHandler: {fileID: 487156672}
   state: 0
   lastClickedTile: {fileID: 0}
 --- !u!4 &816525041
@@ -7074,7 +7076,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1064969522
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8994,7 +8996,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1724775097
+  GlobalObjectIdHash: 4195907434
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -11607,7 +11609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1745451540
+  GlobalObjectIdHash: 3390139484
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -15796,7 +15798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3096028353
+  GlobalObjectIdHash: 3959186546
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1

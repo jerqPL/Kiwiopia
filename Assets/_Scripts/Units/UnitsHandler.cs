@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static Global;
 
 public class UnitsHandler : NetworkBehaviour
 {
@@ -16,9 +17,9 @@ public class UnitsHandler : NetworkBehaviour
     
     void Update()
     {
-        if (Global.selectionHandler.state == 3)
+        if (selectionHandler.state == SelectionHandlerState.UnitMoving)
         {
-            Tile target = Global.selectionHandler.getTileOnMouse();
+            Tile target = selectionHandler.getTileOnMouse();
             if (target != null)
             {
                 if (lastHoveredTile == target)
@@ -26,7 +27,7 @@ public class UnitsHandler : NetworkBehaviour
                     return;
                 }
                 
-                path = Global.tilesHandler.shortestPathSeeingVisible(Global.selectionHandler.lastClickedTile, target);
+                path = tilesHandler.shortestPathSeeingVisible(selectionHandler.lastClickedTile, target);
                 if (path == null) return;
 
                 if (tmpLineRenderer != null)
@@ -46,7 +47,7 @@ public class UnitsHandler : NetworkBehaviour
                 lastHoveredTile = target;
             }
         }
-        if (Global.selectionHandler.state != 3 && tmpLineRenderer != null)
+        if (selectionHandler.state != SelectionHandlerState.UnitMoving && tmpLineRenderer != null)
         {
             Destroy (tmpLineRenderer);
         }

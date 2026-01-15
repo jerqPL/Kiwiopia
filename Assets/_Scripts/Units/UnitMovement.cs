@@ -131,6 +131,7 @@ public class UnitMovement : NetworkBehaviour
         Tile current = unit.tile;
         CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(unit));
         List<Tile> newPath = Global.tilesHandler.shortestPathSeeingVisible(current, destination);
+        unitUI.DestroyProgressLine();
         if (newPath.Count >= 2)
         {
             unit.RotateTowards(newPath[1].transform.position);

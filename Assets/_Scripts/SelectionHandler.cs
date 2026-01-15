@@ -1,20 +1,16 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using static Global;
 
 public class SelectionHandler : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private CameraMovement cameraMovement;
-    [SerializeField] private UIHandler uIHandler;
-    [SerializeField] private UnitsHandler unitsHandler;
-    [SerializeField] private TilesHandler tilesHandler;
 
-    public int state = 0; 
-    //0 - none; 1 - tile; 2 - city; 3 - unit
+    public SelectionHandlerState state = SelectionHandlerState.None; 
+    //0 - none; 1 - unit moving
 
     public Tile lastClickedTile;
-    private int howManyTimesClickedSame;
 
     private InputActionMap selectionMap;
     private InputAction select;
@@ -24,7 +20,6 @@ public class SelectionHandler : MonoBehaviour
 
     void Start()
     {
-        howManyTimesClickedSame = 0;
         selectionMap = InputSystem.actions.FindActionMap("Selection");
         select = selectionMap.FindAction("Select");
         mousePosition = selectionMap.FindAction("Mouse Position");
@@ -39,39 +34,26 @@ public class SelectionHandler : MonoBehaviour
             return;
         }
 
-        if (tile == lastClickedTile)
+        if (state == SelectionHandlerState.UnitMoving)
         {
-            howManyTimesClickedSame++;
-            
-            //////TO-DO
-        }
-        else
-        {
-            howManyTimesClickedSame = 0;
-            if (state == 3)
+            state = SelectionHandlerState.None;
+            if (lastClickedTile.unit == null)
             {
-                state = 0;
-                if (lastClickedTile.unit == null)
-                {
-                    uIHandler.ClickedTile(lastClickedTile, 0);
-                    return;
-                }
-                if (lastClickedTile.unit != null && lastClickedTile.unit.unitMovement.isMoving.Value)
-                {
-                    uIHandler.ClickedTile(lastClickedTile, 0);
-                    return;
-                }
-                Global.unitsHandler.RequesUnitMovement(Global.unitsHandler.GetIndexOf(lastClickedTile.unit));
-                //lastClickedTile.unit.RequestMove(tilesHandler.shortestPath(lastClickedTile, tile));
-                state = 0;
-                uIHandler.ClickedTile(lastClickedTile, 0);
+                uIHandler.ClickedTile(lastClickedTile);
                 return;
             }
+            if (lastClickedTile.unit != null && lastClickedTile.unit.unitMovement.isMoving.Value)
+            {
+                uIHandler.ClickedTile(lastClickedTile);
+                return;
+            }
+            unitsHandler.RequesUnitMovement(Global.unitsHandler.GetIndexOf(lastClickedTile.unit));
+            state = SelectionHandlerState.None;
+            uIHandler.ClickedTile(lastClickedTile);
+            return;
         }
 
-        uIHandler.ClickedTile(tile, howManyTimesClickedSame);
-
-        //cameraMovement.UpdateFocusPoint(tile.transform); - DEPRICATED
+        uIHandler.ClickedTile(tile);
         lastClickedTile = tile;   
     }
 

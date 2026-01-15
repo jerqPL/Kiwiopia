@@ -1,9 +1,11 @@
 
-using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.UI;
+using static Global;
 
 public class UIHandler : NetworkBehaviour
 {
@@ -79,7 +81,8 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform uIPlayers;
     [SerializeField] private GameObject uiPlayerPrefab;
 
-    private Unit clickedUnit;
+    [SerializeField] private Unit clickedUnit;
+    [SerializeField] private Unit perviousClickedUnit;
 
     public override void OnNetworkSpawn()
     {
@@ -193,18 +196,22 @@ public class UIHandler : NetworkBehaviour
         unitMenu.gameObject.SetActive(false);
         tileMenu.gameObject.SetActive(false);
     }
-    public void ClickedTile(Tile tile, int num_of_times)
+    public void ClickedTile(Tile tile)
     {
         DisableAllMenus();
         if (tile != null)
         {
             tileMenu.gameObject.SetActive(true);
             UpdateTileMenu(tile);
+            if (clickedUnit != tile.unit)
+            {
+                ChangeAfterMoveSource(tile);
+            }
+ 
             if (tile.unit != null)
             {
                 unitMenu.gameObject.SetActive(true);
-                clickedUnit = tile.unit;
-                UpdateUnitMenu(tile.unit);
+                UpdateUnitMenu(tile.unit);   
             }
             if (tile.city != null)
             {
@@ -212,6 +219,24 @@ public class UIHandler : NetworkBehaviour
                 UpdateCityMenu(tile.city);
             }
         }
+    }
+
+    void AfterUnitMoved()
+    {
+        ClickedTile(clickedUnit.tile);
+        Global.selectionHandler.lastClickedTile = clickedUnit.tile;
+    }
+
+    public void ChangeAfterMoveSource(Tile tile)
+    {
+        clickedUnit = tile.unit;
+        if (perviousClickedUnit != null)
+            perviousClickedUnit.unitMovement.AfterMove -= AfterUnitMoved;
+
+        if (clickedUnit != null)
+            clickedUnit.unitMovement.AfterMove += AfterUnitMoved;
+
+        perviousClickedUnit = clickedUnit;
     }
 
     private void UpdateTileMenu(Tile tile)
@@ -451,7 +476,7 @@ public class UIHandler : NetworkBehaviour
     public void DestroyUnit()
     {
         Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(clickedUnit));
-        Global.selectionHandler.state = 0;
+        Global.selectionHandler.state = SelectionHandlerState.None;
 
     }
 
@@ -501,7 +526,7 @@ public class UIHandler : NetworkBehaviour
     public void MoveUnit()
     {
         if (clickedUnit != null && clickedUnit.owner == Global.playerHandler.GetLocalPlayer())
-            Global.selectionHandler.state = 3;
+            Global.selectionHandler.state = SelectionHandlerState.UnitMoving;
         UpdateUnitMenu(clickedUnit);
     }
 }

@@ -58,7 +58,7 @@ public class City : NetworkBehaviour
             if (tile == Global.selectionHandler.lastClickedTile) Global.uIHandler.UpdateCityMenu(this);
             if (ctx.Index == 0) StopRecruiting();
         };
-        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 
     private void StopRecruiting()
@@ -88,7 +88,7 @@ public class City : NetworkBehaviour
         {
             Global.playerHandler.GetPlayerAt(curr).UpdateVisibleTiles();
         }
-        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 
     public void StartCapturing(int unitIndex)
@@ -209,7 +209,7 @@ public class City : NetworkBehaviour
             Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
         }
         CreateBorder();
-        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile, 0);
+        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 
 
