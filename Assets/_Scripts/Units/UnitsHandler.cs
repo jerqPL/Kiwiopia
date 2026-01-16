@@ -9,12 +9,14 @@ public class UnitsHandler : NetworkBehaviour
 
     [SerializeField] private LineRenderer lineRendererPrefab;
 
-    private List<Unit> units = new List<Unit>();
+    public List<Unit> units = new List<Unit>();
     private GameObject tmpLineRenderer;
     private Tile lastHoveredTile;
 
     private List<Tile> path;
-    
+
+    public event System.Action AfterUnitMoved;
+
     void Update()
     {
         if (selectionHandler.state == SelectionHandlerState.UnitMoving)
@@ -128,5 +130,10 @@ public class UnitsHandler : NetworkBehaviour
     {
         if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
             GetUnitAt(unitIndex).unitMovement.RequestMove(path);
+    }
+
+    public void UnitMovedUpdate()
+    {
+        AfterUnitMoved?.Invoke();
     }
 }

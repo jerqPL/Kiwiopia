@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
-using UnityEditor;
-using Unity.VisualScripting;
-using TMPro;
+using static Global;
 
 public class City : NetworkBehaviour
 {
@@ -80,14 +78,7 @@ public class City : NetworkBehaviour
             tile.owner = owner;
             
         }
-        if (prev == Global.playerHandler.GetLocalPlayerIndex())
-        {
-            Global.playerHandler.GetPlayerAt(prev).UpdateVisibleTiles();
-        }
-        if (curr == Global.playerHandler.GetLocalPlayerIndex())
-        {
-            Global.playerHandler.GetPlayerAt(curr).UpdateVisibleTiles();
-        }
+        cityHandler.CityChangedUpdate();
         Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 
@@ -206,7 +197,7 @@ public class City : NetworkBehaviour
         }
         if (owner == Global.playerHandler.GetLocalPlayer())
         {
-            Global.playerHandler.GetLocalPlayer().UpdateVisibleTiles();
+            cityHandler.CityChangedUpdate();
         }
         CreateBorder();
         Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);

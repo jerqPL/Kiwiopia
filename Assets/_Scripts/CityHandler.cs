@@ -8,6 +8,8 @@ public class CityHandler : NetworkBehaviour
 
     public List<City> cities = new List<City>();
 
+    public event System.Action AfterCityChanged;
+
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void BuildCityServerRpc(int ownerIndex, int tileIndex)
     {
@@ -54,4 +56,10 @@ public class CityHandler : NetworkBehaviour
         city.ChangeSizeServerRpc(1);
         netObj.ChangeOwnership(Global.playerHandler.players[ownerIndex].OwnerClientId);
     }
+
+    public void CityChangedUpdate() 
+    {
+        AfterCityChanged?.Invoke();
+    }
+
 }

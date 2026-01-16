@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Rendering;
+using static Global;
 
 [RequireComponent(typeof(Unit))]
 public class UnitMovement : NetworkBehaviour
@@ -22,13 +22,6 @@ public class UnitMovement : NetworkBehaviour
         unitUI = GetComponent<UnitUI>();
     }
 
-    public void ChangePlayerVisibility(int prev, int curr)
-    {
-        if (unit.owner == Global.playerHandler.GetLocalPlayer())
-        {
-            unit.owner.UpdateVisibleTiles();
-        }
-    }
 
     public void RequestMove(List<Tile> path)
     {
@@ -69,8 +62,8 @@ public class UnitMovement : NetworkBehaviour
     private IEnumerator<List<Tile>> MoveUnitCoroutine(List<Tile> path)
     {
         if (IsServer) isMoving.Value = true;
-
-        unitUI.CreateProgressLine(path);
+        if (unit.owner == Global.playerHandler.GetLocalPlayer())
+            unitUI.CreateProgressLine(path);
 
         float moveTime = 1 / unit.unitType.speed;
 
@@ -114,14 +107,16 @@ public class UnitMovement : NetworkBehaviour
                         Tile destination = path[path.Count - 1];
                         unitUI.DestroyProgressLine();
                         ResetMovement(destination);
+                        yield break;
                     }
                 }
             }
 
-            unitUI.CreateProgressLine(path.Skip(i+1).ToList());
+            if (unit.owner == Global.playerHandler.GetLocalPlayer())
+                unitUI.CreateProgressLine(path.Skip(i + 1).ToList());
         }
-
-        unitUI.DestroyProgressLine();
+        if (unit.owner == Global.playerHandler.GetLocalPlayer())
+            unitUI.DestroyProgressLine();
         if (IsServer) isMoving.Value = false;
     }
 
@@ -166,8 +161,7 @@ public class UnitMovement : NetworkBehaviour
         Global.tilesHandler.GetTileAt(toIndex).SetUnit(unit);
         Global.tilesHandler.GetTileAt(toIndex).owner = unit.owner;
         MoveTo(Global.tilesHandler.GetTileAt(toIndex).transform.position);
-        AfterMove?.Invoke();
-            
+           
         unit.owner.UpdateVisibleTiles();
         
         if (IsServer)
@@ -177,6 +171,8 @@ public class UnitMovement : NetworkBehaviour
                 Global.tilesHandler.GetTileAt(toIndex).city.StartCapturing(Global.unitsHandler.GetIndexOf(unit));
             }
         }
+        AfterMove?.Invoke();
+        unitsHandler.UnitMovedUpdate();
     }
 
 

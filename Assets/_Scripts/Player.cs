@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Netcode;
+using static Global;
 
 public class Player : NetworkBehaviour
 {
@@ -47,6 +48,14 @@ public class Player : NetworkBehaviour
             wood.Value = Global.startingWood;
             stone.Value = Global.startingStone;
         }
+    }
+    private void Awake()
+    {
+        unitsHandler.AfterUnitMoved += UpdateVisibleUnits;
+        cityHandler.AfterCityChanged += UpdateVisibleUnits;
+
+        unitsHandler.AfterUnitMoved += UpdateVisibleTiles;
+        cityHandler.AfterCityChanged += UpdateVisibleTiles;
     }
 
     public override void OnNetworkDespawn()
@@ -215,6 +224,22 @@ public class Player : NetworkBehaviour
 
         if (this == Global.playerHandler.GetLocalPlayer())
             Global.tilesHandler.SetVisibility(tiles);
+    }
+
+    public void UpdateVisibleUnits()
+    {
+        foreach (Unit unit in unitsHandler.units)
+        {
+            if ((unit.tile != null && seenTiles.Contains(tilesHandler.GetIndexOf(unit.tile))) || unit.owner == this)
+            {
+                unit.unitUI.SetVisibility(true);
+
+            }
+            else
+            {
+                unit.unitUI.SetVisibility(false);
+            }
+        }
     }
 
     [ClientRpc]

@@ -223,6 +223,7 @@ public class UIHandler : NetworkBehaviour
 
     void AfterUnitMoved()
     {
+        if (clickedUnit == null) return;
         ClickedTile(clickedUnit.tile);
         Global.selectionHandler.lastClickedTile = clickedUnit.tile;
     }

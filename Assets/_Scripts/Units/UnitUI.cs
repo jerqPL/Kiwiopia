@@ -84,4 +84,40 @@ public class UnitUI : NetworkBehaviour
             attackCooldownBar.Disable();
         }
     }
+
+    private void MakeInvisible()
+    {
+        healthBar.Disable();
+        attackCooldownBar.Disable();
+        DestroyProgressLine();
+        foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+        {
+            rend.enabled = false;
+        }
+    }
+
+    private void MakeVisible()
+    {
+        foreach (Renderer rend in GetComponentsInChildren<Renderer>())
+        {
+            rend.enabled = true;
+        }
+        UpdateHealthBar(0, health.health.Value);
+        if (unitAttack.inCombat.Value)
+        {
+            attackCooldownBar.Enable();
+        }
+    }
+
+    public void SetVisibility(bool visible)
+    {
+        if (visible)
+        {
+            MakeVisible();
+        }
+        else
+        {
+            MakeInvisible();
+        }
+    }
 }

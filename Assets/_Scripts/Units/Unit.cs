@@ -24,7 +24,7 @@ public class Unit : NetworkBehaviour
 
     public Health health;
     public UnitAttack unitAttack;
-    [SerializeField] private UnitUI unitUI;
+    public UnitUI unitUI;
     public UnitMovement unitMovement;
 
     public event System.Action AfterNetworkSpawn;
@@ -74,7 +74,6 @@ public class Unit : NetworkBehaviour
         tile.SetUnit(this);
         tile.owner = owner;
         
-        tileIndex.OnValueChanged += unitMovement.ChangePlayerVisibility;
         //isMoving.OnValueChanged += AnimateMovement;
         unitMovement.MoveTo(tile.transform.position);
         AfterNetworkSpawn?.Invoke();
