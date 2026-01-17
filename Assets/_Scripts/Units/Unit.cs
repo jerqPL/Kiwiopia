@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using static Global;
 
 public class Unit : NetworkBehaviour
 {
@@ -51,6 +50,7 @@ public class Unit : NetworkBehaviour
         tile.SetUnit(null);
         unitMovement.MoveTo(tile.transform.position);
         AfterDie?.Invoke();
+        unitsHandler.UnitMovedUpdate();
     }
 
     public void SetRandomRotation()
@@ -77,5 +77,6 @@ public class Unit : NetworkBehaviour
         //isMoving.OnValueChanged += AnimateMovement;
         unitMovement.MoveTo(tile.transform.position);
         AfterNetworkSpawn?.Invoke();
+        unitsHandler.UnitMovedUpdate();
     }
 }

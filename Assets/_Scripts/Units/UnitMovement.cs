@@ -14,12 +14,14 @@ public class UnitMovement : NetworkBehaviour
     public NetworkVariable<bool> isMoving = new NetworkVariable<bool>(false);
     private Coroutine movementCoroutine;
 
-    public event System.Action AfterMove;
+    public event System.Action<int, int> AfterChangedTile;
 
     private void Awake()
     {
         unit = GetComponent<Unit>();
         unitUI = GetComponent<UnitUI>();
+
+        unit.tileIndex.OnValueChanged += (prev, curr) => { MoveToTile(prev, curr); unitsHandler.UnitMovedUpdate(); AfterChangedTile?.Invoke(prev, curr); };
     }
 
 
@@ -95,7 +97,7 @@ public class UnitMovement : NetworkBehaviour
 
             }
 
-            MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
+            //MoveToTile(Global.tilesHandler.GetIndexOf(path[i]), Global.tilesHandler.GetIndexOf(path[i + 1]));
 
             //analizuj cala trase i sprawdz czy nadal jest przejezdna, jak nie to zadzwoñ po getShortestPath(); i guess its fine
             if (IsServer)
@@ -171,8 +173,6 @@ public class UnitMovement : NetworkBehaviour
                 Global.tilesHandler.GetTileAt(toIndex).city.StartCapturing(Global.unitsHandler.GetIndexOf(unit));
             }
         }
-        AfterMove?.Invoke();
-        unitsHandler.UnitMovedUpdate();
     }
 
 

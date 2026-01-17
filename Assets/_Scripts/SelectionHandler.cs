@@ -26,6 +26,11 @@ public class SelectionHandler : MonoBehaviour
         select.performed += ctx => clicked = true;
     }
 
+    public void SetLastClickedTile(Tile tile)
+    {
+        lastClickedTile = tile;
+    }
+
     void OnSelect()
     {
         Tile tile = getTileOnMouse();
@@ -47,14 +52,14 @@ public class SelectionHandler : MonoBehaviour
                 uIHandler.ClickedTile(lastClickedTile);
                 return;
             }
-            unitsHandler.RequesUnitMovement(Global.unitsHandler.GetIndexOf(lastClickedTile.unit));
+            unitsHandler.RequestUnitMovement(unitsHandler.GetIndexOf(lastClickedTile.unit), tilesHandler.GetIndexOf(tile));
             state = SelectionHandlerState.None;
             uIHandler.ClickedTile(lastClickedTile);
             return;
         }
 
         uIHandler.ClickedTile(tile);
-        lastClickedTile = tile;   
+        selectionHandler.SetLastClickedTile(tile);
     }
 
     public Tile getTileOnMouse()

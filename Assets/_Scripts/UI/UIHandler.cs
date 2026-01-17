@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics.Tracing;
 using TMPro;
 using Unity.Netcode;
@@ -81,8 +82,8 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private RectTransform uIPlayers;
     [SerializeField] private GameObject uiPlayerPrefab;
 
-    [SerializeField] private Unit clickedUnit;
-    [SerializeField] private Unit perviousClickedUnit;
+    [SerializeField] private Unit clickedUnit = null;
+    [SerializeField] private Unit perviousClickedUnit = null;
 
     public override void OnNetworkSpawn()
     {
@@ -221,21 +222,20 @@ public class UIHandler : NetworkBehaviour
         }
     }
 
-    void AfterUnitMoved()
+    void AfterUnitMoved(int prev, int curr)
     {
-        if (clickedUnit == null) return;
         ClickedTile(clickedUnit.tile);
-        Global.selectionHandler.lastClickedTile = clickedUnit.tile;
+        selectionHandler.SetLastClickedTile(clickedUnit.tile);
     }
 
     public void ChangeAfterMoveSource(Tile tile)
     {
         clickedUnit = tile.unit;
         if (perviousClickedUnit != null)
-            perviousClickedUnit.unitMovement.AfterMove -= AfterUnitMoved;
+            perviousClickedUnit.unitMovement.AfterChangedTile -= AfterUnitMoved;
 
         if (clickedUnit != null)
-            clickedUnit.unitMovement.AfterMove += AfterUnitMoved;
+            clickedUnit.unitMovement.AfterChangedTile += AfterUnitMoved;
 
         perviousClickedUnit = clickedUnit;
     }

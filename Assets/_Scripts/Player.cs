@@ -22,6 +22,7 @@ public class Player : NetworkBehaviour
         NetworkVariableWritePermission.Server);
 
     public List<int> seenTiles = new List<int>();
+    public List<int> visibleTiles = new List<int>();
 
     public List<Unit> units = new List<Unit>();
     public List<City> citys = new List<City>();
@@ -51,11 +52,14 @@ public class Player : NetworkBehaviour
     }
     private void Awake()
     {
-        unitsHandler.AfterUnitMoved += UpdateVisibleUnits;
-        cityHandler.AfterCityChanged += UpdateVisibleUnits;
 
         unitsHandler.AfterUnitMoved += UpdateVisibleTiles;
         cityHandler.AfterCityChanged += UpdateVisibleTiles;
+
+        unitsHandler.AfterUnitMoved += UpdateVisibleUnits;
+        cityHandler.AfterCityChanged += UpdateVisibleUnits;
+
+        
     }
 
     public override void OnNetworkDespawn()
@@ -224,20 +228,24 @@ public class Player : NetworkBehaviour
 
         if (this == Global.playerHandler.GetLocalPlayer())
             Global.tilesHandler.SetVisibility(tiles);
+
+        visibleTiles = tiles.Select(x => tilesHandler.GetIndexOf(x)).ToList();
     }
 
     public void UpdateVisibleUnits()
     {
-        foreach (Unit unit in unitsHandler.units)
+        if (playerHandler.GetLocalPlayer() == this)
         {
-            if ((unit.tile != null && seenTiles.Contains(tilesHandler.GetIndexOf(unit.tile))) || unit.owner == this)
+            foreach (Unit unit in unitsHandler.units)
             {
-                unit.unitUI.SetVisibility(true);
-
-            }
-            else
-            {
-                unit.unitUI.SetVisibility(false);
+                if ((unit.tile != null && visibleTiles.Contains(tilesHandler.GetIndexOf(unit.tile))) || unit.owner == this || unit.isDead)
+                {
+                    unit.unitUI.SetVisibility(true);
+                }
+                else
+                {
+                    unit.unitUI.SetVisibility(false);
+                }
             }
         }
     }

@@ -21,7 +21,7 @@ public class UnitAttack : NetworkBehaviour
         unit = GetComponent<Unit>();
         unitMovement = GetComponent<UnitMovement>();
         unit.AfterNetworkSpawn += UpdateTilesInRange;
-        unitMovement.AfterMove += UpdateTilesInRange;
+        unit.tileIndex.OnValueChanged += (prev, curr) => { UpdateTilesInRange(); } ;
     }
     private void TakeCooldown()
     {
@@ -83,6 +83,7 @@ public class UnitAttack : NetworkBehaviour
         TakeCooldown();
         AttackEnemies();
     }
+
 
     private void UpdateTilesInRange()
     {

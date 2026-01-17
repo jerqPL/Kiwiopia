@@ -126,10 +126,13 @@ public class UnitsHandler : NetworkBehaviour
         return units.IndexOf(unit);
     }
 
-    public void RequesUnitMovement(int unitIndex)
+    public void RequestUnitMovement(int unitIndex, int targetTileIndex)
     {
         if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
+        {
+            List<Tile> path = tilesHandler.shortestPathSeeingVisible(GetUnitAt(unitIndex).tile, Global.tilesHandler.GetTileAt(targetTileIndex));
             GetUnitAt(unitIndex).unitMovement.RequestMove(path);
+        }
     }
 
     public void UnitMovedUpdate()
