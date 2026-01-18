@@ -686,7 +686,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 84918009}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 207599518}
+        m_TargetAssemblyTypeName: UIHandler, Assembly-CSharp
+        m_MethodName: UpgradeCity
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &84918009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5858,7 +5870,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 10fc4df2da32a41aaa32d77bc913491c, type: 2}
+  sharedProfile: {fileID: 11400000, guid: ab09877e2e707104187f6f83e2f62510, type: 2}
 --- !u!4 &832575519
 Transform:
   m_ObjectHideFlags: 0
@@ -8967,6 +8979,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   unitPrefab: {fileID: 8991019274755240810, guid: 0e1087d33e2ac09429e74c1bb3463760, type: 3}
   lineRendererPrefab: {fileID: 5312008685315154619, guid: e93f7352b7ed8f84d907ce1edcb9ea8a, type: 3}
+  units: []
 --- !u!4 &1277345735
 Transform:
   m_ObjectHideFlags: 0
@@ -15767,7 +15780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CityHandler
   ShowTopMostFoldoutHeaderGroup: 1
-  cityPrefab: {fileID: 1917841802229817384, guid: 2b4b492bc8cfd7d458cc63f8fc3b3fbf, type: 3}
+  cityPrefab: {fileID: 6987547144668894095, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
   cities: []
 --- !u!4 &2121364155
 Transform:
