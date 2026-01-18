@@ -129,7 +129,7 @@ public class CameraMovement : MonoBehaviour
             yRotation += rotationSpeed * Time.deltaTime * 2f;
         }
 
-        xRotation = Mathf.Clamp(xRotation, 45f, 89f);
+        xRotation = Mathf.Clamp(xRotation, 10f, 89f);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
 
