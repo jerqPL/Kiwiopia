@@ -23,6 +23,10 @@ public class TilesHandler : MonoBehaviour
         return newTile;
     }
 
+    private void Awake()
+    {
+        GenerateTiles();
+    }
     public void GenerateTiles()
     {
         if (gridSize % 2 == 0)
