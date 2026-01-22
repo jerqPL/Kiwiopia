@@ -58,22 +58,34 @@ public class Unit : NetworkBehaviour
         transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(0, 360), 0);
     }
 
+    void Awake()
+    {
+        if (isLocal())
+        {
+            Initialize();
+        }
+    }
     public override void OnNetworkSpawn()
     {
+        Initialize();
+    }
+
+    private void Initialize()
+    {
         (model = Instantiate(unitType.model, transform.position, Quaternion.identity)).transform.SetParent(transform);
-        
-        Global.unitsHandler.AddUnit(this);
+
+        unitsHandler?.AddUnit(this);
         owner.AddUnit(this);
-        Color color = Global.playerHandler.GetPlayerColor(Global.playerHandler.GetIndexOf(owner));
+        Color color = playerHandler.GetPlayerColor(playerHandler.GetIndexOf(owner));
         List<GameObject> unitParts = model.GetComponent<UnitParts>().armor;
-        foreach(var part in unitParts)
+        foreach (var part in unitParts)
         {
             part.GetComponent<Renderer>().material.color = color;
         }
-        
+
         tile.SetUnit(this);
         tile.owner = owner;
-        
+
         //isMoving.OnValueChanged += AnimateMovement;
         unitMovement.MoveTo(tile.transform.position);
         AfterNetworkSpawn?.Invoke();

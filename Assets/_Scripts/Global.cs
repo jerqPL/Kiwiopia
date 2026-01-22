@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Global : MonoBehaviour
@@ -127,6 +128,8 @@ public class Global : MonoBehaviour
         {128, 128, 128}
     };
 
+    public static event System.Action AfterInitialization;
+
     void Awake()
     {
         terrainMaterials = terrainMaterialReference;
@@ -161,6 +164,8 @@ public class Global : MonoBehaviour
         selectionHandler = selectionHandlerReference;
         cityHandler = cityHandlerReference;
         sessionHandler = sessionHandlerReference;
+
+        AfterInitialization?.Invoke();
     }
 
     public static Vector3 ZeroYVector3(Vector3 vector)
@@ -177,5 +182,10 @@ public class Global : MonoBehaviour
             int rnd = Random.Range(0, i + 1);
             (list[i], list[rnd]) = (list[rnd], list[i]);
         }
+    }
+
+    public static bool isLocal()
+    {
+        return NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening;
     }
 }

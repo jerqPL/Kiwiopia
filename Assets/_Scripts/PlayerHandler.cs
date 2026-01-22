@@ -37,7 +37,7 @@ public class PlayerHandler : NetworkBehaviour
     {
         foreach(Player player in players)
         {
-            player.SpawnPlayer();
+            player.SpawnPlayer(null);
         }
     }
 

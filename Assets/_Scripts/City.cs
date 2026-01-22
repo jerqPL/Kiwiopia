@@ -41,7 +41,19 @@ public class City : NetworkBehaviour
                                                    NetworkVariableReadPermission.Everyone,
                                                    NetworkVariableWritePermission.Server);
 
+
+    private void Awake()
+    {
+        if (isLocal())
+        {
+            Invoke("Initialize", 1);
+        }
+    }
     public override void OnNetworkSpawn()
+    {
+        Initialize(); 
+    }
+    private void Initialize()
     {
         transform.position = tile.transform.position;
         Debug.Log($"tile index: {tileIndex.Value}");
@@ -152,6 +164,23 @@ public class City : NetworkBehaviour
         }
         
         ChangeSizeClientRpc(newSize);
+        size.Value = newSize + 2;
+    }
+
+    public void ChangeSizeLocally(int newSize)
+    {
+        newSize -= 2;
+        if (newSize >= 0)
+        {
+            int moneyToTake = Global.newCityResourceCost[orderNumber, 0] * Global.cityUpgradeCostMultiplayer[newSize, 0];
+            int woodToTake = Global.newCityResourceCost[orderNumber, 1] * Global.cityUpgradeCostMultiplayer[newSize, 1];
+            int stoneToTake = Global.newCityResourceCost[orderNumber, 2] * Global.cityUpgradeCostMultiplayer[newSize, 2];
+
+            if (!owner.TakeResources(moneyToTake, woodToTake, stoneToTake))
+            {
+                return;
+            }
+        }
         size.Value = newSize + 2;
     }
 

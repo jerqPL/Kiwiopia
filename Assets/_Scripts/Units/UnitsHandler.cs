@@ -19,7 +19,7 @@ public class UnitsHandler : NetworkBehaviour
 
     void Update()
     {
-        if (selectionHandler.state == SelectionHandlerState.UnitMoving)
+        if (selectionHandler != null && selectionHandler.state == SelectionHandlerState.UnitMoving)
         {
             Tile target = selectionHandler.getTileOnMouse();
             if (target != null)
@@ -49,7 +49,7 @@ public class UnitsHandler : NetworkBehaviour
                 lastHoveredTile = target;
             }
         }
-        if (selectionHandler.state != SelectionHandlerState.UnitMoving && tmpLineRenderer != null)
+        if (selectionHandler != null && selectionHandler.state != SelectionHandlerState.UnitMoving && tmpLineRenderer != null)
         {
             Destroy (tmpLineRenderer);
         }
@@ -79,8 +79,8 @@ public class UnitsHandler : NetworkBehaviour
 
     public void RecruitUnit(int playerIndex, int tileIndex, int unitType)
     {
-        if (!IsServer) return;
-        
+        if (!IsServer && !isLocal()) return;
+
         GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
         Health health = unitObject.GetComponent<Health>();
@@ -89,8 +89,12 @@ public class UnitsHandler : NetworkBehaviour
         unit.typeIndex.Value = unitType;
         unit.tileIndex.Value = tileIndex;
         unit.ownerIndex.Value = playerIndex;
-        unitObject.GetComponent<NetworkObject>().Spawn();
-        unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
+
+        if (!isLocal())
+        {
+            unitObject.GetComponent<NetworkObject>().Spawn();
+            unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
+        }
     }
 
     public void AddUnit(Unit unit)

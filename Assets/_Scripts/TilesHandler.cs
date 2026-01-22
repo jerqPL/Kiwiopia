@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static Global;
 
 public class TilesHandler : MonoBehaviour
 {
@@ -23,10 +24,7 @@ public class TilesHandler : MonoBehaviour
         return newTile;
     }
 
-    private void Awake()
-    {
-        GenerateTiles();
-    }
+    
     public void GenerateTiles()
     {
         if (gridSize % 2 == 0)

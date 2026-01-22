@@ -5,7 +5,6 @@ public class TitleAnimation : MonoBehaviour
 {
     [SerializeField] private float minRotation = 170;
     [SerializeField] private float maxRotation = 190;
-    [SerializeField] private float cycleDuration = 10f;
 
     private float currentRotation;
 

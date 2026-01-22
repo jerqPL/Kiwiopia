@@ -29,29 +29,41 @@ public class Player : NetworkBehaviour
 
     private GameObject playerCard;
 
-
-    public override void OnNetworkSpawn()
+    private void InitializePlayer(bool isLocal)
     {
-        Global.playerHandler.players.Add(this);
-        if (IsLocalPlayer)
+        playerHandler.players.Add(this);
+        if (uIHandler != null)
         {
-            playerCard = Global.uIHandler.AddPlayer(this.OwnerClientId.ToString(), Global.localPlayerColor);
+            if (IsLocalPlayer)
+            {
+                playerCard = uIHandler.AddPlayer(this.OwnerClientId.ToString(), Global.localPlayerColor);
+            }
+            else
+            {
+                playerCard = uIHandler.AddPlayer(this.OwnerClientId.ToString(), Color.white);
+            }
         }
-        else
-        {
-            playerCard = Global.uIHandler.AddPlayer(this.OwnerClientId.ToString(), Color.white);
-        }
-            
 
-        if (IsServer)
+
+        if (Global.isLocal() || IsServer)
         {
             money.Value = Global.startingMoney;
             wood.Value = Global.startingWood;
             stone.Value = Global.startingStone;
         }
     }
+
+    public override void OnNetworkSpawn()
+    {
+        InitializePlayer(false);
+    }
+
     private void Awake()
     {
+        if(isLocal())
+        {
+            InitializePlayer(true);
+        }
 
         unitsHandler.AfterUnitMoved += UpdateVisibleTiles;
         cityHandler.AfterCityChanged += UpdateVisibleTiles;
@@ -68,7 +80,7 @@ public class Player : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
-    public void SpawnPlayer()
+    public void SpawnPlayer(Tile startingTile)
     {
         Debug.Log("Spawning Player: " + OwnerClientId);
 
@@ -76,7 +88,9 @@ public class Player : NetworkBehaviour
         SendValuesToUI();
 
         // Find starting tile
-        Tile startingTile = FindStartingTile();
+        if (startingTile == null)
+            startingTile = FindStartingTile();
+
         if (startingTile == null)
         {
             Debug.LogError("Could not find starting tile for player " + OwnerClientId);
@@ -92,10 +106,13 @@ public class Player : NetworkBehaviour
         );
 
         // Focus camera only for this player
-        InitializePlayerClientRpc(Global.tilesHandler.GetIndexOf(startingTile), new ClientRpcParams
+        if (!isLocal())
         {
-            Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { OwnerClientId } }
-        });
+            InitializePlayerClientRpc(Global.tilesHandler.GetIndexOf(startingTile), new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { OwnerClientId } }
+            });
+        }
     }
 
     [ClientRpc]
@@ -128,9 +145,10 @@ public class Player : NetworkBehaviour
 
     private void SendValuesToUI()
     {
-        Global.uIHandler.UpdateMoneyText(money.Value);
-        Global.uIHandler.UpdateWoodText(wood.Value);
-        Global.uIHandler.UpdateStoneText(stone.Value);
+        if (Global.uIHandler == null) return;
+        uIHandler.UpdateMoneyText(money.Value);
+        uIHandler.UpdateWoodText(wood.Value);
+        uIHandler.UpdateStoneText(stone.Value);
     }
 
     void Update()
@@ -148,7 +166,7 @@ public class Player : NetworkBehaviour
     
     public bool TakeResources(int tMoney, int tWood, int tStone)
     {
-        if (!NetworkManager.Singleton.IsServer)
+        if (!isLocal() && !NetworkManager.Singleton.IsServer)
         {
             Debug.Log("called from clienttttt! XD");
             return false;
