@@ -16,6 +16,7 @@ public class UnitAnimations : NetworkBehaviour
         unitAttack = GetComponent<UnitAttack>();
         unitMovement = GetComponent<UnitMovement>();
         unit.AfterNetworkSpawn += () => { 
+            Debug.Log("UnitAnimations: Unit spawned, getting animator and parts");
             animator = unit.model.GetComponent<Animator>();
             parts = unit.model.GetComponent<UnitParts>();
             UpdateWeaponTransform(false, false); 
@@ -31,7 +32,12 @@ public class UnitAnimations : NetworkBehaviour
 
     private void SetAnimationVariables()
     {
-        if (animator == null) return;
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator is null in UnitAnimations");
+            return;
+        }
+        
 
         animator.SetBool("isMoving", unitMovement.isMoving.Value);
         animator.SetBool("isDead", unit.isDead);

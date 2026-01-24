@@ -257,37 +257,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -150}
   m_SizeDelta: {x: 600, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &92736377
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 92736378}
-  m_Layer: 0
-  m_Name: Camera Position Main
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &92736378
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 92736377}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.3214394, y: 0, z: 0, w: 0.94693017}
-  m_LocalPosition: {x: -1.55, y: 3.165, z: -2.22}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &153286850
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,7 +343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3762046417
+  GlobalObjectIdHash: 1114030514
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -686,37 +655,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1 &480104822
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 480104823}
-  m_Layer: 0
-  m_Name: Camera Position Multiplayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &480104823
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 480104822}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.27837467, y: 0.47346509, z: -0.1607197, w: 0.82006556}
-  m_LocalPosition: {x: -5.579, y: 3.165, z: 1.273}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &490861421
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,9 +685,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuHandler
   localPlayer: {fileID: 3185647637956518943, guid: 9da34678a26744a43bd4873eabff4613, type: 3}
-  cameraPositionMain: {fileID: 92736378}
-  cameraPositionSingleplayer: {fileID: 0}
-  cameraPositionMultiplayer: {fileID: 480104823}
 --- !u!4 &490861423
 Transform:
   m_ObjectHideFlags: 0
@@ -908,7 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1606728235
+  GlobalObjectIdHash: 3822349326
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1231,7 +1166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1800036843
+  GlobalObjectIdHash: 1163168532
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -1423,10 +1358,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: spearman
       objectReference: {fileID: 0}
-    - target: {fileID: 51745742829502549, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 863572744762923759, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.5
@@ -1441,7 +1372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 863572744762923759, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.4641018
+      value: 3.464096
       objectReference: {fileID: 0}
     - target: {fileID: 863572744762923759, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1449,7 +1380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 863572744762923759, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 863572744762923759, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1590,37 +1521,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2574262398779694068, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
   m_PrefabInstance: {fileID: 1231802605}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1353277382
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1353277383}
-  m_Layer: 0
-  m_Name: Camera Position Singleplayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1353277383
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1353277382}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.40044, y: 0, z: 1.23512}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1424770697
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,13 +1607,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424770697}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.3216697, y: 0.00991551, z: -0.003368757, w: -0.9467941}
-  m_LocalPosition: {x: -1.52, y: 2.44, z: -2.22}
+  m_LocalRotation: {x: 0.3216697, y: -0.009915155, z: 0.0033686364, w: 0.94679403}
+  m_LocalPosition: {x: 1.7, y: 2.44, z: -14.22}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 36.701, y: 60, z: 0}
+  m_LocalEulerAnglesHint: {x: 37.97, y: -0.8, z: 0}
 --- !u!114 &1424770701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2477,7 +2377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1360207426
+  GlobalObjectIdHash: 3261927215
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -2535,7 +2435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.73205
+      value: 1.732048
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2543,19 +2443,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: -0.25881898
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -0.9659259
       objectReference: {fileID: 0}
     - target: {fileID: 4027780022778253319, guid: e2a95b1330ddf954eafad39711548e60, type: 3}
       propertyPath: m_LocalRotation.z
@@ -2998,6 +2898,3 @@ SceneRoots:
   - {fileID: 1892234139}
   - {fileID: 1727193517}
   - {fileID: 490861423}
-  - {fileID: 92736378}
-  - {fileID: 480104823}
-  - {fileID: 1353277383}

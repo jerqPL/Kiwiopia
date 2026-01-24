@@ -57,18 +57,18 @@ public class CityHandler : NetworkBehaviour
         netObj.ChangeOwnership(Global.playerHandler.players[ownerIndex].OwnerClientId);
     }
 
-    public void BuildCityLocally(int ownerIndex, int tileIndex)
+    public City BuildCityLocally(int ownerIndex, int tileIndex)
     {
         Player owner = Global.playerHandler.GetPlayerAt(ownerIndex);
         Tile tile = Global.tilesHandler.GetTileAt(tileIndex);
 
         if (owner == null || tile == null)
-            return;
+            return null;
 
         if (tile.city != null)
         {
             Debug.Log("City already built!");
-            return;
+            return null;
         }
 
         tile.owner = owner;
@@ -80,16 +80,17 @@ public class CityHandler : NetworkBehaviour
         if (!owner.TakeResources(money, wood, stone))
         {
             Debug.Log($"Not enough resources: {money}, {wood}, {stone}");
-            return;
+            return null;
         }
 
         Debug.Log(cityPrefab);
-            Debug.Log(tile);
+        Debug.Log(tile);
         GameObject cityObj = Instantiate(cityPrefab, tile.transform.position, Quaternion.identity);
         City city = cityObj.GetComponent<City>();
         city.ownerIndex.Value = ownerIndex;
         city.tileIndex.Value = tileIndex;
         city.ChangeSizeLocally(1);
+        return city;
     }
 
     public void CityChangedUpdate() 

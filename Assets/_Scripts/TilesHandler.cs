@@ -202,6 +202,7 @@ public class TilesHandler : MonoBehaviour
         {
             return true;
         }
+        return true;
         return false;
     }
 
@@ -209,7 +210,10 @@ public class TilesHandler : MonoBehaviour
     {
         Unit unit = source.unit;
         if (source == null || end == null || unit == null || unit.unitMovement.isMoving.Value)
+        {
+            Debug.Log("Brak Ÿród³a, celu lub jednostki w shortestPathSeeingVisible");
             return new List<Tile>();
+        }
 
         // BFS kolejka
         Queue<Tile> queue = new Queue<Tile>();
@@ -256,7 +260,7 @@ public class TilesHandler : MonoBehaviour
         path.Reverse(); // od source do end
         if (path.Count > 0 && path[0] != source)
         {
-            // brak po³¹czenia miêdzy source a end
+            Debug.Log("Brak po³¹czenia miêdzy Ÿród³em a celem w shortestPathSeeingVisible");
             return new List<Tile>();
         }
 

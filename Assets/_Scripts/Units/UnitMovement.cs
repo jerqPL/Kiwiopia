@@ -31,7 +31,13 @@ public class UnitMovement : NetworkBehaviour
         if (path == null || path.Count < 2) return;
 
         // Send request to server
-        MoveUnitServerRpc(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
+        if (!isLocal())
+            MoveUnitServerRpc(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
+        else
+        {
+            Debug.Log("Requesting local move");
+            MoveUnitLocal(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
+        }
     }
 
     // ServerRPC to move the unit
@@ -51,6 +57,25 @@ public class UnitMovement : NetworkBehaviour
         MoveUnitClientRpc(validIndices.ToArray());
     }
 
+    public void MoveUnitLocal(int[] tileIndices)
+    {
+        if (unit.isDead) return;
+        if (isMoving.Value) return;
+        Debug.Log("Local move requested");
+        List<int> validIndices = new List<int>();
+        foreach (var idx in tileIndices)
+        {
+            if (Global.tilesHandler.GetTileAt(idx) != null)
+                validIndices.Add(idx);
+        }
+
+        List<Tile> path = new List<Tile>();
+        foreach (int idx in validIndices)
+            path.Add(Global.tilesHandler.GetTileAt(idx));
+
+        movementCoroutine = StartCoroutine(MoveUnitCoroutine(path));
+    }
+
     [ClientRpc]
     private void MoveUnitClientRpc(int[] tileIndices)
     {
@@ -63,7 +88,7 @@ public class UnitMovement : NetworkBehaviour
 
     private IEnumerator<List<Tile>> MoveUnitCoroutine(List<Tile> path)
     {
-        if (IsServer) isMoving.Value = true;
+        if (IsServer || isLocal()) isMoving.Value = true;
         if (unit.owner == Global.playerHandler.GetLocalPlayer())
             unitUI.CreateProgressLine(path);
 
@@ -119,7 +144,7 @@ public class UnitMovement : NetworkBehaviour
         }
         if (unit.owner == Global.playerHandler.GetLocalPlayer())
             unitUI.DestroyProgressLine();
-        if (IsServer) isMoving.Value = false;
+        if (IsServer || isLocal()) isMoving.Value = false;
     }
 
     void ResetMovement(Tile destination)

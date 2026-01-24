@@ -1,6 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.UI;
 using static Global;
 
@@ -46,9 +47,16 @@ public class City : NetworkBehaviour
     {
         if (isLocal())
         {
-            Invoke("Initialize", 1);
+            StartCoroutine(InitializeEndOfFrame());
         }
     }
+
+    private IEnumerator InitializeEndOfFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        Initialize();
+    }
+
     public override void OnNetworkSpawn()
     {
         Initialize(); 
@@ -68,7 +76,7 @@ public class City : NetworkBehaviour
             if (tile == Global.selectionHandler.lastClickedTile) Global.uIHandler.UpdateCityMenu(this);
             if (ctx.Index == 0) StopRecruiting();
         };
-        Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
+        uIHandler?.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 
     private void StopRecruiting()

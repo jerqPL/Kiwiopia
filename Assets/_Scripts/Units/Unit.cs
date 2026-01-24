@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -62,9 +63,16 @@ public class Unit : NetworkBehaviour
     {
         if (isLocal())
         {
-            Initialize();
+            StartCoroutine(InitializeEndOfFrame());
         }
     }
+
+    private IEnumerator InitializeEndOfFrame()
+    {
+        yield return new WaitForEndOfFrame();
+        Initialize();
+    }
+
     public override void OnNetworkSpawn()
     {
         Initialize();

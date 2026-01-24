@@ -80,7 +80,7 @@ public class Player : NetworkBehaviour
         base.OnNetworkDespawn();
     }
 
-    public void SpawnPlayer(Tile startingTile)
+    public Unit SpawnPlayer(Tile startingTile)
     {
         Debug.Log("Spawning Player: " + OwnerClientId);
 
@@ -95,11 +95,11 @@ public class Player : NetworkBehaviour
         {
             Debug.LogError("Could not find starting tile for player " + OwnerClientId);
             DespawnPlayer();
-            return;
+            return null;
         }
 
         // Spawn starting unit via UnitsHandler ServerRPC
-        Global.unitsHandler.RecruitUnit(
+        Unit unit = Global.unitsHandler.RecruitUnit(
             Global.playerHandler.GetIndexOf(this),
             Global.tilesHandler.GetIndexOf(startingTile),
             0 // starting unit type
@@ -113,6 +113,7 @@ public class Player : NetworkBehaviour
                 Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { OwnerClientId } }
             });
         }
+        return unit;
     }
 
     [ClientRpc]

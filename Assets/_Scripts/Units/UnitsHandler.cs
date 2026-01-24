@@ -77,9 +77,9 @@ public class UnitsHandler : NetworkBehaviour
         }
     }
 
-    public void RecruitUnit(int playerIndex, int tileIndex, int unitType)
+    public Unit RecruitUnit(int playerIndex, int tileIndex, int unitType)
     {
-        if (!IsServer && !isLocal()) return;
+        if (!IsServer && !isLocal()) return null;
 
         GameObject unitObject = Instantiate(unitPrefab, Global.tilesHandler.GetTileAt(tileIndex).transform.position, Quaternion.identity);
         Unit unit = unitObject.GetComponent<Unit>();
@@ -95,6 +95,8 @@ public class UnitsHandler : NetworkBehaviour
             unitObject.GetComponent<NetworkObject>().Spawn();
             unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
         }
+
+        return unit;
     }
 
     public void AddUnit(Unit unit)
