@@ -303,7 +303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &153286851
 Transform:
   m_ObjectHideFlags: 0
@@ -1854,6 +1854,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 490861422}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: moveUnitsToMain
+      objectReference: {fileID: 0}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainMenuHandler, Assembly-CSharp
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2895,6 +2907,18 @@ PrefabInstance:
     - target: {fileID: 2574262398779694068, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 490861422}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: moveUnitsToMultiplayer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7861745171694840522, guid: 6e1fb387ee478c34295208339d047a4c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: MainMenuHandler, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
