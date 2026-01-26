@@ -1,14 +1,8 @@
-using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Unity.Android.Gradle;
-using Unity.Netcode;
-using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using static Global;
 
 public class MainMenuHandler : MonoBehaviour
@@ -18,11 +12,93 @@ public class MainMenuHandler : MonoBehaviour
     [SerializeField] private Transform cameraPositionSingleplayer;
     [SerializeField] private Transform cameraPositionMultiplayer;
 
-    private string mainUnitPositionTranscript = "";
-    private string multiplayerUnitPositionTranscript = "";
-    private string multiplayerUnitBasePositionTranscript = "404444";
-    private string mainUnitBasePositionTranscript = "";
-    private string mainUnitMultiplayerPositionTranscript = "40";
+    private enum UnitPosition
+    {
+        MAIN,
+        MULTIPLAYER,
+        SINGLEPLAYER
+    }
+
+    private string multiplayerUnitBasePosition = "40444";
+
+    private List<string> mainToMultiplayerPath = new List<string> {
+        "",
+        "4",
+        "40"
+    };
+
+    private List<string> mainToSingleplayerPath = new List<string>
+    {
+        "",
+        "1",
+        "10",
+    };
+
+    private List<string> multiplayerToMainPath = new List<string>
+    {
+        "40",
+        "4",
+        ""
+    };
+
+    private List<string> multiplayerToSingleplayer = new List<string>
+    {
+        "40",
+        "401",
+        "4012"
+    };
+    private List<string> singleplayerToMultiplayer = new List<string>
+    {
+        "4012",
+        "401",
+        "40"
+    };
+
+    private List<string> singleplayerToMainPath = new List<string>
+    {
+        "10",
+        "1",
+        ""
+    };
+
+    private List<string> multiplayerUnitToBasePath = new List<string>
+    {
+        "404",
+        "4044",
+        "40444",
+    };
+
+    private List<string> multiplayerUnitToMultiplayerPath = new List<string>
+    {
+        "40444",
+        "4044",
+        "404",
+    };
+    private List<string> mainUnitgoFromMultiplayer = new List<string> {
+        "40",
+        "405",
+        "4055",
+        "40555",
+        "405555"
+    };
+    private List<string> multiplayerUnitGoFromMultiplayer = new List<string> {
+        "404",
+        "4045",
+        "40455",
+        "404555",
+        "4045555"
+    };
+    private List<string> mainUnitGoFromSingleplayer = new List<string>
+    {
+        "4012",
+        "40122",
+        "401222",
+        "4012222",
+        "40122222",
+    };
+
+
+    private UnitPosition currentUnitPosition = UnitPosition.MAIN;
 
     private Unit mainUnit;
     private Unit multiplayerUnit;
@@ -31,53 +107,148 @@ public class MainMenuHandler : MonoBehaviour
     {
         AfterInitialization += () =>
         {
+            Time.timeScale *= 2;
             Camera.main.transform.position = cameraPositionMain.position;
             tilesHandler.GenerateTiles();
             Tile centerTile = tilesHandler.centerTile.GetComponent<Tile>();
             Player player = Instantiate(localPlayer);
             
             mainUnit = player.SpawnPlayer(centerTile);
-            mainUnitPositionTranscript = mainUnitBasePositionTranscript;
 
             City city = cityHandler.BuildCityLocally(playerHandler.GetIndexOf(player), tilesHandler.GetIndexOf(centerTile.neighbors[0]));
             mainUnit.RotateTowards(city.tile.transform.position);
 
-            Tile multiplayerUnitSpawn = tileTranscriptToTile(multiplayerUnitBasePositionTranscript);
+            Tile multiplayerUnitSpawn = tileTranscriptToTile(multiplayerUnitBasePosition);
             multiplayerUnit = unitsHandler.RecruitUnit(
                 playerHandler.GetIndexOf(player),
                 tilesHandler.GetIndexOf(multiplayerUnitSpawn),
                 1
             );
-            multiplayerUnitPositionTranscript = multiplayerUnitBasePositionTranscript;
             Camera.main.transform.position = cameraPositionMain.position;
             Camera.main.transform.rotation = cameraPositionMain.rotation;
         };
     }
 
+    public void goFromMultiplayer()
+    {
+        if (currentUnitPosition != UnitPosition.MULTIPLAYER)
+        {
+            return;
+        }
+        List<Tile> path = mainUnitgoFromMultiplayer
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+        mainUnit.unitMovement.RequestMove(path);
+        List<Tile> multiplayerUnitPath = multiplayerUnitGoFromMultiplayer
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+        mainUnit.unitMovement.RequestMove(path);
+        multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
+    }
+
+    public void goFromSingleplayer()
+    {
+        if (currentUnitPosition != UnitPosition.SINGLEPLAYER)
+        {
+            return;
+        }
+        List<Tile> path = mainUnitGoFromSingleplayer
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+        mainUnit.unitMovement.RequestMove(path);
+    }
+
     public void moveUnitsToMultiplayer()
     {
-        List<Tile> mainUnitPathToBasePosition = transcriptToList(mainUnitPositionTranscript, true);
-        List<Tile> mainUnitPathToMultiplayerPosition = transcriptToList(mainUnitMultiplayerPositionTranscript, false);
-        List<Tile> mainUnitPath = mainUnitPathToBasePosition.Concat(mainUnitPathToMultiplayerPosition).ToList();
-
-        mainUnit.unitMovement.RequestMove(mainUnitPath);
+        if (currentUnitPosition == UnitPosition.MULTIPLAYER)
+        {
+            return;
+        }
+        if (currentUnitPosition == UnitPosition.MAIN)
+        {
+            currentUnitPosition = UnitPosition.MULTIPLAYER;
+            List<Tile> path = mainToMultiplayerPath
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(path);
+            StartCoroutine(animateCameraMovement(cameraPositionMultiplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
+        }
+        if (currentUnitPosition == UnitPosition.SINGLEPLAYER)
+        {
+            currentUnitPosition = UnitPosition.MULTIPLAYER;
+            List<Tile> path = singleplayerToMultiplayer
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(path);
+            StartCoroutine(animateCameraMovement(cameraPositionMultiplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
+        }
         
-        
-        List<Tile> multiplayerUnitPath = transcriptToList(multiplayerUnitPositionTranscript, true, 4);
-
+        List<Tile> multiplayerUnitPath = multiplayerUnitToMultiplayerPath
+            .Select(transcript => tileTranscriptToTile(transcript))
+            .ToList(); 
         multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
-        StartCoroutine(animateCameraMovement(cameraPositionMultiplayer, (mainUnitPath.Count - 1) * (1/mainUnit.unitType.speed)));   
+    }
+
+    public void moveUnitsToSingleplayer()
+    {
+        if (currentUnitPosition == UnitPosition.SINGLEPLAYER)
+        {
+            return;
+        }
+        if (currentUnitPosition == UnitPosition.MAIN)
+        {
+            currentUnitPosition = UnitPosition.SINGLEPLAYER;
+            List<Tile> path = mainToSingleplayerPath
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(path);
+            StartCoroutine(animateCameraMovement(cameraPositionSingleplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
+        }
+        if (currentUnitPosition == UnitPosition.MULTIPLAYER)
+        {
+            currentUnitPosition = UnitPosition.SINGLEPLAYER;
+            List<Tile> path = multiplayerToSingleplayer
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(path);
+            StartCoroutine(animateCameraMovement(cameraPositionSingleplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
+
+            List<Tile> multiplayerUnitPath = multiplayerUnitToBasePath
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
+        }
     }
 
     public void moveUnitsToMain()
     {
-        List<Tile> multiplayerUnitPath = transcriptToList(multiplayerUnitPositionTranscript, false, 3);
-        Debug.Log("main");
-        List<Tile> mainUnitPathToMain = transcriptToList(mainUnitPositionTranscript, true);
+        if (currentUnitPosition == UnitPosition.MAIN)
+        {
+            return;
+        }
+        if (currentUnitPosition == UnitPosition.MULTIPLAYER)
+        {
+            currentUnitPosition = UnitPosition.MAIN;
+            List<Tile> path = multiplayerToMainPath
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(path);
+            StartCoroutine(animateCameraMovement(cameraPositionMain, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
 
-        mainUnit.unitMovement.RequestMove(mainUnitPathToMain);
-        multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
-        StartCoroutine(animateCameraMovement(cameraPositionMain, (mainUnitPathToMain.Count - 1) * (1/mainUnit.unitType.speed)));
+            List<Tile> multiplayerUnitPath = multiplayerUnitToBasePath
+            .Select(transcript => tileTranscriptToTile(transcript))
+            .ToList();
+            multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
+        }
+        if (currentUnitPosition == UnitPosition.SINGLEPLAYER)
+        {
+            currentUnitPosition = UnitPosition.MAIN;
+            List<Tile> pathToMain = singleplayerToMainPath
+                .Select(transcript => tileTranscriptToTile(transcript))
+                .ToList();
+            mainUnit.unitMovement.RequestMove(pathToMain);
+            StartCoroutine(animateCameraMovement(cameraPositionMain, (pathToMain.Count - 1) * (1 / mainUnit.unitType.speed)));
+        }
     }
 
     private IEnumerator animateCameraMovement(Transform target, float duration)
@@ -152,5 +323,10 @@ public class MainMenuHandler : MonoBehaviour
             }
             return result;
         }
+    }
+
+    public void Quit()
+    {
+        mainUnit.health.health.Value = 0;
     }
 }
