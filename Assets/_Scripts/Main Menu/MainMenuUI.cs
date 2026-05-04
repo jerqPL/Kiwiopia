@@ -2,7 +2,15 @@ using UnityEngine;
 
 public class MainMenuUI : MonoBehaviour
 {
-    [SerializeField] private Animator unitAnimator;
+    public Animator unitAnimator;
+    [SerializeField] private MainMenuHandler mainMenuHandler;
+    [SerializeField] private SoundHandler soundHandler;
+
+    [Header("Menus")]
+    [SerializeField] private RectTransform mainMenu;
+    [SerializeField] private RectTransform multiplayerMenu;
+    [SerializeField] private RectTransform singleplayerMenu;
+
     public void QuitAnimation()
     {
         unitAnimator.SetBool("isDead", true);
@@ -14,13 +22,65 @@ public class MainMenuUI : MonoBehaviour
         Debug.Log("Quit");
         Application.Quit();
     }
-    void Start()
+
+    public void Return() 
     {
+        if (mainMenuHandler.currentUnitPosition == MainMenuHandler.UnitPosition.MAIN)
+        {
+            return;
+        }
+
+        void OnCameraMoved()
+        {
+            mainMenu.gameObject.SetActive(true);
+            mainMenuHandler.AfterCameraMoved -= OnCameraMoved;
+        }
+        mainMenuHandler.moveUnitsToMain();
+        DisableAllMenus();
+        mainMenuHandler.AfterCameraMoved += OnCameraMoved;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ChangeToMultiplayer()
     {
-        
+        if (mainMenuHandler.currentUnitPosition == MainMenuHandler.UnitPosition.MULTIPLAYER)
+        {
+            return;
+        }
+        void OnCameraMoved()
+        {
+            multiplayerMenu.gameObject.SetActive(true);
+            mainMenuHandler.AfterCameraMoved -= OnCameraMoved;
+        }
+        DisableAllMenus();
+        mainMenuHandler.moveUnitsToMultiplayer();
+        mainMenuHandler.AfterCameraMoved += OnCameraMoved;
+    }
+
+    public void ChangeToSingleplayer()
+    {
+        if (mainMenuHandler.currentUnitPosition == MainMenuHandler.UnitPosition.SINGLEPLAYER)
+        {
+            return;
+        }
+        void OnCameraMoved()
+        {
+            singleplayerMenu.gameObject.SetActive(true);
+            mainMenuHandler.AfterCameraMoved -= OnCameraMoved;
+        }
+        DisableAllMenus();
+        mainMenuHandler.moveUnitsToSingleplayer();
+        mainMenuHandler.AfterCameraMoved += OnCameraMoved;
+    }
+
+    void DisableAllMenus()
+    {
+        mainMenu.gameObject.SetActive(false);
+        multiplayerMenu.gameObject.SetActive(false);
+        singleplayerMenu.gameObject.SetActive(false);
+    }
+
+    public void PlaySound(int index)
+    {
+        soundHandler.playAudioClip(index);
     }
 }

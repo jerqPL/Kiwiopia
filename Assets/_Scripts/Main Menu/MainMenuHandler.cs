@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,9 @@ public class MainMenuHandler : MonoBehaviour
     [SerializeField] private Transform cameraPositionSingleplayer;
     [SerializeField] private Transform cameraPositionMultiplayer;
 
-    private enum UnitPosition
+    [SerializeField] private MainMenuUI mainMenuUI;
+
+    public enum UnitPosition
     {
         MAIN,
         MULTIPLAYER,
@@ -39,19 +42,6 @@ public class MainMenuHandler : MonoBehaviour
         "40",
         "4",
         ""
-    };
-
-    private List<string> multiplayerToSingleplayer = new List<string>
-    {
-        "40",
-        "401",
-        "4012"
-    };
-    private List<string> singleplayerToMultiplayer = new List<string>
-    {
-        "4012",
-        "401",
-        "40"
     };
 
     private List<string> singleplayerToMainPath = new List<string>
@@ -98,10 +88,12 @@ public class MainMenuHandler : MonoBehaviour
     };
 
 
-    private UnitPosition currentUnitPosition = UnitPosition.MAIN;
+    public UnitPosition currentUnitPosition = UnitPosition.MAIN;
 
     private Unit mainUnit;
     private Unit multiplayerUnit;
+
+    public System.Action AfterCameraMoved;
 
     private void Awake()
     {
@@ -114,6 +106,7 @@ public class MainMenuHandler : MonoBehaviour
             Player player = Instantiate(localPlayer);
             
             mainUnit = player.SpawnPlayer(centerTile);
+            mainUnit.AfterNetworkSpawn += () => { mainMenuUI.unitAnimator = mainUnit.model.GetComponent<Animator>(); };
 
             City city = cityHandler.BuildCityLocally(playerHandler.GetIndexOf(player), tilesHandler.GetIndexOf(centerTile.neighbors[0]));
             mainUnit.RotateTowards(city.tile.transform.position);
@@ -160,7 +153,7 @@ public class MainMenuHandler : MonoBehaviour
 
     public void moveUnitsToMultiplayer()
     {
-        if (currentUnitPosition == UnitPosition.MULTIPLAYER)
+        if (currentUnitPosition == UnitPosition.MULTIPLAYER || currentUnitPosition == UnitPosition.SINGLEPLAYER)
         {
             return;
         }
@@ -172,17 +165,7 @@ public class MainMenuHandler : MonoBehaviour
                 .ToList();
             mainUnit.unitMovement.RequestMove(path);
             StartCoroutine(animateCameraMovement(cameraPositionMultiplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
-        }
-        if (currentUnitPosition == UnitPosition.SINGLEPLAYER)
-        {
-            currentUnitPosition = UnitPosition.MULTIPLAYER;
-            List<Tile> path = singleplayerToMultiplayer
-                .Select(transcript => tileTranscriptToTile(transcript))
-                .ToList();
-            mainUnit.unitMovement.RequestMove(path);
-            StartCoroutine(animateCameraMovement(cameraPositionMultiplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
-        }
-        
+        }   
         List<Tile> multiplayerUnitPath = multiplayerUnitToMultiplayerPath
             .Select(transcript => tileTranscriptToTile(transcript))
             .ToList(); 
@@ -191,7 +174,7 @@ public class MainMenuHandler : MonoBehaviour
 
     public void moveUnitsToSingleplayer()
     {
-        if (currentUnitPosition == UnitPosition.SINGLEPLAYER)
+        if (currentUnitPosition == UnitPosition.SINGLEPLAYER || currentUnitPosition == UnitPosition.MULTIPLAYER)
         {
             return;
         }
@@ -203,20 +186,6 @@ public class MainMenuHandler : MonoBehaviour
                 .ToList();
             mainUnit.unitMovement.RequestMove(path);
             StartCoroutine(animateCameraMovement(cameraPositionSingleplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
-        }
-        if (currentUnitPosition == UnitPosition.MULTIPLAYER)
-        {
-            currentUnitPosition = UnitPosition.SINGLEPLAYER;
-            List<Tile> path = multiplayerToSingleplayer
-                .Select(transcript => tileTranscriptToTile(transcript))
-                .ToList();
-            mainUnit.unitMovement.RequestMove(path);
-            StartCoroutine(animateCameraMovement(cameraPositionSingleplayer, (path.Count - 1) * (1 / mainUnit.unitType.speed)));
-
-            List<Tile> multiplayerUnitPath = multiplayerUnitToBasePath
-                .Select(transcript => tileTranscriptToTile(transcript))
-                .ToList();
-            multiplayerUnit.unitMovement.RequestMove(multiplayerUnitPath);
         }
     }
 
@@ -276,6 +245,7 @@ public class MainMenuHandler : MonoBehaviour
 
         cam.position = targetPosition;
         cam.rotation = targetRotation;
+        AfterCameraMoved?.Invoke();
     }
 
     Tile tileTranscriptToTile(string transcript)

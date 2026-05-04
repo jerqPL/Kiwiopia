@@ -30,16 +30,18 @@ public class Unit : NetworkBehaviour
     public event System.Action AfterNetworkSpawn;
     public event System.Action AfterDie;
 
-    public void RotateTowards(Vector3 vector)
+    public void RotateTowards(Vector3 target)
     {
-        Vector3 direction = vector - transform.position;
-        direction.y = 0;
-        if (direction == Vector3.zero)
-        {
+        Vector3 direction = target - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.001f)
             return;
-        }
-        Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
-        transform.rotation = rotation;
+
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        Quaternion offset = Quaternion.Euler(0f, 0, 0f); // adjust this
+
+        transform.rotation = lookRotation * offset;
     }
 
     [Rpc(SendTo.ClientsAndHost, InvokePermission = RpcInvokePermission.Server)]
