@@ -95,32 +95,6 @@ public class MainMenuHandler : MonoBehaviour
 
     public System.Action AfterCameraMoved;
 
-    private void Awake()
-    {
-        AfterInitialization += () =>
-        {
-            Time.timeScale *= 2;
-            Camera.main.transform.position = cameraPositionMain.position;
-            tilesHandler.GenerateTiles();
-            Tile centerTile = tilesHandler.centerTile.GetComponent<Tile>();
-            Player player = Instantiate(localPlayer);
-            
-            mainUnit = player.SpawnPlayer(centerTile);
-            mainUnit.AfterNetworkSpawn += () => { mainMenuUI.unitAnimator = mainUnit.model.GetComponent<Animator>(); };
-
-            City city = cityHandler.BuildCityLocally(playerHandler.GetIndexOf(player), tilesHandler.GetIndexOf(centerTile.neighbors[0]));
-            mainUnit.RotateTowards(city.tile.transform.position);
-
-            Tile multiplayerUnitSpawn = tileTranscriptToTile(multiplayerUnitBasePosition);
-            multiplayerUnit = unitsHandler.RecruitUnit(
-                playerHandler.GetIndexOf(player),
-                tilesHandler.GetIndexOf(multiplayerUnitSpawn),
-                1
-            );
-            Camera.main.transform.position = cameraPositionMain.position;
-            Camera.main.transform.rotation = cameraPositionMain.rotation;
-        };
-    }
 
     public void goFromMultiplayer()
     {

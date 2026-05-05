@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 using static Global;
@@ -13,6 +14,7 @@ public class TilesHandler : MonoBehaviour
 
     [SerializeField] private TerrainGeneration terrainGeneration;
     [SerializeField] private PlayerHandler playerHandler;
+
 
     private Tile getNewTile(Vector2 pos, int i, int x)
     {
@@ -265,5 +267,24 @@ public class TilesHandler : MonoBehaviour
         }
 
         return path;
+    }
+
+    public List<Tile> IndirectTileNeighbours(Tile tile, int range)
+    {
+        List<Tile> visibleTiles = new List<Tile> { tile };
+        for (int i = 0; i < range; i++)
+        {
+            int visTiles = visibleTiles.Count;
+            for (int j = 0; j < visTiles; j++)
+            {
+                Tile tilee = visibleTiles[j];
+                foreach (Tile neighbour in tilee.neighbors)
+                {
+                    if (!visibleTiles.Contains(neighbour))
+                        visibleTiles.Add(neighbour);
+                }
+            }
+        }
+        return visibleTiles;
     }
 }

@@ -29,7 +29,7 @@ public class UnitPay : NetworkBehaviour
 
             priceTimer -= coinsToTake * unit.unitType.timePerCoin;
 
-            if (!unit.owner.TakeResources(coinsToTake, 0, 0))
+            if (!unit.owner.TakeResources(coinsToTake))
             {
                 Global.unitsHandler.KillUnitServerRpc(Global.unitsHandler.GetIndexOf(unit));
             }

@@ -50,6 +50,7 @@ public class TerrainGeneration : NetworkBehaviour
         heightXOffset = htX;
         heightZOffset = htZ;
         Global.tilesHandler.GenerateTiles();
+        Global.ownershipHandler.GenerateOwnership();
     }
 
     private void GenerateOffsets()

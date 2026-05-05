@@ -63,65 +63,23 @@ public class Tile : MonoBehaviour
         {
             generationTimer += Time.deltaTime;
             generationTimer1 += Time.deltaTime;
-            if (!hasMountains && !hasForest)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
+            
+            int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
 
-                generationTimer -= generated * Global.timePerCoinPerTile;
-                SendToCity(generated, 0, 0);
-            }
-            else if (hasMountains && hasForest)
-            {
-                int generatedWood = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
-                generationTimer -= generatedWood * Global.timePerLogPerForest;
-                int generatedStone = (int)Mathf.Floor(generationTimer1 / Global.timePerStonePerMountain);
-                generationTimer1 -= generatedStone * Global.timePerStonePerMountain;
-                SendToCity(0, generatedWood, generatedStone);
-            }
-            else if (hasForest)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
-                generationTimer -= generated * Global.timePerLogPerForest;
-                SendToCity(0, generated, 0);
-            }
-            else if (hasMountains)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerStonePerMountain);
-                generationTimer -= generated * Global.timePerStonePerMountain;
-                SendToCity(0, 0, generated);
-            }
+            generationTimer -= generated * Global.timePerCoinPerTile;
+            SendToCity(generated);
+            
+   
         }
         if (underCity == null && unit != null)
         {
             generationTimer += Time.deltaTime;
             generationTimer1 += Time.deltaTime;
-            if (!hasMountains && !hasForest)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
+            int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
 
-                generationTimer -= generated * Global.timePerCoinPerTile;
-                SendToUnit(generated, 0, 0);
-            }
-            else if (hasMountains && hasForest)
-            {
-                int generatedWood = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
-                generationTimer -= generatedWood * Global.timePerLogPerForest;
-                int generatedStone = (int)Mathf.Floor(generationTimer1 / Global.timePerStonePerMountain);
-                generationTimer1 -= generatedStone * Global.timePerStonePerMountain;
-                SendToUnit(0, generatedWood, generatedStone);
-            }
-            else if (hasForest)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerLogPerForest);
-                generationTimer -= generated * Global.timePerLogPerForest;
-                SendToUnit(0, generated, 0);
-            }
-            else if (hasMountains)
-            {
-                int generated = (int)Mathf.Floor(generationTimer / Global.timePerStonePerMountain);
-                generationTimer -= generated * Global.timePerStonePerMountain;
-                SendToUnit(0, 0, generated);
-            }
+            generationTimer -= generated * Global.timePerCoinPerTile;
+            SendToUnit(generated);
+            
         }
     }
 
@@ -197,14 +155,14 @@ public class Tile : MonoBehaviour
         GetComponent<Renderer>().material = Global.terrainMaterials[terrainType];*/
     }
 
-    void SendToCity(int money, int wood, int stone)
+    void SendToCity(int money)
     {
-        underCity.RecieveResources(money, wood, stone);
+        underCity.RecieveResources(money);
     }
 
-    void SendToUnit(int money, int wood, int stone)
+    void SendToUnit(int money)
     {
-        unit.owner.RecieveResources(money, wood, stone);
+        unit.owner.RecieveResources(money);
     }
 
     public void SetVisibility(bool visible)

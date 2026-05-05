@@ -25,8 +25,6 @@ public class City : NetworkBehaviour
     public NetworkVariable<int> capturingUnitIndex = new NetworkVariable<int>();
 
     public int money = 0;
-    public int wood = 0;
-    public int stone = 0;
 
     public bool isRecruiting = false;
 
@@ -161,11 +159,9 @@ public class City : NetworkBehaviour
         newSize -= 2;
         if (newSize >= 0)
         {
-            int moneyToTake = Global.newCityResourceCost[orderNumber, 0] * Global.cityUpgradeCostMultiplayer[newSize, 0];
-            int woodToTake = Global.newCityResourceCost[orderNumber, 1] * Global.cityUpgradeCostMultiplayer[newSize, 1];
-            int stoneToTake = Global.newCityResourceCost[orderNumber, 2] * Global.cityUpgradeCostMultiplayer[newSize, 2];
+            int moneyToTake = Global.newCityResourceCost;
 
-            if (!owner.TakeResources(moneyToTake, woodToTake, stoneToTake))
+            if (!owner.TakeResources(moneyToTake))
             {
                 return;
             }
@@ -180,11 +176,10 @@ public class City : NetworkBehaviour
         newSize -= 2;
         if (newSize >= 0)
         {
-            int moneyToTake = Global.newCityResourceCost[orderNumber, 0] * Global.cityUpgradeCostMultiplayer[newSize, 0];
-            int woodToTake = Global.newCityResourceCost[orderNumber, 1] * Global.cityUpgradeCostMultiplayer[newSize, 1];
-            int stoneToTake = Global.newCityResourceCost[orderNumber, 2] * Global.cityUpgradeCostMultiplayer[newSize, 2];
+            int moneyToTake = Global.newCityResourceCost;
 
-            if (!owner.TakeResources(moneyToTake, woodToTake, stoneToTake))
+
+            if (!owner.TakeResources(moneyToTake))
             {
                 return;
             }
@@ -384,21 +379,17 @@ public class City : NetworkBehaviour
 
     void SendResourcesToPlayer()
     {
-        if (money == 0 && wood == 0 && stone == 0)
+        if (money == 0)
         {
             return;
         }
-        owner.RecieveResources(money, wood, stone);
+        owner.RecieveResources(money);
         money = 0;
-        wood = 0;
-        stone = 0;
     }
 
-    public void RecieveResources(int rMoney, int rWood, int rStone)
+    public void RecieveResources(int rMoney)
     {
         money += rMoney;
-        wood += rWood;
-        stone += rStone;
     }
 
     private void RecruitingProgress()

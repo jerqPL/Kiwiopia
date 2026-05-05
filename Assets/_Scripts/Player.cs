@@ -11,16 +11,6 @@ public class Player : NetworkBehaviour
     NetworkVariableReadPermission.Owner, // The owner (client) can read it
     NetworkVariableWritePermission.Server); // <<< Server has write permission
 
-    public NetworkVariable<int> wood = new NetworkVariable<int>(
-        Global.startingWood,
-        NetworkVariableReadPermission.Owner,
-        NetworkVariableWritePermission.Server); // <<< Server has write permission
-
-    public NetworkVariable<int> stone = new NetworkVariable<int>(
-        Global.startingStone,
-        NetworkVariableReadPermission.Owner,
-        NetworkVariableWritePermission.Server);
-
     public List<int> seenTiles = new List<int>();
     public List<int> visibleTiles = new List<int>();
 
@@ -48,8 +38,6 @@ public class Player : NetworkBehaviour
         if (Global.isLocal() || IsServer)
         {
             money.Value = Global.startingMoney;
-            wood.Value = Global.startingWood;
-            stone.Value = Global.startingStone;
         }
     }
 
@@ -65,10 +53,10 @@ public class Player : NetworkBehaviour
             InitializePlayer(true);
         }
 
-        unitsHandler.AfterUnitMoved += UpdateVisibleTiles;
+        unitsHandler.AfterUnitMoved += (prev, curr) => UpdateVisibleTiles();
         cityHandler.AfterCityChanged += UpdateVisibleTiles;
 
-        unitsHandler.AfterUnitMoved += UpdateVisibleUnits;
+        unitsHandler.AfterUnitMoved += (prev, curr) => UpdateVisibleUnits();
         cityHandler.AfterCityChanged += UpdateVisibleUnits;
 
         
@@ -148,8 +136,6 @@ public class Player : NetworkBehaviour
     {
         if (Global.uIHandler == null) return;
         uIHandler.UpdateMoneyText(money.Value);
-        uIHandler.UpdateWoodText(wood.Value);
-        uIHandler.UpdateStoneText(stone.Value);
     }
 
     void Update()
@@ -157,29 +143,25 @@ public class Player : NetworkBehaviour
         if (!IsOwner) return;
         SendValuesToUI();
     }
-    public void RecieveResources(int rMoney, int rWood, int rStone)
+    public void RecieveResources(int rMoney)
     {
         if (!NetworkManager.Singleton.IsServer) return;
         money.Value += rMoney;
-        wood.Value += rWood;
-        stone.Value += rStone;
     }
     
-    public bool TakeResources(int tMoney, int tWood, int tStone)
+    public bool TakeResources(int tMoney)
     {
         if (!isLocal() && !NetworkManager.Singleton.IsServer)
         {
             Debug.Log("called from clienttttt! XD");
             return false;
         }
-        if (money.Value >= tMoney && wood.Value >= tWood && stone.Value >= tStone)
+        if (money.Value >= tMoney)
         {
             money.Value -= tMoney;
-            wood.Value -= tWood;
-            stone.Value -= tStone;
             return true;
         }
-        Debug.Log($"Not enough resources: {tMoney}, {tWood}, {tStone}");
+        Debug.Log($"Not enough resources: {tMoney}");
         return false;
     }
 

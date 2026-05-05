@@ -15,7 +15,7 @@ public class UnitsHandler : NetworkBehaviour
 
     private List<Tile> path;
 
-    public event System.Action AfterUnitMoved;
+    public event System.Action<int, int> AfterUnitMoved;
 
     void Update()
     {
@@ -61,7 +61,7 @@ public class UnitsHandler : NetworkBehaviour
         City city = Global.tilesHandler.GetTileAt(tileIndex).city;
         if (city != null && city.ownerIndex.Value == playerIndex)
         {
-            if (Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost, 0, 0))
+            if (Global.playerHandler.GetPlayerAt(playerIndex).TakeResources(Global.unitTypes[unitType].cost))
             city.recruitmentQueue.Add(unitType);
         }
     }
@@ -72,7 +72,7 @@ public class UnitsHandler : NetworkBehaviour
         City city = Global.tilesHandler.GetTileAt(tileIndex).city;
         if (city != null && city.ownerIndex.Value == playerIndex)
         {
-            Global.playerHandler.GetPlayerAt(playerIndex).RecieveResources(Global.unitTypes[city.recruitmentQueue[index]].cost, 0, 0);
+            Global.playerHandler.GetPlayerAt(playerIndex).RecieveResources(Global.unitTypes[city.recruitmentQueue[index]].cost);
             city.recruitmentQueue.RemoveAt(index);
         }
     }
@@ -95,6 +95,8 @@ public class UnitsHandler : NetworkBehaviour
             unitObject.GetComponent<NetworkObject>().Spawn();
             unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
         }
+
+        AfterUnitMoved?.Invoke(-1, tileIndex);
 
         return unit;
     }
@@ -141,8 +143,8 @@ public class UnitsHandler : NetworkBehaviour
         }
     }
 
-    public void UnitMovedUpdate()
+    public void UnitMovedUpdate(int prev, int curr)
     {
-        AfterUnitMoved?.Invoke();
+        AfterUnitMoved?.Invoke(prev, curr);
     }
 }

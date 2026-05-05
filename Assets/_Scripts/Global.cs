@@ -45,12 +45,6 @@ public class Global : MonoBehaviour
     public static int startingMoney; //money, wood, stone;
     [SerializeField] private int startingMoneyReference;
 
-    public static int startingWood; 
-    [SerializeField] private int startingWoodReference;
-
-    public static int startingStone;
-    [SerializeField] private int startingStoneReference;
-
 
     public static float timePerCoinPerTile;
     [SerializeField] private float timePerCoinPerTileReference;
@@ -108,25 +102,10 @@ public class Global : MonoBehaviour
     [SerializeField] private Color localPlayerColorReference;
 
 
-    public static int[,] newCityResourceCost = {
-        {20, 5, 5},
-        {40, 10, 10},
-        {80, 20, 20 },
-        {160, 40, 40 },
-        {320, 80, 80 },
-        {640, 160, 160 },
-        {1280, 320, 320 }
-    };
+    public static int newCityResourceCost = 10;
 
-    public static int[,] cityUpgradeCostMultiplayer = {
-        {2, 2, 2},
-        {4, 4, 4},
-        {8, 8, 8},
-        {16, 16, 16},
-        {32, 32, 32},
-        {64, 64, 64},
-        {128, 128, 128}
-    };
+    public static OwnershipHandler ownershipHandler;
+    [SerializeField] private OwnershipHandler ownershipHandlerReference;
 
     public static event System.Action AfterInitialization;
 
@@ -143,8 +122,6 @@ public class Global : MonoBehaviour
         notScoutedTileMaterial = notScoutedTileMaterialReference;
 
         startingMoney = startingMoneyReference;
-        startingWood = startingWoodReference;
-        startingStone = startingStoneReference;
 
         timePerCoinPerTile = timePerCoinPerTileReference;
         timePerLogPerForest = timePerLogPerForestReference;
@@ -164,6 +141,7 @@ public class Global : MonoBehaviour
         selectionHandler = selectionHandlerReference;
         cityHandler = cityHandlerReference;
         sessionHandler = sessionHandlerReference;
+        ownershipHandler = ownershipHandlerReference;
 
         AfterInitialization?.Invoke();
     }

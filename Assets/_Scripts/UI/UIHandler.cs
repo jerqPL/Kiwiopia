@@ -285,35 +285,11 @@ public class UIHandler : NetworkBehaviour
         if (!tile.localPlayerHasSeen)
         {
             tileMoneyYield.text = "?";
-            tileWoodYield.text = "?";
-            tileStoneYield.text = "?";
         }
         else
-        {
-            if (tile.hasForest && tile.hasMountains)
-            {
-                tileMoneyYield.text = "0";
-                tileWoodYield.text = ((int)(1f / Global.timePerLogPerForest * 10) / 10f).ToString();
-                tileStoneYield.text = ((int)(1f / Global.timePerStonePerMountain * 10) / 10f).ToString();
-            }
-            else if (tile.hasMountains)
-            {
-                tileMoneyYield.text = "0";
-                tileWoodYield.text = "0";
-                tileStoneYield.text = ((int)(1f / Global.timePerStonePerMountain * 10) / 10f).ToString();
-            }
-            else if (tile.hasForest)
-            {
-                tileMoneyYield.text = "0";
-                tileWoodYield.text = ((int)(1f / Global.timePerLogPerForest * 10) / 10f).ToString();
-                tileStoneYield.text = "0";
-            }
-            else
-            {
-                tileMoneyYield.text = ((int)(1f / Global.timePerCoinPerTile * 10) / 10f).ToString();
-                tileWoodYield.text = "0";
-                tileStoneYield.text = "0";
-            }
+        { 
+            tileMoneyYield.text = ((int)(1f / Global.timePerCoinPerTile * 10) / 10f).ToString();
+            
         }
 
         if (tile.owner == null)

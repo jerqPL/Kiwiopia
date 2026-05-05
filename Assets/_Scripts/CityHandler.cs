@@ -32,17 +32,15 @@ public class CityHandler : NetworkBehaviour
         }
 
         tile.owner = owner;
-        
 
-        int money = Global.newCityResourceCost[owner.citys.Count, 0];
-        int wood = Global.newCityResourceCost[owner.citys.Count, 1];
-        int stone = Global.newCityResourceCost[owner.citys.Count, 2];
+
+        int money = Global.newCityResourceCost;
 
 
         if (NetworkManager.Singleton.IsServer) Debug.Log("building city on server");
-        if (!owner.TakeResources(money, wood, stone))
+        if (!owner.TakeResources(money))
         {
-            Debug.Log($"Not enough resources: {money}, {wood}, {stone}");
+            Debug.Log($"Not enough resources: {money}");
             return;
         }
 
@@ -73,13 +71,11 @@ public class CityHandler : NetworkBehaviour
 
         tile.owner = owner;
 
-        int money = Global.newCityResourceCost[owner.citys.Count, 0];
-        int wood = Global.newCityResourceCost[owner.citys.Count, 1];
-        int stone = Global.newCityResourceCost[owner.citys.Count, 2];
+        int money = Global.newCityResourceCost;
 
-        if (!owner.TakeResources(money, wood, stone))
+        if (!owner.TakeResources(money))
         {
-            Debug.Log($"Not enough resources: {money}, {wood}, {stone}");
+            Debug.Log($"Not enough resources: {money}");
             return null;
         }
 

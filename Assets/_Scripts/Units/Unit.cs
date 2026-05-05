@@ -50,10 +50,11 @@ public class Unit : NetworkBehaviour
         isDead = true;
         owner.units.Remove(this);
         unitMovement.CancelMovementClientRpc(tileIndex.Value);
+        int tileInde = tilesHandler.GetIndexOf(tile);
         tile.SetUnit(null);
         unitMovement.MoveTo(tile.transform.position);
         AfterDie?.Invoke();
-        unitsHandler.UnitMovedUpdate();
+        unitsHandler.UnitMovedUpdate(tileInde, -1);
     }
 
     public void SetRandomRotation()
@@ -99,6 +100,6 @@ public class Unit : NetworkBehaviour
         //isMoving.OnValueChanged += AnimateMovement;
         unitMovement.MoveTo(tile.transform.position);
         AfterNetworkSpawn?.Invoke();
-        unitsHandler.UnitMovedUpdate();
+        unitsHandler.UnitMovedUpdate(-1, tilesHandler.GetIndexOf(tile));
     }
 }
