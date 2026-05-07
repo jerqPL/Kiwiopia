@@ -21,7 +21,7 @@ public class UnitMovement : NetworkBehaviour
         unit = GetComponent<Unit>();
         unitUI = GetComponent<UnitUI>();
 
-        unit.tileIndex.OnValueChanged += (prev, curr) => { MoveToTile(prev, curr); unitsHandler.UnitMovedUpdate(prev, curr); AfterChangedTile?.Invoke(prev, curr); };
+        unit.tileIndex.OnValueChanged += (prev, curr) => { MoveToTile(prev, curr); unitsHandler.UnitMovedUpdate(prev, curr, unit.ownerIndex.Value); AfterChangedTile?.Invoke(prev, curr); };
     }
 
 

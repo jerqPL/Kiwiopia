@@ -15,7 +15,7 @@ public class UnitsHandler : NetworkBehaviour
 
     private List<Tile> path;
 
-    public event System.Action<int, int> AfterUnitMoved;
+    public event System.Action<int/*prev*/, int/*current*/, int/*owner*/> AfterUnitMoved;
 
     void Update()
     {
@@ -96,7 +96,7 @@ public class UnitsHandler : NetworkBehaviour
             unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
         }
 
-        AfterUnitMoved?.Invoke(-1, tileIndex);
+        //AfterUnitMoved?.Invoke(-1, tileIndex, playerIndex);
 
         return unit;
     }
@@ -143,8 +143,8 @@ public class UnitsHandler : NetworkBehaviour
         }
     }
 
-    public void UnitMovedUpdate(int prev, int curr)
+    public void UnitMovedUpdate(int prev, int curr, int owner)
     {
-        AfterUnitMoved?.Invoke(prev, curr);
+        AfterUnitMoved?.Invoke(prev, curr, owner);
     }
 }

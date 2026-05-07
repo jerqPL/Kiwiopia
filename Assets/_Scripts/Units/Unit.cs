@@ -13,7 +13,7 @@ public class Unit : NetworkBehaviour
     public NetworkVariable<int> ownerIndex;
     public Player owner => Global.playerHandler.GetPlayerAt(ownerIndex.Value);
 
-    public NetworkVariable<int> tileIndex;
+    public NetworkVariable<int> tileIndex = new NetworkVariable<int>(-1);
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);    
     
     public NetworkVariable<bool> isLeader = new NetworkVariable<bool>(false);
@@ -54,7 +54,7 @@ public class Unit : NetworkBehaviour
         tile.SetUnit(null);
         unitMovement.MoveTo(tile.transform.position);
         AfterDie?.Invoke();
-        unitsHandler.UnitMovedUpdate(tileInde, -1);
+        unitsHandler.UnitMovedUpdate(tileInde, -1, ownerIndex.Value);
     }
 
     public void SetRandomRotation()
@@ -100,6 +100,6 @@ public class Unit : NetworkBehaviour
         //isMoving.OnValueChanged += AnimateMovement;
         unitMovement.MoveTo(tile.transform.position);
         AfterNetworkSpawn?.Invoke();
-        unitsHandler.UnitMovedUpdate(-1, tilesHandler.GetIndexOf(tile));
+        //unitsHandler.UnitMovedUpdate(-1, tilesHandler.GetIndexOf(tile), ownerIndex.Value);
     }
 }

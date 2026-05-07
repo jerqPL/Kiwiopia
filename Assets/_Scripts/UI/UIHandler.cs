@@ -12,15 +12,11 @@ public class UIHandler : NetworkBehaviour
 {
     [Header("Resources UI")]
     [SerializeField] private TMP_Text moneyText;
-    [SerializeField] private TMP_Text woodText;
-    [SerializeField] private TMP_Text stoneText;
 
     [Header("City UI")]
     [SerializeField] private TMP_Text cityTier;
     [SerializeField] private Image cityOwner;
     [SerializeField] private TMP_Text cityMoneyYield;
-    [SerializeField] private TMP_Text cityWoodYield;
-    [SerializeField] private TMP_Text cityStoneYield;
     [SerializeField] private RectTransform recruitmentQueueLayoutGroup;
     [SerializeField] private List<RectTransform> unitPrefabs;
     private List<RectTransform> unitsInQueue = new List<RectTransform>();
@@ -31,8 +27,6 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private Image tileOwner;
     [SerializeField] private TMP_Text unknownTileOwner;
     [SerializeField] private TMP_Text tileMoneyYield;
-    [SerializeField] private TMP_Text tileWoodYield;
-    [SerializeField] private TMP_Text tileStoneYield;
     [SerializeField] private List<RectTransform> tileVisibleOnlyAsOwner;
 
     [Header("Unit UI")]
@@ -396,8 +390,6 @@ public class UIHandler : NetworkBehaviour
         }
 
         cityMoneyYield.text = ((int)(moneyYield * 10) / 10f).ToString();
-        cityWoodYield.text = ((int)(woodYield * 10) / 10f).ToString();
-        cityStoneYield.text = ((int)(stoneYield * 10) / 10f).ToString();
 
         foreach(RectTransform unitQ in unitsInQueue)
         {
@@ -473,15 +465,6 @@ public class UIHandler : NetworkBehaviour
         moneyText.text = value.ToString();
     }
 
-    public void UpdateWoodText(int value)
-    {
-        woodText.text = value.ToString();
-    }
-
-    public void UpdateStoneText(int value)
-    {
-        stoneText.text = value.ToString();
-    }
 
     public void Lost()
     {

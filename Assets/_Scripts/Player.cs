@@ -53,10 +53,10 @@ public class Player : NetworkBehaviour
             InitializePlayer(true);
         }
 
-        unitsHandler.AfterUnitMoved += (prev, curr) => UpdateVisibleTiles();
+        unitsHandler.AfterUnitMoved += (prev, curr, owner) => UpdateVisibleTiles();
         cityHandler.AfterCityChanged += UpdateVisibleTiles;
 
-        unitsHandler.AfterUnitMoved += (prev, curr) => UpdateVisibleUnits();
+        unitsHandler.AfterUnitMoved += (prev, curr, owner) => UpdateVisibleUnits();
         cityHandler.AfterCityChanged += UpdateVisibleUnits;
 
         

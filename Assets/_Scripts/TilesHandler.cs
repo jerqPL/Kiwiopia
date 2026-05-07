@@ -287,4 +287,40 @@ public class TilesHandler : MonoBehaviour
         }
         return visibleTiles;
     }
+
+    public int Distance(Tile tile1, Tile tile2)
+    {
+        if (tile1 == tile2)
+        {
+            Debug.Log("Distance calculation starts and ends, tiles are the same, distance is 0");
+            return 0;
+        }
+        Debug.Log($"Distance calculation starts from {tile1.name} to {tile2.name}");
+        List<Tile> visibleTiles = new List<Tile> { tile1 };
+        for (int o = 1; o < gridSize; o++)
+        {
+            for (int i = 0; i < o; i++)
+            {
+                int visTiles = visibleTiles.Count;
+                for (int j = 0; j < visTiles; j++)
+                {
+                    Tile tilee = visibleTiles[j];
+                    foreach (Tile neighbour in tilee.neighbors)
+                    {
+                        if (!visibleTiles.Contains(neighbour))
+                        {
+                            if (neighbour == tile2)
+                            {
+                                Debug.Log($"Distance calculation ends, distance is {o}");
+                                return o;
+                            }
+                            visibleTiles.Add(neighbour);
+                        }
+                    }
+                }
+            }
+        }
+        Debug.Log("Distance calculation ends, no path found");
+        return -1;
+    }
 }

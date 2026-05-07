@@ -815,13 +815,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIHandler
   ShowTopMostFoldoutHeaderGroup: 1
   moneyText: {fileID: 387672319}
-  woodText: {fileID: 0}
-  stoneText: {fileID: 0}
   cityTier: {fileID: 1173510675}
   cityOwner: {fileID: 1329729673}
   cityMoneyYield: {fileID: 44512346}
-  cityWoodYield: {fileID: 0}
-  cityStoneYield: {fileID: 0}
   recruitmentQueueLayoutGroup: {fileID: 1347786990}
   unitPrefabs:
   - {fileID: 2073689735237227369, guid: c50e36baea852ed48b882835c3e56cdd, type: 3}
@@ -830,15 +826,11 @@ MonoBehaviour:
   - {fileID: 2073689735237227369, guid: 22655c177f4c9704aa7bb5c3c33e3e47, type: 3}
   - {fileID: 2073689735237227369, guid: 76c9807aaca64874fb4e16c6c86878c7, type: 3}
   - {fileID: 2073689735237227369, guid: 2b121765f0eef654bbd5ece020b40478, type: 3}
-  cityVisibleOnlyAsOwner:
-  - {fileID: 1974444399}
-  - {fileID: 0}
+  cityVisibleOnlyAsOwner: []
   tileType: {fileID: 1363281456}
   tileOwner: {fileID: 1499343314}
   unknownTileOwner: {fileID: 1750635274}
   tileMoneyYield: {fileID: 1122720851}
-  tileWoodYield: {fileID: 0}
-  tileStoneYield: {fileID: 0}
   tileVisibleOnlyAsOwner: []
   unitType: {fileID: 1853954350}
   unitOwner: {fileID: 1439703456}
@@ -1015,7 +1007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &221350076
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2280,9 +2272,9 @@ RectTransform:
   - {fileID: 480881832}
   m_Father: {fileID: 630190798}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -150}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &480881831
@@ -3582,9 +3574,9 @@ RectTransform:
   - {fileID: 1115646189}
   m_Father: {fileID: 630190798}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 300, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 600, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &614927346
@@ -7189,8 +7181,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74a093422d1ba2f438385c84d51eb73a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OwnershipHandler
-  owershipDistance: 3
-  ownershipFallof: 1
+  ownershipDistance: 3
+  ownershipFallof: 0.5
+  minOwnership: 0.2
 --- !u!4 &1220441549
 Transform:
   m_ObjectHideFlags: 0
@@ -11381,7 +11374,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1842523340
 RectTransform:
   m_ObjectHideFlags: 0
