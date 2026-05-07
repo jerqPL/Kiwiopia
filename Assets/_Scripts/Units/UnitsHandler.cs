@@ -87,7 +87,7 @@ public class UnitsHandler : NetworkBehaviour
         health.SetUnitType(unitType);
         health.SetHealth(Global.unitTypes[unitType].health);
         unit.typeIndex.Value = unitType;
-        unit.tileIndex.Value = tileIndex;
+        
         unit.ownerIndex.Value = playerIndex;
 
         if (!isLocal())
@@ -96,6 +96,7 @@ public class UnitsHandler : NetworkBehaviour
             unitObject.GetComponent<NetworkObject>().ChangeOwnership(Global.playerHandler.players[playerIndex].OwnerClientId);
         }
 
+        unit.tileIndex.Value = tileIndex;
         //AfterUnitMoved?.Invoke(-1, tileIndex, playerIndex);
 
         return unit;

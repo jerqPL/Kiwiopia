@@ -21,7 +21,7 @@ public class TilesHandler : MonoBehaviour
         GameObject tileGameObject = Instantiate(hexTile, new Vector3(pos.x, -.5f, pos.y), Quaternion.identity);
         tileGameObject.name = $"Tile_{i}_{x}";
         tileGameObject.transform.parent = transform;
-        Tile newTile = tileGameObject.AddComponent<Tile>();
+        Tile newTile = tileGameObject.GetComponent<Tile>();
         newTile.position = pos;
         return newTile;
     }

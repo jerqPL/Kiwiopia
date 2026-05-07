@@ -1,9 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
+using static Global;
 
 public class Tile : MonoBehaviour
 {
+    [SerializeField] private Image tileOwnerImage;
+
     public List<Tile> neighbors = new List<Tile>();
 
     public bool hasCity = false;
@@ -32,6 +36,22 @@ public class Tile : MonoBehaviour
     private Material material;
 
     private Material seenNotVisible;
+
+    public void UpdateOwner(Player owner)
+    {
+        Debug.Log("Updating owner of tile " + gameObject.name + " to " + (owner != null ? owner.name : "null"));
+        this.owner = owner;
+        if (owner != null)
+        {
+            Color color = playerHandler.GetPlayerColor(playerHandler.GetIndexOf(owner));
+            tileOwnerImage.gameObject.SetActive(true);
+            tileOwnerImage.color = color;
+        }
+        else
+        {
+            tileOwnerImage.gameObject.SetActive(false);
+        }
+    }
 
 
     void Awake()

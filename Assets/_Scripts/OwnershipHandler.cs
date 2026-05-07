@@ -85,15 +85,17 @@ public class OwnershipHandler : MonoBehaviour
                 owner = i;
             }
         }
-        tile.transform.position = new Vector3(tile.transform.position.x, maxOwnership - 0.5f, tile.transform.position.z);
-        if (owner == -1 || maxOwnership - secondMaxOwnership > minOwnership)
+        //tile.transform.position = new Vector3(tile.transform.position.x, maxOwnership - 0.5f, tile.transform.position.z);
+        if (owner == -1 || maxOwnership - secondMaxOwnership < minOwnership)
         {
-            tile.owner = null;
+            tile.UpdateOwner(null);
+            //tile.owner = null;
             Debug.Log("Tile " + tile.name + " has no owner");
             
             return;
         }
-        tile.owner = playerHandler.players[owner];
+        tile.UpdateOwner(playerHandler.players[owner]);
+        //tile.owner = playerHandler.players[owner];
         
     }
 
