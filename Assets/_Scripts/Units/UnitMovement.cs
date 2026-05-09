@@ -212,7 +212,7 @@ public class UnitMovement : NetworkBehaviour
         if (!IsServer) return;
         if (playerIndex != unit.ownerIndex.Value) return;
         if (isMoving.Value) return;
-        List<Tile> neighbourTiles = unit.tile.neighbors;
+        List<Tile> neighbourTiles = unit.tile.neighbours.ToList();
         Global.Shuffle(neighbourTiles);
         foreach (Tile neighbour in neighbourTiles)
         {

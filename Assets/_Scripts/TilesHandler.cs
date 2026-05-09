@@ -23,10 +23,11 @@ public class TilesHandler : MonoBehaviour
         tileGameObject.transform.parent = transform;
         Tile newTile = tileGameObject.GetComponent<Tile>();
         newTile.position = pos;
+        newTile.index = tiles.Count;
         return newTile;
     }
 
-    
+
     public void GenerateTiles()
     {
         if (gridSize % 2 == 0)
@@ -34,86 +35,159 @@ public class TilesHandler : MonoBehaviour
             gridSize += 1;
         }
 
+        tiles.Clear();
 
-        Vector2 startingPosition = new Vector2((-Mathf.Sqrt(3)/2) * (gridSize - 1), (-gridSize + 1) * 1.5f);
+        // Store coordinates for neighbour lookup
+        Dictionary<Vector2Int, Tile> tileMap = new Dictionary<Vector2Int, Tile>();
+
+        Vector2 startingPosition = new Vector2(
+            (-Mathf.Sqrt(3) / 2) * (gridSize - 1),
+            (-gridSize + 1) * 1.5f
+        );
+
         float deltaX = 0f;
+
+        // TOP HALF + MIDDLE
         for (int i = 0; i < gridSize; i++)
         {
             for (int x = 0; x < gridSize + i; x++)
             {
-                Vector2 pos = startingPosition + new Vector2(x * Mathf.Sqrt(3) + deltaX, 1.5f * i);
+                Vector2 pos = startingPosition + new Vector2(
+                    x * Mathf.Sqrt(3) + deltaX,
+                    1.5f * i
+                );
 
                 Tile newTile = getNewTile(pos, i, x);
 
-                if (x != 0) {
-                    AddNeighbourAtIndex(tiles.Count - 1, newTile);
-                }
-
-                if (i != 0)
-                {
-                    if (x != 0)
-                    {
-                        AddNeighbourAtIndex(tiles.Count - 1 - x - (gridSize + i - 1) + x, newTile);
-                    }
-                     if (x != gridSize + i - 1)
-                    {
-                        AddNeighbourAtIndex(tiles.Count - 1 - x - (gridSize + i - 1) + x + 1, newTile);
-                    }
-                }
-
                 tiles.Add(newTile);
 
+                tileMap[new Vector2Int(i, x)] = newTile;
 
-                if (i == gridSize - 1 && x == (gridSize + i - 1)/2)
+                // Ensure exactly 6 neighbour slots
+                newTile.neighbours = new Tile[6];
+
+                if (i == gridSize - 1 && x == (gridSize + i - 1) / 2)
                 {
                     centerTile = newTile.gameObject;
                 }
             }
-            deltaX -= Mathf.Sqrt(3) / 2;
 
-            
+            deltaX -= Mathf.Sqrt(3) / 2;
         }
+
+        // BOTTOM HALF
         deltaX += Mathf.Sqrt(3);
+
         for (int i = gridSize - 2; i >= 0; i--)
         {
             for (int x = 0; x < gridSize + i; x++)
             {
-                Vector2 pos = startingPosition + new Vector2(x * Mathf.Sqrt(3) + deltaX, 1.5f * (gridSize + (gridSize - 2 - i)) );
-                Tile newTile = getNewTile(pos, 2 * gridSize - i - 2, x);
+                Vector2 pos = startingPosition + new Vector2(
+                    x * Mathf.Sqrt(3) + deltaX,
+                    1.5f * (gridSize + (gridSize - 2 - i))
+                );
 
+                int row = 2 * gridSize - i - 2;
 
-                if ( x != 0) {
-                    AddNeighbourAtIndex(tiles.Count - 1, newTile);
-                }
-                AddNeighbourAtIndex(tiles.Count - 1 - x - (gridSize + i - 1) + x - 1, newTile);
-                
-                AddNeighbourAtIndex(tiles.Count - 1 - x - (gridSize + i - 1) + x, newTile);
-                
+                Tile newTile = getNewTile(pos, row, x);
 
                 tiles.Add(newTile);
+
+                tileMap[new Vector2Int(row, x)] = newTile;
+
+                // Ensure exactly 6 neighbour slots
+                newTile.neighbours = new Tile[6];
             }
+
             deltaX += Mathf.Sqrt(3) / 2;
         }
 
+        // CONNECT NEIGHBOURS
+        foreach (var kvp in tileMap)
+        {
+            Vector2Int coord = kvp.Key;
+            Tile tile = kvp.Value;
+
+            int row = coord.x;
+            int col = coord.y;
+
+            // Same order for every tile:
+            // 0 = Left
+            // 1 = Right
+            // 2 = Upper Left
+            // 3 = Upper Right
+            // 4 = Lower Left
+            // 5 = Lower Right
+
+            Vector2Int[] offsets;
+
+            bool topHalf = row < gridSize;
+
+            if (topHalf)
+            {
+                offsets = new Vector2Int[]
+                {
+                new Vector2Int(0, -1), // Left
+                new Vector2Int(0, 1),  // Right
+                new Vector2Int(-1, -1),// Upper Left
+                new Vector2Int(-1, 0), // Upper Right
+                new Vector2Int(1, 0),  // Lower Left
+                new Vector2Int(1, 1)   // Lower Right
+                };
+            }
+            else
+            {
+                offsets = new Vector2Int[]
+                {
+                new Vector2Int(0, -1), // Left
+                new Vector2Int(0, 1),  // Right
+                new Vector2Int(-1, 0), // Upper Left
+                new Vector2Int(-1, 1), // Upper Right
+                new Vector2Int(1, -1), // Lower Left
+                new Vector2Int(1, 0)   // Lower Right
+                };
+            }
+
+            for (int n = 0; n < 6; n++)
+            {
+                Vector2Int neighbourCoord = coord + offsets[n];
+
+                if (tileMap.TryGetValue(neighbourCoord, out Tile neighbour))
+                {
+                    tile.neighbours[n] = neighbour;
+                }
+                else
+                {
+                    tile.neighbours[n] = null;
+                }
+            }
+        }
+
+        // APPLY TERRAIN
         foreach (Tile tile in tiles)
         {
-            tile.ApplyTerrain(terrainGeneration.GetTerrainAtPos(tile.transform.position.x, tile.transform.position.z));
-        }   
+            tile.ApplyTerrain(
+                terrainGeneration.GetTerrainAtPos(
+                    tile.transform.position.x,
+                    tile.transform.position.z
+                )
+            );
+        }
     }
 
 
-    void AddNeighbourAtIndex(int index, Tile tile)
+    /*void AddNeighbourAtIndex(int index, Tile tile)
     {
-        if (index >= 0 && index < tiles.Count && !tile.neighbors.Contains(tiles[index]))
+        if (index >= 0 && index < tiles.Count && !tile.neighbours.Contains(tiles[index]))
         {
-            tile.neighbors.Add(tiles[index]);
-            tiles[index].neighbors.Add(tile);
+            tile.neighbours.Add(tiles[index]);
+            tiles[index].neighbours.Add(tile);
         }
         else
         {
             Debug.LogWarning($"Index {index} is out of bounds for tiles list.");
         }
-    }
+    }*/
 
     /*public List<Tile> shortestPath(Tile source, Tile end)
     {
@@ -234,17 +308,17 @@ public class TilesHandler : MonoBehaviour
                 break; // znaleziono cel
             }
 
-            List<Tile> neighbors = new List<Tile>(current.neighbors);
+            List<Tile> neighbors = new List<Tile>(current.neighbours);
             Global.Shuffle(neighbors);
-            foreach (Tile neighbor in neighbors)
+            foreach (Tile neighbour in neighbors)
             {
-
-                if (!cameFrom.ContainsKey(neighbor))
+                if (neighbour == null) continue;
+                if (!cameFrom.ContainsKey(neighbour))
                 {
-                    if (CanGetThrough(unit, neighbor))
+                    if (CanGetThrough(unit, neighbour))
                     {
-                        cameFrom[neighbor] = current;
-                        queue.Enqueue(neighbor);
+                        cameFrom[neighbour] = current;
+                        queue.Enqueue(neighbour);
                     }
                 }
             }
@@ -278,8 +352,9 @@ public class TilesHandler : MonoBehaviour
             for (int j = 0; j < visTiles; j++)
             {
                 Tile tilee = visibleTiles[j];
-                foreach (Tile neighbour in tilee.neighbors)
+                foreach (Tile neighbour in tilee.neighbours)
                 {
+                    if (neighbour == null) continue;
                     if (!visibleTiles.Contains(neighbour))
                         visibleTiles.Add(neighbour);
                 }
@@ -305,8 +380,9 @@ public class TilesHandler : MonoBehaviour
                 for (int j = 0; j < visTiles; j++)
                 {
                     Tile tilee = visibleTiles[j];
-                    foreach (Tile neighbour in tilee.neighbors)
+                    foreach (Tile neighbour in tilee.neighbours)
                     {
+                        if (neighbour == null) continue;
                         if (!visibleTiles.Contains(neighbour))
                         {
                             if (neighbour == tile2)

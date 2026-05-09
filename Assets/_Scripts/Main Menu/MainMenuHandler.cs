@@ -228,7 +228,7 @@ public class MainMenuHandler : MonoBehaviour
         int index = 0;
         while (index < transcript.Length)
         {
-            current = current.neighbors[int.Parse(transcript[index].ToString())];
+            current = current.neighbours[int.Parse(transcript[index].ToString())];
             index++;
         }
         return current;

@@ -8,7 +8,11 @@ public class Tile : MonoBehaviour
 {
     [SerializeField] private Image tileOwnerImage;
 
-    public List<Tile> neighbors = new List<Tile>();
+    [SerializeField] private List<Image> tileBorders;
+
+    public int index = 0;
+
+    public Tile[] neighbours;
 
     public bool hasCity = false;
     public bool hasMountains = false;
@@ -46,6 +50,10 @@ public class Tile : MonoBehaviour
             Color color = playerHandler.GetPlayerColor(playerHandler.GetIndexOf(owner));
             tileOwnerImage.gameObject.SetActive(true);
             tileOwnerImage.color = color;
+            foreach(Image border in tileBorders)
+            {
+                border.color = color;
+            }
         }
         else
         {
@@ -78,6 +86,20 @@ public class Tile : MonoBehaviour
 
     void Update()
     {
+        if (owner != null) { 
+            for (int i = 0; i < neighbours.Length; i++)
+            {
+                if (neighbours[i] == null || neighbours[i].owner != owner)
+                {
+                    tileBorders[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    tileBorders[i].gameObject.SetActive(false);
+                }
+            }
+        }
+        ///DELETE ^ TS FASSTTT
         if (!NetworkManager.Singleton.IsServer) return;
         if (underCity != null)
         {

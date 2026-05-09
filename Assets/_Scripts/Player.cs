@@ -210,7 +210,7 @@ public class Player : NetworkBehaviour
                     for (int j = 0; j < visTiles; j++)
                     {
                         Tile tile = unittiles[j];
-                        foreach (Tile neighbour in tile.neighbors)
+                        foreach (Tile neighbour in tile.neighbours)
                         {
                             if (!unittiles.Contains(neighbour))
                                 unittiles.Add(neighbour);

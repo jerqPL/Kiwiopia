@@ -200,7 +200,7 @@ public class City : NetworkBehaviour
         tile.underCity = this;
         tile.city = this;
         tile.GetDefaultOwner();
-        foreach (Tile neighbour in tile.neighbors)
+        foreach (Tile neighbour in tile.neighbours)
         {
             if (neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
             {
@@ -215,7 +215,7 @@ public class City : NetworkBehaviour
             for (int j = 0; j < cityTilesCount; j++)
             {
                 Tile cityTile = cityTiles[j];
-                foreach (Tile neighbour in cityTile.neighbors)
+                foreach (Tile neighbour in cityTile.neighbours)
                 {
                     if (!cityTiles.Contains(neighbour) && neighbour.underCity == null && (neighbour.owner == tile.owner || neighbour.owner == null))
                     {
