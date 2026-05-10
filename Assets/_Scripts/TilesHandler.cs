@@ -37,112 +37,124 @@ public class TilesHandler : MonoBehaviour
 
         tiles.Clear();
 
-        // Store coordinates for neighbour lookup
         Dictionary<Vector2Int, Tile> tileMap = new Dictionary<Vector2Int, Tile>();
 
         Vector2 startingPosition = new Vector2(
-            (-Mathf.Sqrt(3) / 2) * (gridSize - 1),
+            (-Mathf.Sqrt(3f) / 2f) * (gridSize - 1),
             (-gridSize + 1) * 1.5f
         );
 
         float deltaX = 0f;
 
         // TOP HALF + MIDDLE
-        for (int i = 0; i < gridSize; i++)
+        for (int row = 0; row < gridSize; row++)
         {
-            for (int x = 0; x < gridSize + i; x++)
+            for (int col = 0; col < gridSize + row; col++)
             {
                 Vector2 pos = startingPosition + new Vector2(
-                    x * Mathf.Sqrt(3) + deltaX,
-                    1.5f * i
+                    col * Mathf.Sqrt(3f) + deltaX,
+                    1.5f * row
                 );
 
-                Tile newTile = getNewTile(pos, i, x);
+                Tile newTile = getNewTile(pos, row, col);
+
+                newTile.neighbours = new Tile[6];
 
                 tiles.Add(newTile);
 
-                tileMap[new Vector2Int(i, x)] = newTile;
+                tileMap[new Vector2Int(row, col)] = newTile;
 
-                // Ensure exactly 6 neighbour slots
-                newTile.neighbours = new Tile[6];
-
-                if (i == gridSize - 1 && x == (gridSize + i - 1) / 2)
+                if (row == gridSize - 1 &&
+                    col == (gridSize + row - 1) / 2)
                 {
                     centerTile = newTile.gameObject;
                 }
             }
 
-            deltaX -= Mathf.Sqrt(3) / 2;
+            deltaX -= Mathf.Sqrt(3f) / 2f;
         }
 
         // BOTTOM HALF
-        deltaX += Mathf.Sqrt(3);
+        deltaX += Mathf.Sqrt(3f);
 
         for (int i = gridSize - 2; i >= 0; i--)
         {
-            for (int x = 0; x < gridSize + i; x++)
+            int row = 2 * gridSize - i - 2;
+
+            for (int col = 0; col < gridSize + i; col++)
             {
                 Vector2 pos = startingPosition + new Vector2(
-                    x * Mathf.Sqrt(3) + deltaX,
+                    col * Mathf.Sqrt(3f) + deltaX,
                     1.5f * (gridSize + (gridSize - 2 - i))
                 );
 
-                int row = 2 * gridSize - i - 2;
+                Tile newTile = getNewTile(pos, row, col);
 
-                Tile newTile = getNewTile(pos, row, x);
+                newTile.neighbours = new Tile[6];
 
                 tiles.Add(newTile);
 
-                tileMap[new Vector2Int(row, x)] = newTile;
-
-                // Ensure exactly 6 neighbour slots
-                newTile.neighbours = new Tile[6];
+                tileMap[new Vector2Int(row, col)] = newTile;
             }
 
-            deltaX += Mathf.Sqrt(3) / 2;
+            deltaX += Mathf.Sqrt(3f) / 2f;
         }
 
         // CONNECT NEIGHBOURS
         foreach (var kvp in tileMap)
         {
             Vector2Int coord = kvp.Key;
-            Tile tile = kvp.Value;
 
             int row = coord.x;
             int col = coord.y;
 
-            // Same order for every tile:
-            // 0 = Left
-            // 1 = Right
-            // 2 = Upper Left
-            // 3 = Upper Right
-            // 4 = Lower Left
-            // 5 = Lower Right
+            Tile tile = kvp.Value;
+
+            int middleRow = gridSize - 1;
 
             Vector2Int[] offsets;
 
-            bool topHalf = row < gridSize;
-
-            if (topHalf)
+            // TOP HALF
+            if (row < middleRow)
             {
                 offsets = new Vector2Int[]
                 {
                 new Vector2Int(0, -1), // Left
                 new Vector2Int(0, 1),  // Right
-                new Vector2Int(-1, -1),// Upper Left
-                new Vector2Int(-1, 0), // Upper Right
-                new Vector2Int(1, 0),  // Lower Left
-                new Vector2Int(1, 1)   // Lower Right
+
+                new Vector2Int(-1, -1), // Upper Left
+                new Vector2Int(-1, 0),  // Upper Right
+
+                new Vector2Int(1, 0), // Lower Left
+                new Vector2Int(1, 1)  // Lower Right
                 };
             }
+            // MIDDLE ROW
+            else if (row == middleRow)
+            {
+                offsets = new Vector2Int[]
+                {
+                new Vector2Int(0, -1), // Left
+                new Vector2Int(0, 1),  // Right
+
+                new Vector2Int(-1, -1), // Upper Left
+                new Vector2Int(-1, 0),  // Upper Right
+
+                new Vector2Int(1, -1), // Lower Left
+                new Vector2Int(1, 0)   // Lower Right
+                };
+            }
+            // BOTTOM HALF
             else
             {
                 offsets = new Vector2Int[]
                 {
                 new Vector2Int(0, -1), // Left
                 new Vector2Int(0, 1),  // Right
+
                 new Vector2Int(-1, 0), // Upper Left
                 new Vector2Int(-1, 1), // Upper Right
+
                 new Vector2Int(1, -1), // Lower Left
                 new Vector2Int(1, 0)   // Lower Right
                 };
@@ -185,7 +197,7 @@ public class TilesHandler : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Index {index} is out of bounds for tiles list.");
+            LogsHandler.LogWarning($"Index {index} is out of bounds for tiles list.");
         }
     }*/
 
@@ -287,7 +299,7 @@ public class TilesHandler : MonoBehaviour
         Unit unit = source.unit;
         if (source == null || end == null || unit == null || unit.unitMovement.isMoving.Value)
         {
-            Debug.Log("Brak Ÿród³a, celu lub jednostki w shortestPathSeeingVisible");
+            LogsHandler.Log("Brak Ÿród³a, celu lub jednostki w shortestPathSeeingVisible");
             return new List<Tile>();
         }
 
@@ -336,7 +348,7 @@ public class TilesHandler : MonoBehaviour
         path.Reverse(); // od source do end
         if (path.Count > 0 && path[0] != source)
         {
-            Debug.Log("Brak po³¹czenia miêdzy Ÿród³em a celem w shortestPathSeeingVisible");
+            LogsHandler.Log("Brak po³¹czenia miêdzy Ÿród³em a celem w shortestPathSeeingVisible");
             return new List<Tile>();
         }
 
@@ -367,10 +379,10 @@ public class TilesHandler : MonoBehaviour
     {
         if (tile1 == tile2)
         {
-            Debug.Log("Distance calculation starts and ends, tiles are the same, distance is 0");
+            LogsHandler.Log("Distance calculation starts and ends, tiles are the same, distance is 0");
             return 0;
         }
-        Debug.Log($"Distance calculation starts from {tile1.name} to {tile2.name}");
+        LogsHandler.Log($"Distance calculation starts from {tile1.name} to {tile2.name}");
         List<Tile> visibleTiles = new List<Tile> { tile1 };
         for (int o = 1; o < gridSize; o++)
         {
@@ -387,7 +399,7 @@ public class TilesHandler : MonoBehaviour
                         {
                             if (neighbour == tile2)
                             {
-                                Debug.Log($"Distance calculation ends, distance is {o}");
+                                LogsHandler.Log($"Distance calculation ends, distance is {o}");
                                 return o;
                             }
                             visibleTiles.Add(neighbour);
@@ -396,7 +408,7 @@ public class TilesHandler : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Distance calculation ends, no path found");
+        LogsHandler.Log("Distance calculation ends, no path found");
         return -1;
     }
 }

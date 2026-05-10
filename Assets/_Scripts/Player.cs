@@ -70,7 +70,7 @@ public class Player : NetworkBehaviour
 
     public Unit SpawnPlayer(Tile startingTile)
     {
-        Debug.Log("Spawning Player: " + OwnerClientId);
+        LogsHandler.Log("Spawning Player: " + OwnerClientId);
 
         // Update local UI
         SendValuesToUI();
@@ -81,7 +81,7 @@ public class Player : NetworkBehaviour
 
         if (startingTile == null)
         {
-            Debug.LogError("Could not find starting tile for player " + OwnerClientId);
+            LogsHandler.LogError("Could not find starting tile for player " + OwnerClientId);
             DespawnPlayer();
             return null;
         }
@@ -153,7 +153,7 @@ public class Player : NetworkBehaviour
     {
         if (!isLocal() && !NetworkManager.Singleton.IsServer)
         {
-            Debug.Log("called from clienttttt! XD");
+            LogsHandler.Log("called from clienttttt! XD");
             return false;
         }
         if (money.Value >= tMoney)
@@ -161,7 +161,7 @@ public class Player : NetworkBehaviour
             money.Value -= tMoney;
             return true;
         }
-        Debug.Log($"Not enough resources: {tMoney}");
+        LogsHandler.Log($"Not enough resources: {tMoney}");
         return false;
     }
 
@@ -196,7 +196,7 @@ public class Player : NetworkBehaviour
         foreach (City city in citys)
         {
             if (!tiles.Contains(city.tile)) tiles.Add(city.tile);
-            tiles.AddRange(city.cityTiles.Where(x => !tiles.Contains(x)));
+            //tiles.AddRange(city.cityTiles.Where(x => !tiles.Contains(x)));
         }
 
         foreach (Unit unit in units)
@@ -212,6 +212,7 @@ public class Player : NetworkBehaviour
                         Tile tile = unittiles[j];
                         foreach (Tile neighbour in tile.neighbours)
                         {
+                            if (neighbour == null) continue;
                             if (!unittiles.Contains(neighbour))
                                 unittiles.Add(neighbour);
                         }

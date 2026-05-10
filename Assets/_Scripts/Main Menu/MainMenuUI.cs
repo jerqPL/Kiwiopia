@@ -19,7 +19,7 @@ public class MainMenuUI : MonoBehaviour
 
     private void Quit()
     {
-        Debug.Log("Quit");
+        LogsHandler.Log("Quit");
         Application.Quit();
     }
 

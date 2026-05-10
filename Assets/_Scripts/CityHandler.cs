@@ -21,13 +21,13 @@ public class CityHandler : NetworkBehaviour
 
         if (tile.city != null)
         {
-            Debug.Log("City already built!");
+            LogsHandler.Log("City already built!");
             return;
         }
 
         if (tile.underCity != null)
         {
-            Debug.Log("Under city, alr");
+            LogsHandler.Log("Under city, alr");
             return ;
         }
 
@@ -37,10 +37,10 @@ public class CityHandler : NetworkBehaviour
         int money = Global.newCityResourceCost;
 
 
-        if (NetworkManager.Singleton.IsServer) Debug.Log("building city on server");
+        if (NetworkManager.Singleton.IsServer) LogsHandler.Log("building city on server");
         if (!owner.TakeResources(money))
         {
-            Debug.Log($"Not enough resources: {money}");
+            LogsHandler.Log($"Not enough resources: {money}");
             return;
         }
 
@@ -51,7 +51,7 @@ public class CityHandler : NetworkBehaviour
         city.ownerIndex.Value = ownerIndex;
         city.tileIndex.Value = tileIndex;
         netObj.Spawn(); // == replicate to all clients
-        city.ChangeSizeServerRpc(1);
+        //city.ChangeSizeServerRpc(1);
         netObj.ChangeOwnership(Global.playerHandler.players[ownerIndex].OwnerClientId);
     }
 
@@ -65,7 +65,7 @@ public class CityHandler : NetworkBehaviour
 
         if (tile.city != null)
         {
-            Debug.Log("City already built!");
+            LogsHandler.Log("City already built!");
             return null;
         }
 
@@ -75,12 +75,12 @@ public class CityHandler : NetworkBehaviour
 
         if (!owner.TakeResources(money))
         {
-            Debug.Log($"Not enough resources: {money}");
+            LogsHandler.Log($"Not enough resources: {money}");
             return null;
         }
 
-        Debug.Log(cityPrefab);
-        Debug.Log(tile);
+        LogsHandler.Log(cityPrefab);
+        LogsHandler.Log(tile);
         GameObject cityObj = Instantiate(cityPrefab, tile.transform.position, Quaternion.identity);
         City city = cityObj.GetComponent<City>();
         city.ownerIndex.Value = ownerIndex;

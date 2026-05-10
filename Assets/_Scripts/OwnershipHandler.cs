@@ -19,7 +19,7 @@ public class OwnershipHandler : MonoBehaviour
 
     public void GenerateOwnership() 
     { 
-        Debug.Log("Initializing OwnershipHandler");
+        LogsHandler.Log("Initializing OwnershipHandler");
         foreach (Tile tile in tilesHandler.tiles)
         {
             tileOwners.Add(new List<float>());
@@ -47,7 +47,8 @@ public class OwnershipHandler : MonoBehaviour
 
     void OwnershipChanged(int prev, int curr, int player)
     {
-        //Debug.LogError("New ownership change: player " + player + " moved from tile " + prev + " to tile " + curr);
+        //LogsHandler.LogError("New ownership change: player " + player + " moved from tile " + prev + " to tile " + curr);
+        List<Tile> tilesAffected = new List<Tile>();
         if (prev == curr)
         {
             return;
@@ -63,25 +64,46 @@ public class OwnershipHandler : MonoBehaviour
                 if (distance <= ownershipDistance)
                 {
                     tileOwners[tilesHandler.GetIndexOf(n)][player] -= GetOwnershipByDistance(distance);
-                    Debug.Log("removing ownership from tile " + n.name + " for player " + player + ", distance: " + distance + ", removed value: " + 1f * Mathf.Pow(1f - ownershipFallof, distance) + ", final value: " + tileOwners[tilesHandler.GetIndexOf(n)][player]);
+                    LogsHandler.Log("removing ownership from tile " + n.name + " for player " + player + ", distance: " + distance + ", removed value: " + 1f * Mathf.Pow(1f - ownershipFallof, distance) + ", final value: " + tileOwners[tilesHandler.GetIndexOf(n)][player]);
                     UpdateTileOwnership(n);
+                    tilesAffected.Add(n);
                 }
             }
         }
         if (curr != -1) { 
             Tile currTile = tilesHandler.GetTileAt(curr);
             List<Tile> neighbours = tilesHandler.IndirectTileNeighbours(currTile, ownershipDistance);
-            Debug.Log("Current tile: " + currTile.name + ", Neighbours: " + neighbours.Count);
+            LogsHandler.Log("Current tile: " + currTile.name + ", Neighbours: " + neighbours.Count);
             foreach (Tile n in neighbours) 
             {
                 int distance = tilesHandler.Distance(currTile, n);
                 if (distance <= ownershipDistance)
                 {
                     tileOwners[tilesHandler.GetIndexOf(n)][player] += GetOwnershipByDistance(distance);
-                    Debug.Log("adding ownership to tile " + n.name + " for player " + player + ", distance: " + distance + ", added value: " + 1f * Mathf.Pow(1f - ownershipFallof, distance) + ", final value: " + tileOwners[tilesHandler.GetIndexOf(n)][player]);
+                    LogsHandler.Log("adding ownership to tile " + n.name + " for player " + player + ", distance: " + distance + ", added value: " + 1f * Mathf.Pow(1f - ownershipFallof, distance) + ", final value: " + tileOwners[tilesHandler.GetIndexOf(n)][player]);
                     UpdateTileOwnership(n);
+                    tilesAffected.Add(n);
                 }
             }
+        }
+
+        List <Tile> tilesAffectedNeighbours = new List<Tile>();
+
+        foreach (Tile tile in tilesAffected)
+        {
+            foreach (Tile neighbour in tile.neighbours)
+            {
+                if (neighbour == null) continue;
+                if (!tilesAffectedNeighbours.Contains(neighbour) && !tilesAffected.Contains(neighbour))
+                {
+                    tilesAffectedNeighbours.Add(neighbour);
+                }
+            }
+        }
+        tilesAffected.AddRange(tilesAffectedNeighbours);
+        foreach (Tile tile in tilesAffected)
+        {
+            tile.UpdateBorders();
         }
     }
 
@@ -92,10 +114,13 @@ public class OwnershipHandler : MonoBehaviour
         float maxOwnership = float.MinValue;
         float secondMaxOwnership = float.MinValue;
         int owner = -1;
+        int ownershipCount = 0;
 
         for (int i = 0; i < playerHandler.players.Count; i++)
         {
             float value = tileOwners[tileIndex][i];
+
+            ownershipCount++;
 
             if (value > maxOwnership)
             {
@@ -109,17 +134,39 @@ public class OwnershipHandler : MonoBehaviour
             }
         }
 
-        Debug.Log(
+        LogsHandler.Log(
             "Tile " + tile.name +
             " ownership values: " + string.Join(", ", tileOwners[tileIndex]) +
             ", max ownership: " + maxOwnership +
             ", second max ownership: " + secondMaxOwnership
         );
 
-        if (owner == -1 || maxOwnership - secondMaxOwnership < minOwnership)
+        // No meaningful ownership
+        if (maxOwnership <= 0)
         {
             tile.UpdateOwner(null);
-            Debug.Log("Tile " + tile.name + " has no owner");
+            LogsHandler.Log("Tile " + tile.name + " has no owner");
+            return;
+        }
+
+        // If only one player exists, just use maxOwnership threshold
+        if (ownershipCount < 2 || secondMaxOwnership == float.MinValue)
+        {
+            if (maxOwnership < minOwnership)
+            {
+                tile.UpdateOwner(null);
+                LogsHandler.Log("Tile " + tile.name + " has no owner");
+                return;
+            }
+
+            tile.UpdateOwner(playerHandler.players[owner]);
+            return;
+        }
+
+        if (maxOwnership - secondMaxOwnership < minOwnership)
+        {
+            tile.UpdateOwner(null);
+            LogsHandler.Log("Tile " + tile.name + " has no owner");
             return;
         }
 

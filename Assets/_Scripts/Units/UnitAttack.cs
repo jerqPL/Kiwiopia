@@ -99,6 +99,7 @@ public class UnitAttack : NetworkBehaviour
                     Tile tile = unitVisibleTiles[j];
                     foreach (Tile neighbour in tile.neighbours)
                     {
+                        if (neighbour == null) continue;
                         if (!unitVisibleTiles.Contains(neighbour))
                             unitVisibleTiles.Add(neighbour);
                     }

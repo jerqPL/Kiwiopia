@@ -368,7 +368,7 @@ public class UIHandler : NetworkBehaviour
         float woodYield = 0f;
         float stoneYield = 0f;
 
-        foreach(Tile tile in city.cityTiles)
+        /*foreach(Tile tile in city.cityTiles)
         {
             if (tile.hasForest && tile.hasMountains)
             {
@@ -387,7 +387,7 @@ public class UIHandler : NetworkBehaviour
             {
                 moneyYield += 1f / Global.timePerCoinPerTile;
             }
-        }
+        }*/
 
         cityMoneyYield.text = ((int)(moneyYield * 10) / 10f).ToString();
 
@@ -455,10 +455,10 @@ public class UIHandler : NetworkBehaviour
         UpdateUnitMenu(clickedUnit);
     }
 
-    public void UpgradeCity()
+    /*public void UpgradeCity()
     {
         Global.selectionHandler.lastClickedTile.city.ChangeSizeServerRpc(Global.selectionHandler.lastClickedTile.city.size.Value + 1);
-    }
+    }*/
 
     public void UpdateMoneyText(int value)
     {

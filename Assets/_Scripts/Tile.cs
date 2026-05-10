@@ -43,7 +43,7 @@ public class Tile : MonoBehaviour
 
     public void UpdateOwner(Player owner)
     {
-        Debug.Log("Updating owner of tile " + gameObject.name + " to " + (owner != null ? owner.name : "null"));
+        LogsHandler.Log("Updating owner of tile " + gameObject.name + " to " + (owner != null ? owner.name : "null"));
         this.owner = owner;
         if (owner != null)
         {
@@ -84,9 +84,10 @@ public class Tile : MonoBehaviour
         }
     }
 
-    void Update()
+    public void UpdateBorders()
     {
-        if (owner != null) { 
+        if (owner != null)
+        {
             for (int i = 0; i < neighbours.Length; i++)
             {
                 if (neighbours[i] == null || neighbours[i].owner != owner)
@@ -99,9 +100,20 @@ public class Tile : MonoBehaviour
                 }
             }
         }
-        ///DELETE ^ TS FASSTTT
+        else
+        {
+            for (int i = 0; i < neighbours.Length; i++)
+            {
+                tileBorders[i].gameObject.SetActive(false);
+            }
+        }
+    }
+
+    void Update()
+    {
+        
         if (!NetworkManager.Singleton.IsServer) return;
-        if (underCity != null)
+        if (owner != null)
         {
             generationTimer += Time.deltaTime;
             generationTimer1 += Time.deltaTime;
@@ -109,11 +121,11 @@ public class Tile : MonoBehaviour
             int generated = (int)Mathf.Floor(generationTimer / Global.timePerCoinPerTile);
 
             generationTimer -= generated * Global.timePerCoinPerTile;
-            SendToCity(generated);
+            SendToPlayer(generated);
             
    
         }
-        if (underCity == null && unit != null)
+        /*if (underCity == null && unit != null)
         {
             generationTimer += Time.deltaTime;
             generationTimer1 += Time.deltaTime;
@@ -122,7 +134,7 @@ public class Tile : MonoBehaviour
             generationTimer -= generated * Global.timePerCoinPerTile;
             SendToUnit(generated);
             
-        }
+        }*/
     }
 
     public void ApplyTerrain(Vector3 newTerrain)
@@ -197,9 +209,9 @@ public class Tile : MonoBehaviour
         GetComponent<Renderer>().material = Global.terrainMaterials[terrainType];*/
     }
 
-    void SendToCity(int money)
+    void SendToPlayer(int money)
     {
-        underCity.RecieveResources(money);
+        owner.RecieveResources(money);
     }
 
     void SendToUnit(int money)

@@ -16,7 +16,7 @@ public class SessionHandler : MonoBehaviour
         set
         {
             activeSession = value;
-            Debug.Log($"Active session: {activeSession}");
+            LogsHandler.Log($"Active session: {activeSession}");
         }
     }
 
@@ -38,12 +38,12 @@ public class SessionHandler : MonoBehaviour
         {
             await UnityServices.InitializeAsync(); // Initialize Unity Gaming Services SDKs.
             await AuthenticationService.Instance.SignInAnonymouslyAsync(); // Anonymously authenticate the player
-            Debug.Log($"Sign in anonymously succeeded! PlayerID: {AuthenticationService.Instance.PlayerId}");
+            LogsHandler.Log($"Sign in anonymously succeeded! PlayerID: {AuthenticationService.Instance.PlayerId}");
         }
         catch (Exception e)
         {
             Global.uIHandler.SetErrorText(e.Message);
-            Debug.LogException(e);
+            LogsHandler.LogException(e);
         }
     }
 
@@ -81,9 +81,9 @@ public class SessionHandler : MonoBehaviour
         {
             Global.uIHandler.SetErrorText(e.Message);
             Global.uIHandler.EnableCreateStatusError();
-            Debug.LogException(e);
+            LogsHandler.LogException(e);
         }
-        Debug.Log($"Session {ActiveSession.Id} created! Join code: {ActiveSession.Code}");
+        LogsHandler.Log($"Session {ActiveSession.Id} created! Join code: {ActiveSession.Code}");
         Global.networkUI.DisplayJoinCode(ActiveSession.Code);
         Global.uIHandler.SwichToLobbyMenu();
     }
@@ -100,14 +100,14 @@ public class SessionHandler : MonoBehaviour
         {
             Global.uIHandler.SetErrorText(e.Message);
             Global.uIHandler.EnableJoinStatusError();
-            Debug.LogException(e);
+            LogsHandler.LogException(e);
         }
-        Debug.Log($"Session {ActiveSession.Id} joined!");
+        LogsHandler.Log($"Session {ActiveSession.Id} joined!");
         Global.uIHandler.SwichToLobbyMenu();
         
         foreach (var player in ActiveSession.Players)
         {
-            Debug.Log(player);
+            LogsHandler.Log(player);
             Global.uIHandler.AddPlayer(player.Id);
         }
 
@@ -129,9 +129,9 @@ public class SessionHandler : MonoBehaviour
         {
             Global.uIHandler.SetErrorText(e.Message);
             Global.uIHandler.EnableJoinStatusError();
-            Debug.LogException(e);
+            LogsHandler.LogException(e);
         }
-        Debug.Log($"Session {ActiveSession.Id} joined!");
+        LogsHandler.Log($"Session {ActiveSession.Id} joined!");
         Global.uIHandler.SwichToLobbyMenu();
         Global.networkUI.DisplayJoinCode(activeSession.Code);
     }

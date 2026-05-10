@@ -35,7 +35,7 @@ public class UnitMovement : NetworkBehaviour
             MoveUnitServerRpc(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
         else
         {
-            Debug.Log("Requesting local move");
+            LogsHandler.Log("Requesting local move");
             MoveUnitLocal(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
         }
     }
@@ -61,7 +61,7 @@ public class UnitMovement : NetworkBehaviour
     {
         if (unit.isDead) return;
         if (isMoving.Value) return;
-        Debug.Log("Local move requested");
+        LogsHandler.Log("Local move requested");
         List<int> validIndices = new List<int>();
         foreach (var idx in tileIndices)
         {
@@ -149,7 +149,7 @@ public class UnitMovement : NetworkBehaviour
 
     void ResetMovement(Tile destination)
     {
-        Debug.Log("Resetting movement");
+        LogsHandler.Log("Resetting movement");
         Tile current = unit.tile;
         CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(unit));
         List<Tile> newPath = Global.tilesHandler.shortestPathSeeingVisible(current, destination);
@@ -216,7 +216,8 @@ public class UnitMovement : NetworkBehaviour
         Global.Shuffle(neighbourTiles);
         foreach (Tile neighbour in neighbourTiles)
         {
-            if (neighbour.unit == null && neighbour.underCity.owner == unit.owner)
+            if (neighbour == null) continue;
+            if (neighbour.unit == null /*&& neighbour.underCity.owner == unit.owner*/)
             {
                 int[] tileIndices = { Global.tilesHandler.GetIndexOf(unit.tile), Global.tilesHandler.GetIndexOf(neighbour) };
                 MoveUnitServerRpc(tileIndices);

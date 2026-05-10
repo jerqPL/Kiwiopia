@@ -7,10 +7,10 @@ using static Global;
 
 public class City : NetworkBehaviour
 {
-    public List<Tile> cityTiles = new List<Tile>();
+    //public List<Tile> cityTiles = new List<Tile>();
     [SerializeField] private Slider recruitProgressBar;
     [SerializeField] private Slider captureProgressBar;
-    [SerializeField] private LineRenderer lineRenderer;
+
     public NetworkVariable<int> tileIndex = new NetworkVariable<int>();
     public Tile tile => Global.tilesHandler.GetTileAt(tileIndex.Value);
     public NetworkVariable<int> ownerIndex = new NetworkVariable<int>();
@@ -24,17 +24,12 @@ public class City : NetworkBehaviour
     public NetworkVariable<bool> isBeingCaptured = new NetworkVariable<bool>(false);
     public NetworkVariable<int> capturingUnitIndex = new NetworkVariable<int>();
 
-    public int money = 0;
-
     public bool isRecruiting = false;
 
     private int recruitedUnitType;
     private float recruitTimeLeft;
 
     public float capturingTime = 0f;
-    
-
-    private LineRenderer cityBorder;
 
     public NetworkList<int> recruitmentQueue = new NetworkList<int>(default,
                                                    NetworkVariableReadPermission.Everyone,
@@ -62,7 +57,7 @@ public class City : NetworkBehaviour
     private void Initialize()
     {
         transform.position = tile.transform.position;
-        Debug.Log($"tile index: {tileIndex.Value}");
+        LogsHandler.Log($"tile index: {tileIndex.Value}");
         owner.citys.Add(this);
         tile.city = this;
         tile.underCity = this;
@@ -91,11 +86,6 @@ public class City : NetworkBehaviour
         }
         Global.playerHandler.GetPlayerAt(prev).citys.Remove(this);
         Global.playerHandler.GetPlayerAt(curr).citys.Add(this);
-        foreach(Tile tile in cityTiles)
-        {
-            tile.owner = owner;
-            
-        }
         cityHandler.CityChangedUpdate();
         Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
@@ -113,7 +103,7 @@ public class City : NetworkBehaviour
         if (isRecruiting) RecruitingProgress();
         if (isBeingCaptured.Value) CapturingProcess();
         if (!IsServer) return;
-        SendResourcesToPlayer();
+        //SendResourcesToPlayer();
     }
 
     private void PullRecruitmentQueue()
@@ -153,7 +143,7 @@ public class City : NetworkBehaviour
         }
     }
 
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
+    /*[Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Owner)]
     public void ChangeSizeServerRpc(int newSize)
     {
         newSize -= 2;
@@ -169,7 +159,7 @@ public class City : NetworkBehaviour
         
         ChangeSizeClientRpc(newSize);
         size.Value = newSize + 2;
-    }
+    }*/
 
     public void ChangeSizeLocally(int newSize)
     {
@@ -187,7 +177,7 @@ public class City : NetworkBehaviour
         size.Value = newSize + 2;
     }
 
-    [ClientRpc]
+    /*[ClientRpc]
     public void ChangeSizeClientRpc(int newSize)
     {
         foreach (Tile cityTile in cityTiles)
@@ -233,11 +223,11 @@ public class City : NetworkBehaviour
         }
         CreateBorder();
         Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
-    }
+    }*/
 
 
 
-    private void CreateBorder()
+    /*private void CreateBorder()
     {
         // store all edges, remove duplicates
         Dictionary<Edge, int> edgeCount = new Dictionary<Edge, int>();
@@ -289,9 +279,9 @@ public class City : NetworkBehaviour
         
         cityBorder.positionCount = borderPoints.Count;
         cityBorder.SetPositions(borderPoints.ToArray());
-    }
+    }*/
 
-    List<Vector3> BuildContinuousLoop(List<Edge> edges)
+    /*List<Vector3> BuildContinuousLoop(List<Edge> edges)
     {
         List<Vector3> result = new List<Vector3>();
 
@@ -328,11 +318,11 @@ public class City : NetworkBehaviour
         }
         if (safe < 10)
         {
-            Debug.LogError("Safe trigerred");
+            LogsHandler.LogError("Safe trigerred");
         }
 
         return result;
-    }
+    }*/
 
     struct Edge : System.IEquatable<Edge>
     {
@@ -377,7 +367,7 @@ public class City : NetworkBehaviour
 
     
 
-    void SendResourcesToPlayer()
+    /*void SendResourcesToPlayer()
     {
         if (money == 0)
         {
@@ -385,12 +375,12 @@ public class City : NetworkBehaviour
         }
         owner.RecieveResources(money);
         money = 0;
-    }
+    }*/
 
-    public void RecieveResources(int rMoney)
+    /*public void RecieveResources(int rMoney)
     {
         money += rMoney;
-    }
+    }*/
 
     private void RecruitingProgress()
     {

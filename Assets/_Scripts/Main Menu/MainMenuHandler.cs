@@ -236,23 +236,23 @@ public class MainMenuHandler : MonoBehaviour
 
     public List<Tile> transcriptToList(string transcript, bool fromEnd, int length = -1)
     {
-        Debug.Log("Transcript: " + transcript + ", fromEnd: " + fromEnd);
+        LogsHandler.Log("Transcript: " + transcript + ", fromEnd: " + fromEnd);
         List<Tile> result = new List<Tile>();
         Tile current = tilesHandler.centerTile.GetComponent<Tile>();
         if (!fromEnd)
         {
-            Debug.Log("Processing from start");
+            LogsHandler.Log("Processing from start");
             int index = length == -1 ? 0 : length;
             while (index < transcript.Length+1)
             {
                 current = tileTranscriptToTile(transcript.Substring(0, index));
-                Debug.Log(transcript.Substring(0, index));
+                LogsHandler.Log(transcript.Substring(0, index));
                 result.Add(current);
                 index++;
             
             }
             
-            Debug.Log("Result: " + string.Join(", ", result.Select(t => t)));
+            LogsHandler.Log("Result: " + string.Join(", ", result.Select(t => t)));
             return result;
         }
         else
@@ -261,7 +261,7 @@ public class MainMenuHandler : MonoBehaviour
             while (index >= 0 && (length == -1 || transcript.Length - 1 - index + 1 < length))
             {
                 current = tileTranscriptToTile(transcript.Substring(0, index));
-                Debug.Log(tileTranscriptToTile(transcript.Substring(0, index)));
+                LogsHandler.Log(tileTranscriptToTile(transcript.Substring(0, index)));
                 result.Add(current);
                 index--;
             }

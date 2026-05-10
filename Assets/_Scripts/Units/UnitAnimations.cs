@@ -16,7 +16,7 @@ public class UnitAnimations : NetworkBehaviour
         unitAttack = GetComponent<UnitAttack>();
         unitMovement = GetComponent<UnitMovement>();
         unit.AfterNetworkSpawn += () => { 
-            Debug.Log("UnitAnimations: Unit spawned, getting animator and parts");
+            LogsHandler.Log("UnitAnimations: Unit spawned, getting animator and parts");
             animator = unit.model.GetComponent<Animator>();
             parts = unit.model.GetComponent<UnitParts>();
             UpdateWeaponTransform(false, false); 
@@ -34,7 +34,7 @@ public class UnitAnimations : NetworkBehaviour
     {
         if (animator == null)
         {
-            Debug.LogWarning("Animator is null in UnitAnimations");
+            LogsHandler.LogWarning("Animator is null in UnitAnimations");
             return;
         }
         

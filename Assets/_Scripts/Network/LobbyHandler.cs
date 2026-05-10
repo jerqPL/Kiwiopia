@@ -25,14 +25,14 @@ public class LobbyHandler : NetworkBehaviour
     private void OnClientConnected(ulong clientId)
     {
         connectedClients.Add(clientId);
-        Debug.Log($"Client connected: {clientId}");
+        LogsHandler.Log($"Client connected: {clientId}");
         
     }
 
     private void OnClientDisconnected(ulong clientId)
     {
         connectedClients.Remove(clientId);
-        Debug.Log($"Client disconnected: {clientId}");
+        LogsHandler.Log($"Client disconnected: {clientId}");
         
     }
 
@@ -41,7 +41,7 @@ public class LobbyHandler : NetworkBehaviour
         if (!IsServer) return;
         Global.uIHandler.HideGameMenuClientRpc();
         gameStarted = true;
-        Debug.Log("All players connected! Generating map...");
+        LogsHandler.Log("All players connected! Generating map...");
         // call your TerrainGeneration / TilesHandler generation
         Global.terrainGeneration.SpawnMapServerRpc();
         Global.playerHandler.SpawnPlayers();
