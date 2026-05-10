@@ -70,6 +70,7 @@ public class City : NetworkBehaviour
             if (ctx.Index == 0) StopRecruiting();
         };
         uIHandler?.ClickedTile(Global.selectionHandler.lastClickedTile);
+        cityHandler.CityChangedUpdate(-1, ownerIndex.Value, tileIndex.Value);
     }
 
     private void StopRecruiting()
@@ -86,7 +87,7 @@ public class City : NetworkBehaviour
         }
         Global.playerHandler.GetPlayerAt(prev).citys.Remove(this);
         Global.playerHandler.GetPlayerAt(curr).citys.Add(this);
-        cityHandler.CityChangedUpdate();
+        cityHandler.CityChangedUpdate(prev, curr, tileIndex.Value);
         Global.uIHandler.ClickedTile(Global.selectionHandler.lastClickedTile);
     }
 

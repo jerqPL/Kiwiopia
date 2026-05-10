@@ -9163,7 +9163,7 @@ MonoBehaviour:
   inProgressLineMaterialReference: {fileID: 2100000, guid: ae9d5e1c112cfda48b10bc2af131fd7a, type: 2}
   notScoutedTileMaterialReference: {fileID: 2100000, guid: 02c41d5c9e3011948add5d7110e0e8fd, type: 2}
   startingMoneyReference: 25
-  timePerCoinPerTileReference: 6
+  timePerCoinPerTileReference: 10
   timePerLogPerForestReference: 4
   timePerStonePerMountainReference: 4
   unitTypesReference:

@@ -14,7 +14,7 @@ public class OwnershipHandler : MonoBehaviour
     void Awake()
     {
         unitsHandler.AfterUnitMoved += OwnershipChanged;
-        
+        cityHandler.AfterCityChanged += OwnershipChangedCity;
     }
 
     public void GenerateOwnership() 
@@ -43,6 +43,19 @@ public class OwnershipHandler : MonoBehaviour
         //return 1f * Mathf.Pow(1f - ownershipFallof, distance);
         float t = 1f - ((float)distance / (ownershipDistance + 1));
         return t * t;
+    }
+
+    void OwnershipChangedCity(int prev, int curr, int tileIndex)
+    {
+        LogsHandler.Log("City changed on tile " + tileIndex + ", prev: " + prev + ", curr: " + curr);
+        if (prev != -1) 
+        {
+            OwnershipChanged(tileIndex, -1, prev);
+        }
+        if (curr != -1) 
+        {
+            OwnershipChanged(-1, tileIndex, curr);
+        }
     }
 
     void OwnershipChanged(int prev, int curr, int player)

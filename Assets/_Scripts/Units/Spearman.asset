@@ -23,6 +23,6 @@ MonoBehaviour:
   attackCooldown: 5
   speed: 1
   canClimb: 0
-  timePerCoin: 3
+  timePerCoin: 0.5
   scoutDistance: 2
   model: {fileID: 51745742829502549, guid: 20bddd737cd905e45a0914e6e3ef3807, type: 3}

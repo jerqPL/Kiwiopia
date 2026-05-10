@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class CityHandler : NetworkBehaviour
 {
@@ -8,7 +9,7 @@ public class CityHandler : NetworkBehaviour
 
     public List<City> cities = new List<City>();
 
-    public event System.Action AfterCityChanged;
+    public event System.Action<int, int, int> AfterCityChanged;
 
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void BuildCityServerRpc(int ownerIndex, int tileIndex)
@@ -89,9 +90,9 @@ public class CityHandler : NetworkBehaviour
         return city;
     }
 
-    public void CityChangedUpdate() 
+    public void CityChangedUpdate(int prev, int curr, int tileIndex) 
     {
-        AfterCityChanged?.Invoke();
+        AfterCityChanged?.Invoke(prev, curr, tileIndex);
     }
 
 }
