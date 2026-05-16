@@ -79,6 +79,10 @@ public class UIHandler : NetworkBehaviour
     [SerializeField] private Unit clickedUnit = null;
     [SerializeField] private Unit perviousClickedUnit = null;
 
+    [SerializeField] private Material movementPathMaterial;
+    [SerializeField] private float movementPathMaterialScrollSpeed;
+    private float t = 0;
+
     public override void OnNetworkSpawn()
     {
         if (IsClient)
@@ -97,6 +101,9 @@ public class UIHandler : NetworkBehaviour
         {
             UpdateUnitMenu(clickedUnit);
         }
+        t += Time.deltaTime * movementPathMaterialScrollSpeed;
+        t = t % 1;
+        movementPathMaterial.mainTextureOffset = new Vector2(-t, 0);
     }
 
     public GameObject AddPlayer(string playerID, Color color)
@@ -489,4 +496,6 @@ public class UIHandler : NetworkBehaviour
             Global.selectionHandler.state = SelectionHandlerState.UnitMoving;
         UpdateUnitMenu(clickedUnit);
     }
+
+
 }

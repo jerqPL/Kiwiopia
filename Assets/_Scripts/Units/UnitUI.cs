@@ -15,7 +15,8 @@ public class UnitUI : NetworkBehaviour
     [SerializeField] private BarUI healthBar;
     [SerializeField] private BarUI attackCooldownBar;
 
-    private LineRenderer progressLine;
+    private LineRenderer movementProgressLine;
+    private LineRenderer movementPathLine;
     private void Awake()
     {
         unit = GetComponent<Unit>();
@@ -25,26 +26,38 @@ public class UnitUI : NetworkBehaviour
         unitAttack.inCombat.OnValueChanged += ChangeVisibilityAttackCooldown;
         unit.AfterDie += () => {
             healthBar.transform.gameObject.SetActive(false);
-            DestroyProgressLine();
+            DestroyMovementProgressLine();
         };
     }
 
-    public void CreateProgressLine(List<Tile> path)
+    public void CreateMovementProgressLine(List<Tile> path)
     {
-        DestroyProgressLine();
-        progressLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
-        progressLine.numCornerVertices = 8;
-        progressLine.numCapVertices = 8;
-        progressLine.material = Global.inProgressLineMaterial;
-        progressLine.positionCount = path.Count;
+        DestroyMovementProgressLine();
+        movementProgressLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        movementProgressLine.positionCount = path.Count;
         for (int i = 0; i < path.Count; i++)
-            progressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
+            movementProgressLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
     }
 
-    public void DestroyProgressLine()
+    public void DestroyMovementProgressLine()
     {
-        if (progressLine != null)
-            Destroy(progressLine.gameObject);
+        if (movementProgressLine != null)
+            Destroy(movementProgressLine.gameObject);
+    }
+
+    public void CreateMovementPathLine(List<Tile> path)
+    {
+        DestroyMovementPathLine();
+        movementPathLine = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
+        movementPathLine.positionCount = path.Count;
+        for (int i = 0; i < path.Count; i++)
+            movementPathLine.SetPosition(i, Global.AddToYVector3(Global.ZeroYVector3(path[i].transform.position), Global.lineHegithAboveTiles));
+    }
+
+    public void DestroyMovementPathLine()
+    {
+        if (movementPathLine != null)
+            Destroy(movementPathLine.gameObject);
     }
 
     private void UpdateHealthBar(int prev, int curr)
@@ -89,7 +102,7 @@ public class UnitUI : NetworkBehaviour
     {
         healthBar.Disable();
         attackCooldownBar.Disable();
-        DestroyProgressLine();
+        DestroyMovementProgressLine();
         foreach (Renderer rend in GetComponentsInChildren<Renderer>())
         {
             rend.enabled = false;

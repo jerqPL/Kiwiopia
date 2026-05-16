@@ -286,6 +286,7 @@ public class TilesHandler : MonoBehaviour
 
     public bool CanGetThrough(Unit unit, Tile tile)
     {
+        return true;
         if (!unit.owner.seenTiles.Contains(Global.tilesHandler.GetIndexOf(tile)) || ((!tile.hasMountains || unit.unitType.canClimb) && (tile.unit == null || tile.unit.owner != unit.owner || (tile.unit.owner == unit.owner && tile.unit.unitMovement.isMoving.Value))))
         {
             return true;
@@ -297,9 +298,9 @@ public class TilesHandler : MonoBehaviour
     public List<Tile> shortestPathSeeingVisible(Tile source, Tile end)
     {
         Unit unit = source.unit;
-        if (source == null || end == null || unit == null || unit.unitMovement.isMoving.Value)
+        if (source == null || end == null)
         {
-            LogsHandler.Log("Brak Ÿród³a, celu lub jednostki w shortestPathSeeingVisible");
+            LogsHandler.Log("Brak Ÿród³a lub celu");
             return new List<Tile>();
         }
 

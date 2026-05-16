@@ -30,7 +30,7 @@ public class UnitMovement : NetworkBehaviour
         if (unit.isDead) return;
         if (path == null || path.Count < 2) return;
 
-        // Send request to server
+        unit.unitUI.DestroyMovementPathLine();
         if (!isLocal())
             MoveUnitServerRpc(path.ConvertAll(t => Global.tilesHandler.GetIndexOf(t)).ToArray());
         else
@@ -90,7 +90,7 @@ public class UnitMovement : NetworkBehaviour
     {
         if (IsServer || isLocal()) isMoving.Value = true;
         if (unit.owner == Global.playerHandler.GetLocalPlayer())
-            unitUI.CreateProgressLine(path);
+            unitUI.CreateMovementProgressLine(path);
 
         float moveTime = 1 / unit.unitType.speed;
 
@@ -132,7 +132,7 @@ public class UnitMovement : NetworkBehaviour
                     if (!Global.tilesHandler.CanGetThrough(unit, path[j]))
                     {
                         Tile destination = path[path.Count - 1];
-                        unitUI.DestroyProgressLine();
+                        unitUI.DestroyMovementProgressLine();
                         ResetMovement(destination);
                         yield break;
                     }
@@ -140,10 +140,10 @@ public class UnitMovement : NetworkBehaviour
             }
 
             if (unit.owner == Global.playerHandler.GetLocalPlayer())
-                unitUI.CreateProgressLine(path.Skip(i + 1).ToList());
+                unitUI.CreateMovementProgressLine(path.Skip(i + 1).ToList());
         }
         if (unit.owner == Global.playerHandler.GetLocalPlayer())
-            unitUI.DestroyProgressLine();
+            unitUI.DestroyMovementProgressLine();
         if (IsServer || isLocal()) isMoving.Value = false;
     }
 
@@ -153,7 +153,7 @@ public class UnitMovement : NetworkBehaviour
         Tile current = unit.tile;
         CancelMovementServerRpc(Global.unitsHandler.GetIndexOf(unit));
         List<Tile> newPath = Global.tilesHandler.shortestPathSeeingVisible(current, destination);
-        unitUI.DestroyProgressLine();
+        unitUI.DestroyMovementProgressLine();
         if (newPath.Count >= 2)
         {
             unit.RotateTowards(newPath[1].transform.position);
@@ -172,7 +172,7 @@ public class UnitMovement : NetworkBehaviour
     public void CancelMovementClientRpc(int tileIndex)
     {
         StopCoroutine(movementCoroutine);
-        unitUI.DestroyProgressLine();
+        unitUI.DestroyMovementProgressLine();
         MoveTo(Global.tilesHandler.GetTileAt(tileIndex).transform.position);
         Global.tilesHandler.GetTileAt(tileIndex).SetUnit(unit);
         if (unit.owner == Global.playerHandler.GetLocalPlayer())

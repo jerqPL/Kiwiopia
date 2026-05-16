@@ -21,7 +21,7 @@ MonoBehaviour:
   damage: 12
   resistance: 2
   attackCooldown: 5
-  speed: 1
+  speed: 0.2
   canClimb: 0
   timePerCoin: 0.5
   scoutDistance: 2

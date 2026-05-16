@@ -19,17 +19,38 @@ public class UnitsHandler : NetworkBehaviour
 
     void Update()
     {
-        if (selectionHandler != null && selectionHandler.state == SelectionHandlerState.UnitMoving)
+        if (selectionHandler != null && (selectionHandler.state == SelectionHandlerState.UnitMoving|| selectionHandler.state == SelectionHandlerState.UnitDragging))
         {
             Tile target = selectionHandler.getTileOnMouse();
+            path = selectionHandler.draggedUnitPath;
+            if (path.Count > 0)
+            {
+                selectionHandler.draggedUnit.unitUI.CreateMovementPathLine(path);
+                return;
+                LineRenderer newLineRenderer = Instantiate(lineRendererPrefab, Vector3.zero, Quaternion.Euler(90, 0, 0));
+                newLineRenderer.numCornerVertices = 8;
+                newLineRenderer.numCapVertices = 8;
+                newLineRenderer.positionCount = path.Count;
+                for (int i = 0; i < path.Count; i++)
+                {
+                    newLineRenderer.SetPosition(i, path[i].gameObject.transform.position + Vector3.up * 0.55f);
+                }
+                tmpLineRenderer = newLineRenderer.gameObject;
+                lastHoveredTile = target;
+            }
+            return;
+
             if (target != null)
             {
                 if (lastHoveredTile == target)
                 {
                     return;
                 }
+
+                
                 
                 path = tilesHandler.shortestPathSeeingVisible(selectionHandler.lastClickedTile, target);
+                
                 if (path == null) return;
 
                 if (tmpLineRenderer != null)
@@ -140,6 +161,14 @@ public class UnitsHandler : NetworkBehaviour
         if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
         {
             List<Tile> path = tilesHandler.shortestPathSeeingVisible(GetUnitAt(unitIndex).tile, Global.tilesHandler.GetTileAt(targetTileIndex));
+            GetUnitAt(unitIndex).unitMovement.RequestMove(path);
+        }
+    }
+
+    public void RequestUnitMovementPath(int unitIndex, List<Tile> path)
+    {
+        if (GetUnitAt(unitIndex).owner == Global.playerHandler.GetLocalPlayer())
+        {
             GetUnitAt(unitIndex).unitMovement.RequestMove(path);
         }
     }

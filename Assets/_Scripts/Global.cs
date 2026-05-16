@@ -83,7 +83,7 @@ public class Global : MonoBehaviour
 
     public static SelectionHandler selectionHandler;
     [SerializeField] private SelectionHandler selectionHandlerReference;
-    public enum SelectionHandlerState { None, UnitMoving}
+    public enum SelectionHandlerState { None, UnitMoving, UnitDragging }
 
     public static CityHandler cityHandler;
     [SerializeField] private CityHandler cityHandlerReference;
