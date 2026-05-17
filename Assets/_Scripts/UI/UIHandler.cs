@@ -81,7 +81,14 @@ public class UIHandler : NetworkBehaviour
 
     [SerializeField] private Material movementPathMaterial;
     [SerializeField] private float movementPathMaterialScrollSpeed;
-    private float t = 0;
+    private float t1 = 0;
+
+    [SerializeField] private Material unitSelectionBoxMaterial;
+    [SerializeField] private float unitSelectionBoxMaterialScrollSpeed;
+    private float t2 = 0;
+    [SerializeField] private LineRenderer unitSelectionBoxLineRendererPrefab;
+    [SerializeField] private LineRenderer unitSelectionBoxLineRenderer;
+
 
     public override void OnNetworkSpawn()
     {
@@ -101,9 +108,13 @@ public class UIHandler : NetworkBehaviour
         {
             UpdateUnitMenu(clickedUnit);
         }
-        t += Time.deltaTime * movementPathMaterialScrollSpeed;
-        t = t % 1;
-        movementPathMaterial.mainTextureOffset = new Vector2(-t, 0);
+        t1 += Time.deltaTime * movementPathMaterialScrollSpeed;
+        t1 = t1 % 1;
+        t2 += Time.deltaTime * unitSelectionBoxMaterialScrollSpeed;
+        t2 = t2 % 1;
+
+        movementPathMaterial.mainTextureOffset = new Vector2(-t1, 0);
+        unitSelectionBoxMaterial.mainTextureOffset = new Vector2(-t2, 0);
     }
 
     public GameObject AddPlayer(string playerID, Color color)
@@ -497,5 +508,16 @@ public class UIHandler : NetworkBehaviour
         UpdateUnitMenu(clickedUnit);
     }
 
-
+    public void UpdateUnitSelectionBox(List<Tile> tiles)
+    {
+        if (unitSelectionBoxLineRenderer == null)
+        {
+            unitSelectionBoxLineRenderer = Instantiate(unitSelectionBoxLineRendererPrefab);
+        }
+        unitSelectionBoxLineRenderer.positionCount = tiles.Count;
+        for(int i = 0; i < tiles.Count; i++)
+        {
+            unitSelectionBoxLineRenderer.SetPosition(i, new Vector3(tiles[i].position.x, 0.1f, tiles[i].position.y));
+        }
+    }
 }
